@@ -1,0 +1,17 @@
+<component name="libraryTable">
+  <library name="java">
+    <CLASSES />
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/client/src/main/java" />
+      <root url="file://$PROJECT_DIR$/server/src/main/java" />
+      <root url="file://$PROJECT_DIR$/shared/src/main/java" />
+      <root url="file://$PROJECT_DIR$/shared/src/test/java" />
+      <root url="file://$PROJECT_DIR$/starter-code/1-chess-game" />
+      <root url="file://$PROJECT_DIR$/starter-code/3-web-api" />
+      <root url="file://$PROJECT_DIR$/starter-code/4-database" />
+      <root url="file://$PROJECT_DIR$/starter-code/5-pregame" />
+      <root url="file://$PROJECT_DIR$/starter-code/6-gameplay" />
+    </SOURCES>
+  </library>
+</component>
