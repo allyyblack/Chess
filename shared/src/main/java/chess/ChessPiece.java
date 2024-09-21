@@ -53,6 +53,41 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        switch(type)
+        {
+            case KING :
+
+            case QUEEN :
+                // Statements
+                break;
+            case BISHOP :
+                for (int i = 1; i + myPosition.getRow() <=8; i++) {
+                    if (i + myPosition.getColumn() >= 8) {
+                        break;
+                    }
+                    ChessPosition nextMove = new ChessPosition(i + myPosition.getRow(), i + myPosition.getColumn());
+                    if(board.getPiece(nextMove) != null) {
+                        if(board.getPiece(nextMove).pieceColor == board.getPiece(myPosition).pieceColor) {
+                            break;
+                        }
+                        else {
+
+                            break;
+                        }
+                    }
+                }
+            case KNIGHT :
+                // Statements
+                break;
+            case ROOK :
+                // Statements
+                break;
+            case PAWN :
+                // Statements
+                break;
+            default :
+                // default Statement
+        }
         return new ArrayList<>();
     }
 }
