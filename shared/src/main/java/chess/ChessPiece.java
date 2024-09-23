@@ -334,8 +334,91 @@ public class ChessPiece {
                 // Statements
                 break;
             case ROOK :
-                // Statements
-                break;
+//Rook
+
+//Move up
+                for (int i = 1; myPosition.getRow() + i <= 8; i++) {
+                    ChessPosition nextMove = new ChessPosition(myPosition.getRow() + i, myPosition.getColumn());
+                    if(board.getPiece(nextMove) != null) {
+                        if(board.getPiece(nextMove).pieceColor == board.getPiece(myPosition).pieceColor) {
+                            break;
+                        }
+                        else {
+                            validMoves.add(new ChessMove(myPosition, nextMove));
+                            System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
+
+                            break;
+                        }
+                    }
+                    else {
+                        validMoves.add(new ChessMove(myPosition, nextMove));
+                        System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
+
+                    }
+                }
+
+//Move down
+                for (int i = 1; myPosition.getRow() - i >= 1; i++) {
+                    ChessPosition nextMove = new ChessPosition(myPosition.getRow() - i, myPosition.getColumn());
+                    if(board.getPiece(nextMove) != null) {
+                        if(board.getPiece(nextMove).pieceColor == board.getPiece(myPosition).pieceColor) {
+                            break;
+                        }
+                        else {
+                            validMoves.add(new ChessMove(myPosition, nextMove));
+                            System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
+
+                            break;
+                        }
+                    }
+                    else {
+                        validMoves.add(new ChessMove(myPosition, nextMove));
+                        System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
+
+                    }
+                }
+
+//Move right
+                for (int i = 1; myPosition.getColumn() + i <= 8; i++) {
+                    ChessPosition nextMove = new ChessPosition(myPosition.getRow(), myPosition.getColumn() + i);
+                    if(board.getPiece(nextMove) != null) {
+                        if(board.getPiece(nextMove).pieceColor == board.getPiece(myPosition).pieceColor) {
+                            break;
+                        }
+                        else {
+                            validMoves.add(new ChessMove(myPosition, nextMove));
+                            System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
+
+                            break;
+                        }
+                    }
+                    else {
+                        validMoves.add(new ChessMove(myPosition, nextMove));
+                        System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
+
+                    }
+                }
+
+//Move left
+                for (int i = 1; myPosition.getColumn() - i >= 1; i++) {
+                    ChessPosition nextMove = new ChessPosition(myPosition.getRow(), myPosition.getColumn() - i);
+                    if(board.getPiece(nextMove) != null) {
+                        if(board.getPiece(nextMove).pieceColor == board.getPiece(myPosition).pieceColor) {
+                            break;
+                        }
+                        else {
+                            validMoves.add(new ChessMove(myPosition, nextMove));
+                            System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
+
+                            break;
+                        }
+                    }
+                    else {
+                        validMoves.add(new ChessMove(myPosition, nextMove));
+                        System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
+
+                    }
+                }
             case PAWN :
                 // Statements
                 break;
