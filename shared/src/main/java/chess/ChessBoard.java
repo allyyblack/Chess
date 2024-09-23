@@ -36,9 +36,12 @@ public class ChessBoard {
         if (position.getRow() == 0 || position.getColumn() == 0) {
             return null;
         }
-        if (position.getRow() == 8 || position.getColumn() == 8) {
+        if (position.getRow() == squares.length + 1 || position.getColumn() == squares.length + 1) {
             return null;
         }
+//        if (position.getRow() == 8 || position.getColumn() == 8) {
+//            return null;
+//        }
         return squares[position.getRow()-1][position.getColumn()-1];
     }
 
