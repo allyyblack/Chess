@@ -439,7 +439,111 @@ public class ChessPiece {
                     }
                 }
             case KNIGHT :
-                // Statements
+//Move up and left
+                if (myPosition.getRow() + 2 <= 8 && myPosition.getColumn() - 1 >= 1) {
+                    ChessPosition kingMoveUp = new ChessPosition(myPosition.getRow() + 2, myPosition.getColumn() - 1);
+                    if (board.getPiece(kingMoveUp) != null) {
+                        if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor){
+                            validMoves.add(new ChessMove(myPosition, kingMoveUp));
+                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
+                        }
+                    } else {
+                        validMoves.add(new ChessMove(myPosition, kingMoveUp));
+                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
+                    }
+                }
+//Move up and right
+                if (myPosition.getRow() + 2 <= 8 && myPosition.getColumn() + 1 <= 8) {
+                    ChessPosition kingMoveUp = new ChessPosition(myPosition.getRow() + 2, myPosition.getColumn() + 1);
+                    if (board.getPiece(kingMoveUp) != null) {
+                        if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor){
+                            validMoves.add(new ChessMove(myPosition, kingMoveUp));
+                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
+                        }
+                    } else {
+                        validMoves.add(new ChessMove(myPosition, kingMoveUp));
+                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
+                    }
+                }
+//Move down and left
+                if (myPosition.getRow() - 2 >= 1 && myPosition.getColumn() - 1 >= 1) {
+                    ChessPosition kingMoveUp = new ChessPosition(myPosition.getRow() - 2, myPosition.getColumn() - 1);
+                    if (board.getPiece(kingMoveUp) != null) {
+                        if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor){
+                            validMoves.add(new ChessMove(myPosition, kingMoveUp));
+                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
+                        }
+                    } else {
+                        validMoves.add(new ChessMove(myPosition, kingMoveUp));
+                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
+                    }
+                }
+//Move down and right
+                if (myPosition.getRow() - 2 >= 1 && myPosition.getColumn() + 1 <= 8) {
+                    ChessPosition kingMoveUp = new ChessPosition(myPosition.getRow() - 2, myPosition.getColumn() + 1);
+                    if (board.getPiece(kingMoveUp) != null) {
+                        if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor){
+                            validMoves.add(new ChessMove(myPosition, kingMoveUp));
+                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
+                        }
+                    } else {
+                        validMoves.add(new ChessMove(myPosition, kingMoveUp));
+                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
+                    }
+                }
+//Move right and up
+                if (myPosition.getRow() + 1 <= 8 && myPosition.getColumn() + 2 <= 8) {
+                    ChessPosition kingMoveUp = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 2);
+                    if (board.getPiece(kingMoveUp) != null) {
+                        if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor){
+                            validMoves.add(new ChessMove(myPosition, kingMoveUp));
+                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
+                        }
+                    } else {
+                        validMoves.add(new ChessMove(myPosition, kingMoveUp));
+                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
+                    }
+                }
+//Move right and down
+                if (myPosition.getRow() - 1 >= 1 && myPosition.getColumn() + 2 <= 8) {
+                    ChessPosition kingMoveUp = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 2);
+                    if (board.getPiece(kingMoveUp) != null) {
+                        if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor){
+                            validMoves.add(new ChessMove(myPosition, kingMoveUp));
+                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
+                        }
+                    } else {
+                        validMoves.add(new ChessMove(myPosition, kingMoveUp));
+                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
+                    }
+                }
+//Move left and down
+                if (myPosition.getRow() - 1 >= 1 && myPosition.getColumn() - 2 >= 1) {
+                    ChessPosition kingMoveUp = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 2);
+                    if (board.getPiece(kingMoveUp) != null) {
+                        if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor){
+                            validMoves.add(new ChessMove(myPosition, kingMoveUp));
+                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
+                        }
+                    } else {
+                        validMoves.add(new ChessMove(myPosition, kingMoveUp));
+                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
+                    }
+                }
+//Move left and up
+                if (myPosition.getRow() + 1 <= 8 && myPosition.getColumn() - 2 >= 1) {
+                    ChessPosition kingMoveUp = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 2);
+                    if (board.getPiece(kingMoveUp) != null) {
+                        if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor){
+                            validMoves.add(new ChessMove(myPosition, kingMoveUp));
+                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
+                        }
+                    } else {
+                        validMoves.add(new ChessMove(myPosition, kingMoveUp));
+                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
+                    }
+                }
+
                 break;
             case ROOK :
 //Rook
