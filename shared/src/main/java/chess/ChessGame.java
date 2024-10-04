@@ -59,13 +59,22 @@ public class ChessGame {
      * @param move chess move to preform
      * @throws InvalidMoveException if move is invalid
      */
-    public void makeMove(ChessMove move) {
+    public void makeMove(ChessMove move) throws InvalidMoveException {
+
         ChessPosition startPosition = move.getStartPosition();
         ChessPosition endPosition = move.getEndPosition();
         ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
-        ChessPiece piece = board.getPiece(endPosition);
+        ChessPiece piece = new ChessPiece(board.getPiece(startPosition));
+        Collection<ChessMove> validMoves = validMoves(startPosition);
+        if (!validMoves.contains(move)) {
+            throw new InvalidMoveException("Invalid Move");
+        }
+        if ()
         if (promotionPiece != null) {
             piece = new ChessPiece(board.getPiece(startPosition).getTeamColor(), promotionPiece);
+        }
+        else {
+            piece = board.getPiece(startPosition);
         }
         board.addPiece(endPosition, piece);
         board.addPiece(startPosition, null);
@@ -152,7 +161,7 @@ public class ChessGame {
     public Collection<ChessPosition> getTeamPositions(TeamColor teamColor) {
         ArrayList<ChessPosition> positions = new ArrayList<>();
         for (int row = 1; row <= 8; row++) {
-            for (int col = 0; col <= 8; col++) {
+            for (int col = 1; col <= 8; col++) {
                 ChessPosition position = new ChessPosition(row, col);
                 ChessPiece piece = board.getPiece(position);
                 if (piece != null && piece.getTeamColor() == teamColor) {
@@ -170,7 +179,6 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        ChessBoard newBoard = board.clone();
         if (!isInCheck(teamColor)) {
             return false;
         }
@@ -179,8 +187,9 @@ public class ChessGame {
             if (piece != null) {
                 Collection<ChessMove> validMoves = piece.pieceMoves(board, position);
                 for (ChessMove newMove : validMoves) {
-                    makeMoveHypothetical(newMove, newBoard);  // Create a hypothetical board after the move
-                    if (isInCheckHypothetical(teamColor, newBoard)) {  // If the move gets the team out of check, it's not checkmate
+                    ChessBoard newBoard = board.clone();
+                    makeMoveHypothetical(newMove, newBoard);
+                    if (isInCheckHypothetical(teamColor, newBoard)) {
                         return false;
                     }
                 }
