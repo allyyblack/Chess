@@ -19,6 +19,10 @@ public class ChessPiece {
         this.pieceColor = pieceColor;
         this.type = type;
     }
+    public ChessPiece clone() {
+        return new ChessPiece(this.pieceColor, this.type);
+    }
+
 
     /**
      * The various different chess piece options
@@ -662,6 +666,7 @@ public class ChessPiece {
                                 else {
                                     validMoves.add(new ChessMove(myPosition, diagonalLeft));
                                 }
+                                System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                             }
                         }
                         ChessPosition diagonalRight = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn()+1);
@@ -676,6 +681,7 @@ public class ChessPiece {
                                 else {
                                     validMoves.add(new ChessMove(myPosition, diagonalRight));
                                 }
+                                System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                             }
                         }
                     }
@@ -709,6 +715,8 @@ public class ChessPiece {
                                 else {
                                     validMoves.add(new ChessMove(myPosition, diagonalLeft));
                                 }
+                                System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
+
                             }
                         }
                         ChessPosition diagonalRight = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn()+1);
@@ -723,6 +731,8 @@ public class ChessPiece {
                                 else {
                                     validMoves.add(new ChessMove(myPosition, diagonalRight));
                                 }
+                                System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
+
                             }
                         }
                     }

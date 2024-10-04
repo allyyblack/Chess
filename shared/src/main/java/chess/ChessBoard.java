@@ -21,6 +21,24 @@ public class ChessBoard {
      * @param position where to add the piece to
      * @param piece    the piece to add
      */
+    public ChessBoard clone() {
+        ChessBoard newBoard = new ChessBoard();
+        newBoard.squares = new ChessPiece[8][8];
+
+        // Iterate over each position on the board
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                ChessPiece piece = this.squares[row][col];
+                if (piece != null) {
+                    newBoard.squares[row][col] = piece.clone();
+                } else {
+                    newBoard.squares[row][col] = null;
+                }
+            }
+        }
+        return newBoard; // Return the cloned board
+    }
+
     public void addPiece(ChessPosition position, ChessPiece piece) {
         squares[position.getRow()-1][position.getColumn()-1] = piece;
     }
