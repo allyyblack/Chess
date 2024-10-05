@@ -70,11 +70,9 @@ public class ChessPiece {
                     if (board.getPiece(kingMoveUp) != null) {
                         if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor){
                             validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                         }
                     } else {
                         validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                     }
                 }
 //Move down
@@ -83,11 +81,9 @@ public class ChessPiece {
                     if (board.getPiece(kingMoveUp) != null) {
                         if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor) {
                         validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                         }
                     } else {
                         validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                     }
                 }
 //Move right
@@ -96,11 +92,9 @@ public class ChessPiece {
                     if (board.getPiece(kingMoveUp) != null) {
                         if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor) {
                             validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                         }
                     } else {
                         validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                     }
                 }
 //Move left
@@ -109,11 +103,9 @@ public class ChessPiece {
                     if (board.getPiece(kingMoveUp) != null) {
                         if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor) {
                             validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                         }
                     } else {
                         validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                     }
                 }
 //Move diagonally up right
@@ -122,11 +114,9 @@ public class ChessPiece {
                     if (board.getPiece(kingMoveUp) != null) {
                         if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor) {
                             validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                         }
                     } else {
                         validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                     }
                 }
 //Move diagonally down right
@@ -136,11 +126,9 @@ public class ChessPiece {
                     if (board.getPiece(kingMoveUp) != null) {
                         if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor) {
                             validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                         }
                     } else {
                         validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                     }
                 }
 //Move diagonally down left
@@ -149,11 +137,9 @@ public class ChessPiece {
                     if (board.getPiece(kingMoveUp) != null) {
                         if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor) {
                             validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                         }
                     } else {
                         validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                     }
                 }
 //Move diagonally up left
@@ -162,11 +148,9 @@ public class ChessPiece {
                     if (board.getPiece(kingMoveUp) != null) {
                         if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor) {
                             validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                         }
                     } else {
                         validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                     }
                 }
             break;
@@ -186,13 +170,11 @@ public class ChessPiece {
                         }
                         else {
                             validMoves.add(new ChessMove(myPosition, nextMove));
-                            System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
                             break;
                         }
                     }
                     else {
                         validMoves.add(new ChessMove(myPosition, nextMove));
-                        System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
                     }
                 }
 //move lower right diagonal
@@ -207,13 +189,11 @@ public class ChessPiece {
                         }
                         else {
                             validMoves.add(new ChessMove(myPosition, nextMove));
-                            System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
                             break;
                         }
                     }
                     else {
                         validMoves.add(new ChessMove(myPosition, nextMove));
-                        System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
 
                     }
@@ -230,14 +210,12 @@ public class ChessPiece {
                         }
                         else {
                             validMoves.add(new ChessMove(myPosition, nextMove));
-                            System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
                             break;
                         }
                     }
                     else {
                         validMoves.add(new ChessMove(myPosition, nextMove));
-                        System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
 
                     }
@@ -254,14 +232,12 @@ public class ChessPiece {
                         }
                         else {
                             validMoves.add(new ChessMove(myPosition, nextMove));
-                            System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
                             break;
                         }
                     }
                     else {
                         validMoves.add(new ChessMove(myPosition, nextMove));
-                        System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
                     }
                 }
@@ -274,14 +250,12 @@ public class ChessPiece {
                         }
                         else {
                             validMoves.add(new ChessMove(myPosition, nextMove));
-                            System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
                             break;
                         }
                     }
                     else {
                         validMoves.add(new ChessMove(myPosition, nextMove));
-                        System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
                     }
                 }
@@ -295,14 +269,12 @@ public class ChessPiece {
                         }
                         else {
                             validMoves.add(new ChessMove(myPosition, nextMove));
-                            System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
                             break;
                         }
                     }
                     else {
                         validMoves.add(new ChessMove(myPosition, nextMove));
-                        System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
                     }
                 }
@@ -316,14 +288,12 @@ public class ChessPiece {
                         }
                         else {
                             validMoves.add(new ChessMove(myPosition, nextMove));
-                            System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
                             break;
                         }
                     }
                     else {
                         validMoves.add(new ChessMove(myPosition, nextMove));
-                        System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
                     }
                 }
@@ -337,14 +307,12 @@ public class ChessPiece {
                         }
                         else {
                             validMoves.add(new ChessMove(myPosition, nextMove));
-                            System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
                             break;
                         }
                     }
                     else {
                         validMoves.add(new ChessMove(myPosition, nextMove));
-                        System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
                     }
                 }
@@ -363,13 +331,11 @@ public class ChessPiece {
                         }
                         else {
                             validMoves.add(new ChessMove(myPosition, nextMove));
-                            System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
                             break;
                         }
                     }
                     else {
                         validMoves.add(new ChessMove(myPosition, nextMove));
-                        System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
                     }
                 }
 //move lower right diagonal
@@ -384,13 +350,11 @@ public class ChessPiece {
                         }
                         else {
                             validMoves.add(new ChessMove(myPosition, nextMove));
-                            System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
                             break;
                         }
                     }
                     else {
                         validMoves.add(new ChessMove(myPosition, nextMove));
-                        System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
 
                     }
@@ -407,14 +371,12 @@ public class ChessPiece {
                         }
                         else {
                             validMoves.add(new ChessMove(myPosition, nextMove));
-                            System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
                             break;
                         }
                     }
                     else {
                         validMoves.add(new ChessMove(myPosition, nextMove));
-                        System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
 
                     }
@@ -431,14 +393,12 @@ public class ChessPiece {
                         }
                         else {
                             validMoves.add(new ChessMove(myPosition, nextMove));
-                            System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
                             break;
                         }
                     }
                     else {
                         validMoves.add(new ChessMove(myPosition, nextMove));
-                        System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
                     }
                 }
@@ -450,11 +410,9 @@ public class ChessPiece {
                     if (board.getPiece(kingMoveUp) != null) {
                         if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor){
                             validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                         }
                     } else {
                         validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                     }
                 }
 //Move up and right
@@ -463,11 +421,9 @@ public class ChessPiece {
                     if (board.getPiece(kingMoveUp) != null) {
                         if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor){
                             validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                         }
                     } else {
                         validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                     }
                 }
 //Move down and left
@@ -476,11 +432,9 @@ public class ChessPiece {
                     if (board.getPiece(kingMoveUp) != null) {
                         if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor){
                             validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                         }
                     } else {
                         validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                     }
                 }
 //Move down and right
@@ -489,11 +443,9 @@ public class ChessPiece {
                     if (board.getPiece(kingMoveUp) != null) {
                         if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor){
                             validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                         }
                     } else {
                         validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                     }
                 }
 //Move right and up
@@ -502,11 +454,9 @@ public class ChessPiece {
                     if (board.getPiece(kingMoveUp) != null) {
                         if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor){
                             validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                         }
                     } else {
                         validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                     }
                 }
 //Move right and down
@@ -515,11 +465,9 @@ public class ChessPiece {
                     if (board.getPiece(kingMoveUp) != null) {
                         if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor){
                             validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                         }
                     } else {
                         validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                     }
                 }
 //Move left and down
@@ -528,11 +476,9 @@ public class ChessPiece {
                     if (board.getPiece(kingMoveUp) != null) {
                         if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor){
                             validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                         }
                     } else {
                         validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                     }
                 }
 //Move left and up
@@ -541,11 +487,9 @@ public class ChessPiece {
                     if (board.getPiece(kingMoveUp) != null) {
                         if (board.getPiece(kingMoveUp).pieceColor != board.getPiece(myPosition).pieceColor){
                             validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                         }
                     } else {
                         validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                        System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                     }
                 }
 
@@ -562,14 +506,12 @@ public class ChessPiece {
                         }
                         else {
                             validMoves.add(new ChessMove(myPosition, nextMove));
-                            System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
                             break;
                         }
                     }
                     else {
                         validMoves.add(new ChessMove(myPosition, nextMove));
-                        System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
                     }
                 }
@@ -583,14 +525,12 @@ public class ChessPiece {
                         }
                         else {
                             validMoves.add(new ChessMove(myPosition, nextMove));
-                            System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
                             break;
                         }
                     }
                     else {
                         validMoves.add(new ChessMove(myPosition, nextMove));
-                        System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
                     }
                 }
@@ -604,14 +544,12 @@ public class ChessPiece {
                         }
                         else {
                             validMoves.add(new ChessMove(myPosition, nextMove));
-                            System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
                             break;
                         }
                     }
                     else {
                         validMoves.add(new ChessMove(myPosition, nextMove));
-                        System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
                     }
                 }
@@ -625,14 +563,12 @@ public class ChessPiece {
                         }
                         else {
                             validMoves.add(new ChessMove(myPosition, nextMove));
-                            System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
                             break;
                         }
                     }
                     else {
                         validMoves.add(new ChessMove(myPosition, nextMove));
-                        System.out.println(nextMove.getRow() + "" + nextMove.getColumn());
 
                     }
                 }
@@ -652,7 +588,6 @@ public class ChessPiece {
                             else {
                                 validMoves.add(new ChessMove(myPosition, kingMoveUp));
                             }
-                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                         }
                         ChessPosition diagonalLeft = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn()-1);
                         if (board.getPiece(diagonalLeft) != null) {
@@ -666,7 +601,6 @@ public class ChessPiece {
                                 else {
                                     validMoves.add(new ChessMove(myPosition, diagonalLeft));
                                 }
-                                System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                             }
                         }
                         ChessPosition diagonalRight = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn()+1);
@@ -681,7 +615,6 @@ public class ChessPiece {
                                 else {
                                     validMoves.add(new ChessMove(myPosition, diagonalRight));
                                 }
-                                System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                             }
                         }
                     }
@@ -701,7 +634,6 @@ public class ChessPiece {
                             else {
                                 validMoves.add(new ChessMove(myPosition, kingMoveUp));
                             }
-                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                         }
                         ChessPosition diagonalLeft = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn()-1);
                         if (board.getPiece(diagonalLeft) != null) {
@@ -715,7 +647,6 @@ public class ChessPiece {
                                 else {
                                     validMoves.add(new ChessMove(myPosition, diagonalLeft));
                                 }
-                                System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
 
                             }
                         }
@@ -731,7 +662,6 @@ public class ChessPiece {
                                 else {
                                     validMoves.add(new ChessMove(myPosition, diagonalRight));
                                 }
-                                System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
 
                             }
                         }
@@ -744,7 +674,6 @@ public class ChessPiece {
                         ChessPosition kingMoveUp = new ChessPosition(myPosition.getRow() - 2, myPosition.getColumn());
                         if (board.getPiece(kingMoveUp) == null) {
                             validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                         }
                     }
                 }
@@ -755,7 +684,6 @@ public class ChessPiece {
                         ChessPosition kingMoveUp = new ChessPosition(myPosition.getRow() + 2, myPosition.getColumn());
                         if (board.getPiece(kingMoveUp) == null) {
                             validMoves.add(new ChessMove(myPosition, kingMoveUp));
-                            System.out.println(kingMoveUp.getRow() + "" + kingMoveUp.getColumn());
                         }
                     }
                 }

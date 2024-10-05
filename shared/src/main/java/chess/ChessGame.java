@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -49,7 +50,20 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
-        return piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> potentials = piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        for (ChessMove move : potentials) {
+            ChessBoard hypotheticalBoard = board.clone();
+            makeMoveHypothetical(move, hypotheticalBoard);
+            if (!isInCheckHypothetical(piece.getTeamColor(),hypotheticalBoard)) {
+                validMoves.add(move);
+                System.out.println(move.getEndPosition().getRow() + "" + move.getEndPosition().getColumn());
+            }
+        }
+        HashSet<ChessMove> uniqueNumbers = new HashSet<>(validMoves);
+
+        Collection<ChessMove> numbersWithoutDuplicates = new ArrayList<>(uniqueNumbers);
+        return numbersWithoutDuplicates;
     }
 
     /**
@@ -88,7 +102,7 @@ public class ChessGame {
         ChessPosition startPosition = move.getStartPosition();
         ChessPosition endPosition = move.getEndPosition();
         ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
-        ChessPiece piece = hypotheticalBoard.getPiece(endPosition);
+        ChessPiece piece = hypotheticalBoard.getPiece(startPosition);
         if (promotionPiece != null) {
             piece = new ChessPiece(hypotheticalBoard.getPiece(startPosition).getTeamColor(), promotionPiece);
         }
@@ -117,10 +131,10 @@ public class ChessGame {
     }
     public boolean isInCheckHypothetical(TeamColor teamColor, ChessBoard hypotheticalBoard) {
         ChessPosition kingPosition = findKingPositionHypothetical(teamColor, hypotheticalBoard);
-        for (ChessPosition opponentPosition : getTeamPositions(getOppositeTeamColor(teamColor))) {
-            ChessPiece opponentPiece = board.getPiece(opponentPosition);
+        for (ChessPosition opponentPosition : getTeamPositionsHypothetical(getOppositeTeamColor(teamColor), hypotheticalBoard)) {
+            ChessPiece opponentPiece = hypotheticalBoard.getPiece(opponentPosition);
             if (opponentPiece != null) {
-                Collection<ChessMove> opponentMoves = opponentPiece.pieceMoves(board, opponentPosition);
+                Collection<ChessMove> opponentMoves = opponentPiece.pieceMoves(hypotheticalBoard, opponentPosition);
                 if (opponentMoves.contains(new ChessMove(opponentPosition, kingPosition))) {
                     return true;
                 }
@@ -169,6 +183,19 @@ public class ChessGame {
             for (int col = 1; col <= 8; col++) {
                 ChessPosition position = new ChessPosition(row, col);
                 ChessPiece piece = board.getPiece(position);
+                if (piece != null && piece.getTeamColor() == teamColor) {
+                    positions.add(position);
+                }
+            }
+        }
+        return positions;
+    }
+    public Collection<ChessPosition> getTeamPositionsHypothetical(TeamColor teamColor, ChessBoard hypotheticalBoard) {
+        ArrayList<ChessPosition> positions = new ArrayList<>();
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition position = new ChessPosition(row, col);
+                ChessPiece piece = hypotheticalBoard.getPiece(position);
                 if (piece != null && piece.getTeamColor() == teamColor) {
                     positions.add(position);
                 }

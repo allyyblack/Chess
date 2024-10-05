@@ -37,7 +37,20 @@ public class ChessBoard {
         }
         return newBoard; // Return the cloned board
     }
-
+    public void printBoard() {
+//iterate through squares and prunt out each individual cell
+        for (int row = 0; row <= 7; row++) {
+            for (int col = 0; col <= 7; col++) {
+                if (squares[row][col] == null) {
+                    System.out.print("[    ]");
+                }
+                else {
+                    System.out.print(squares[row][col].getPieceType());
+                }
+            }
+            System.out.println("");
+        }
+    }
     public void addPiece(ChessPosition position, ChessPiece piece) {
         squares[position.getRow()-1][position.getColumn()-1] = piece;
     }
