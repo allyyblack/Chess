@@ -25,9 +25,8 @@ public class ChessBoard {
         ChessBoard newBoard = new ChessBoard();
         newBoard.squares = new ChessPiece[8][8];
 
-        // Iterate over each position on the board
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
+        for (int row = 0; row <= 7; row++) {
+            for (int col = 0; col <= 7; col++) {
                 ChessPiece piece = this.squares[row][col];
                 if (piece != null) {
                     newBoard.squares[row][col] = piece.clone();

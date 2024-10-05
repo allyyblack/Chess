@@ -11,10 +11,9 @@ import java.util.Collection;
  */
 public class ChessGame {
     private TeamColor team;
-    private ChessBoard board;
+    private ChessBoard board = new ChessBoard();
 
     public ChessGame() {
-
     }
 
     /**
@@ -64,17 +63,23 @@ public class ChessGame {
         ChessPosition startPosition = move.getStartPosition();
         ChessPosition endPosition = move.getEndPosition();
         ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
-        ChessPiece piece = new ChessPiece(board.getPiece(startPosition));
+        if (board.getPiece(startPosition) == null) {
+            throw new InvalidMoveException("Invalid Move");
+        }
         Collection<ChessMove> validMoves = validMoves(startPosition);
         if (!validMoves.contains(move)) {
             throw new InvalidMoveException("Invalid Move");
         }
-        if ()
+        ChessPiece piece = new ChessPiece(board.getPiece(startPosition).getTeamColor(), board.getPiece(startPosition).getPieceType());
         if (promotionPiece != null) {
             piece = new ChessPiece(board.getPiece(startPosition).getTeamColor(), promotionPiece);
         }
-        else {
-            piece = board.getPiece(startPosition);
+        if (isInCheck(piece.getTeamColor())) {
+            ChessBoard newBoard = board.clone();
+            makeMoveHypothetical(move, newBoard);
+            if (isInCheckHypothetical(piece.getTeamColor(), newBoard)) {
+                throw new InvalidMoveException("Invalid Move");
+            }
         }
         board.addPiece(endPosition, piece);
         board.addPiece(startPosition, null);
