@@ -15,6 +15,8 @@ public class ChessGame {
     private ChessBoard board = new ChessBoard();
 
     public ChessGame() {
+        board.resetBoard();
+        team = TeamColor.WHITE;
     }
 
     /**
@@ -80,6 +82,9 @@ public class ChessGame {
         if (board.getPiece(startPosition) == null) {
             throw new InvalidMoveException("Invalid Move");
         }
+        if (board.getPiece(startPosition).getTeamColor() != team) {
+            throw new InvalidMoveException("Invalid Move out of turn");
+        }
         Collection<ChessMove> validMoves = validMoves(startPosition);
         if (!validMoves.contains(move)) {
             throw new InvalidMoveException("Invalid Move");
@@ -97,6 +102,7 @@ public class ChessGame {
         }
         board.addPiece(endPosition, piece);
         board.addPiece(startPosition, null);
+        setTeamTurn(getOppositeTeamColor(team));
     }
     public void makeMoveHypothetical(ChessMove move, ChessBoard hypotheticalBoard) {
         ChessPosition startPosition = move.getStartPosition();
@@ -220,15 +226,19 @@ public class ChessGame {
                 Collection<ChessMove> validMoves = piece.pieceMoves(board, position);
                 for (ChessMove newMove : validMoves) {
                     ChessBoard newBoard = board.clone();
+                    System.out.println("printing original board");
+                    newBoard.printBoard();
                     makeMoveHypothetical(newMove, newBoard);
-                    if (isInCheckHypothetical(teamColor, newBoard)) {
+                    System.out.println("printing board with move");
+                    newBoard.printBoard();
+                    if (!isInCheckHypothetical(teamColor, newBoard)) {
                         return false;
                     }
                 }
             }
         }
 
-        return true;  // No valid moves found, so the team is in checkmate
+        return true;
     }
     /**
      * Determines if the given team is in stalemate, which here is defined as having
@@ -238,7 +248,23 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (isInCheck(teamColor)) {
+            return false;
+        }
+        for (ChessPosition position : getTeamPositions(teamColor)) {
+            ChessPiece piece = board.getPiece(position);
+            if (piece != null) {
+                Collection<ChessMove> validMoves = piece.pieceMoves(board, position);
+                for (ChessMove newMove : validMoves) {
+                    ChessBoard newBoard = board.clone();
+                    makeMoveHypothetical(newMove, newBoard);
+                    if (!isInCheckHypothetical(teamColor, newBoard)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**

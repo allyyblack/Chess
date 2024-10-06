@@ -39,7 +39,7 @@ public class ChessBoard {
     }
     public void printBoard() {
 //iterate through squares and prunt out each individual cell
-        for (int row = 0; row <= 7; row++) {
+        for (int row = 7; row >= 0; row--) {
             for (int col = 0; col <= 7; col++) {
                 if (squares[row][col] == null) {
                     System.out.print("[    ]");
