@@ -593,10 +593,15 @@ public class ChessPiece {
                         if (board.getPiece(diagonalLeft) != null) {
                             if (board.getPiece(diagonalLeft).pieceColor != this.pieceColor) {
                                 if (myPosition.getRow() + 1 == 8) {
+                                    if(board.getPiece(diagonalLeft).getPieceType() == PieceType.KING) {
+                                        validMoves.add(new ChessMove(myPosition, diagonalLeft, null));
+
+                                    } else {
                                     validMoves.add(new ChessMove(myPosition, diagonalLeft, PieceType.QUEEN));
                                     validMoves.add(new ChessMove(myPosition, diagonalLeft, PieceType.KNIGHT));
                                     validMoves.add(new ChessMove(myPosition, diagonalLeft, PieceType.ROOK));
                                     validMoves.add(new ChessMove(myPosition, diagonalLeft, PieceType.BISHOP));
+                                    }
                                 }
                                 else {
                                     validMoves.add(new ChessMove(myPosition, diagonalLeft));
@@ -607,6 +612,9 @@ public class ChessPiece {
                         if (board.getPiece(diagonalRight) != null) {
                             if (board.getPiece(diagonalRight).pieceColor != this.pieceColor) {
                                 if (myPosition.getRow() + 1 == 8) {
+                                    if(board.getPiece(diagonalRight).getPieceType() == PieceType.KING) {
+                                        validMoves.add(new ChessMove(myPosition, diagonalRight, null));
+                                    }
                                     validMoves.add(new ChessMove(myPosition, diagonalRight, PieceType.QUEEN));
                                     validMoves.add(new ChessMove(myPosition, diagonalRight, PieceType.KNIGHT));
                                     validMoves.add(new ChessMove(myPosition, diagonalRight, PieceType.ROOK));

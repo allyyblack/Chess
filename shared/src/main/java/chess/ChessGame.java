@@ -128,7 +128,8 @@ public class ChessGame {
             ChessPiece opponentPiece = board.getPiece(opponentPosition);
             if (opponentPiece != null) {
                 Collection<ChessMove> opponentMoves = opponentPiece.pieceMoves(board, opponentPosition);
-                if (opponentMoves.contains(new ChessMove(opponentPosition, kingPosition))) {
+                ChessMove checkMove = new ChessMove(opponentPosition, kingPosition);
+                if (opponentMoves.contains(checkMove)) {
                     return true;
                 }
             }
@@ -230,6 +231,7 @@ public class ChessGame {
                     newBoard.printBoard();
                     makeMoveHypothetical(newMove, newBoard);
                     System.out.println("printing board with move");
+
                     newBoard.printBoard();
                     if (!isInCheckHypothetical(teamColor, newBoard)) {
                         return false;
