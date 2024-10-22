@@ -1,6 +1,5 @@
 package dataaccess;
 
-import dataaccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -10,9 +9,9 @@ import java.util.Collection;
 public interface DataAccess {
     void clear() throws DataAccessException;
 
-    void createUser() throws DataAccessException;
+    UserData createUser(UserData userData) throws DataAccessException;
 
-    UserData getUser(UserData username) throws DataAccessException;
+    UserData getUser(String username) throws DataAccessException;
 
     void createGame() throws DataAccessException;
 

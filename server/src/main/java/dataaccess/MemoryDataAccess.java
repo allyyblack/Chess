@@ -3,14 +3,12 @@ package dataaccess;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import java.util.UUID;
 
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class MemoryDataAccess implements DataAccess{
+    final private Collection<UserData> users = new HashSet<>();
+
 
     @Override
     public void clear() throws DataAccessException {
@@ -18,12 +16,18 @@ public class MemoryDataAccess implements DataAccess{
     }
 
     @Override
-    public void createUser() throws DataAccessException {
-
+    public UserData createUser(UserData userData) throws DataAccessException {
+        users.add(userData);
+        return userData;
     }
 
     @Override
-    public UserData getUser(UserData username) throws DataAccessException {
+    public UserData getUser(String username) throws DataAccessException {
+        for (UserData user : users) {
+            if (Objects.equals(user.username(), username)) {
+                return user;
+            }
+        }
         return null;
     }
 
@@ -62,3 +66,4 @@ public class MemoryDataAccess implements DataAccess{
 
     }
 }
+
