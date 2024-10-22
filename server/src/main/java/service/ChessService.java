@@ -21,13 +21,4 @@ public class ChessService {
         String authToken = dataAccess.createAuth();
         return authToken;
     }
-
-
-
-    public Pet addPet(Pet pet) throws ResponseException {
-        if (pet.type() == PetType.DOG && pet.name().equals("fleas")) {
-            throw new ResponseException(200, "no dogs with fleas");
-        }
-        return dataAccess.addPet(pet);
-    }
 }
