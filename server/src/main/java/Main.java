@@ -1,9 +1,10 @@
 import chess.*;
 import server.Server;
+import service.ChessService;
 
 public class Main {
     public static void main(String[] args) {
-        Server server = new Server();
+        Server server = new Server(ChessService service);
         int port = 8080;
         server.run(port);
 
