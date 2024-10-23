@@ -8,6 +8,7 @@ import java.util.*;
 
 public class MemoryDataAccess implements DataAccess{
     final private Collection<UserData> users = new HashSet<>();
+    final private Collection<AuthData> tokens = new HashSet<>();
 
 
     @Override
@@ -52,18 +53,26 @@ public class MemoryDataAccess implements DataAccess{
     }
 
     @Override
-    public String createAuth() throws DataAccessException {
-        return UUID.randomUUID().toString();
+    public String createAuth(String username) throws DataAccessException {
+        String token =  UUID.randomUUID().toString();
+        AuthData authData = new AuthData(token, username);
+        tokens.add(authData);
+        return token;
     }
 
     @Override
-    public AuthData getAuth(AuthData authToken) throws DataAccessException {
+    public AuthData getAuth(String authToken) throws DataAccessException {
+        for (AuthData authData : tokens) {
+            if (Objects.equals(authData.authToken(), authToken)) {
+                return authData;
+            }
+        }
         return null;
     }
 
     @Override
     public void deleteAuth(AuthData authToken) throws DataAccessException {
-
+        tokens.remove(authToken);
     }
 }
 

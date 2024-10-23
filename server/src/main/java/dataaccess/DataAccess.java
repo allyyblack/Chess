@@ -21,9 +21,9 @@ public interface DataAccess {
 
     void updateGame(GameData gameID) throws DataAccessException;
 
-    String createAuth() throws DataAccessException;
+    String createAuth(String username) throws DataAccessException;
 
-    AuthData getAuth(AuthData authToken) throws DataAccessException;
+    AuthData getAuth(String authToken) throws DataAccessException;
 
     void deleteAuth(AuthData authToken) throws DataAccessException;
 }

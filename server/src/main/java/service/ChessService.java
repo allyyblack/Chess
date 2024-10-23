@@ -21,18 +21,26 @@ public class ChessService {
     public String Login(String username, String password) throws DataAccessException {
         UserData userData = new UserData(username, password, null);
         UserData foundUser = dataAccess.getUser(userData.username());
-        if (foundUser == null) {
-            throw new DataAccessException("Error: unauthorized");
+        if (foundUser == null || !Objects.equals(foundUser.password(), password)) {
+            throw new DataAccessException("");
         }
-        if (!Objects.equals(foundUser.password(), password)) {
-            throw new DataAccessException("Error: unauthorized");
-        }
-        String authToken = dataAccess.createAuth();
-        return authToken;
+        return dataAccess.createAuth(username);
     }
 
-    public void Register(String username, String password, String email) throws DataAccessException {
-        UserData UserInfo = new UserData(username, password, email);
-        dataAccess.createUser(UserInfo);
+    public UserData Register(String username, String password, String email) throws DataAccessException {
+        UserData userInfo = new UserData(username, password, email);
+        UserData foundUser = dataAccess.getUser(userInfo.username());
+        if (foundUser != null) {
+            throw new DataAccessException("");
+        }
+        return dataAccess.createUser(userInfo);
+    }
+
+    public void Logout(String authToken) throws DataAccessException {
+        AuthData authData = dataAccess.getAuth(authToken);
+        if (authData == null) {
+            throw new DataAccessException("");
+        }
+        dataAccess.deleteAuth(authData);
     }
 }
