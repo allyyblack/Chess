@@ -131,7 +131,7 @@ public class ServiceTests {
         AuthData authData = service.login(username, password);
         service.createGame("gameName", authData.authToken());
         service.createGame("gameName2", authData.authToken());
-        Collection<GameData> games = service.ListGames(authData.authToken());
+        Collection<GameData> games = service.listGames(authData.authToken());
         Assertions.assertEquals(2, games.size(), "There should be 2 games in the list");
     }
 
@@ -147,9 +147,9 @@ public class ServiceTests {
         AuthData authData = service.login(username, password);
         service.createGame("gameName", authData.authToken());
         service.createGame("gameName2", authData.authToken());
-        Collection<GameData> games = service.ListGames(authData.authToken());
+        Collection<GameData> games = service.listGames(authData.authToken());
         Assertions.assertThrows(UnauthorizedAccessException.class, () -> {
-            service.ListGames("invalid authToken");
+            service.listGames("invalid authToken");
         });
     }
 

@@ -71,7 +71,7 @@ public class ChessService {
         dataAccess.clear();
     }
 
-    public Collection<GameData> ListGames(String authToken) throws DataAccessException, UnauthorizedAccessException {
+    public Collection<GameData> listGames(String authToken) throws DataAccessException, UnauthorizedAccessException {
         AuthData authData = dataAccess.getAuth(authToken);
         if (authData == null) {
             throw new UnauthorizedAccessException("Invalid auth token");
