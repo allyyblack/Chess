@@ -23,13 +23,13 @@ public class MemoryDataAccess implements DataAccess{
     }
 
     @Override
-    public UserData createUser(UserData userData) throws DataAccessException {
+    public UserData createUser(UserData userData) {
         users.add(userData);
         return userData;
     }
 
     @Override
-    public UserData getUser(String username) throws DataAccessException {
+    public UserData getUser(String username) {
         for (UserData user : users) {
             if (Objects.equals(user.username(), username)) {
                 return user;
@@ -39,7 +39,7 @@ public class MemoryDataAccess implements DataAccess{
     }
 
     @Override
-    public GameData createGame(String gameName) throws DataAccessException {
+    public GameData createGame(String gameName) {
         ChessGame game = new ChessGame();
         GameData data = new GameData(nextId++, null, null, gameName, game);
         games.add(data);
@@ -57,32 +57,33 @@ public class MemoryDataAccess implements DataAccess{
     }
 
     @Override
-    public Collection<GameData> listGames() throws DataAccessException {
+    public Collection<GameData> listGames() {
         return games;
     }
 
     @Override
     public void updateGame(int gameID, String authToken, String color) throws DataAccessException {
         GameData gameData = getGame(gameID);
-        AuthData authData = getAuth(authToken);
         if (authToken == null) {
             throw new DataAccessException("authtoken null");
         }
-
-        if (Objects.equals(color, "WHITE")) {
-            GameData updatedGame = new GameData(gameID, authData.username(), gameData.blackUsername(), gameData.gameName(), gameData.game());
-            games.remove(gameData);
-            games.add(updatedGame);
-        }
-        if (Objects.equals(color, "BLACK")) {
-            GameData updatedGame = new GameData(gameID, gameData.whiteUsername(), authData.username(), gameData.gameName(), gameData.game());
-            games.remove(gameData);
-            games.add(updatedGame);
+        AuthData authData = getAuth(authToken);
+        if (authData != null) {
+            if (Objects.equals(color, "WHITE")) {
+                GameData updatedGame = new GameData(gameID, authData.username(), gameData.blackUsername(), gameData.gameName(), gameData.game());
+                games.remove(gameData);
+                games.add(updatedGame);
+            }
+            if (Objects.equals(color, "BLACK")) {
+                GameData updatedGame = new GameData(gameID, gameData.whiteUsername(), authData.username(), gameData.gameName(), gameData.game());
+                games.remove(gameData);
+                games.add(updatedGame);
+            }
         }
     }
 
     @Override
-    public AuthData createAuth(String username) throws DataAccessException {
+    public AuthData createAuth(String username) {
         String token =  UUID.randomUUID().toString();
         AuthData authData = new AuthData(token, username);
         tokens.add(authData);
@@ -103,7 +104,7 @@ public class MemoryDataAccess implements DataAccess{
     }
 
     @Override
-    public void deleteAuth(AuthData authToken) throws DataAccessException {
+    public void deleteAuth(AuthData authToken) {
         tokens.remove(authToken);
     }
 }

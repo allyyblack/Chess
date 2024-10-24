@@ -20,7 +20,7 @@ public class ChessService {
 
     // Chess is not very simple
 
-    public AuthData Login(String username, String password) throws DataAccessException {
+    public AuthData Login(String username, String password) throws DataAccessException{
         UserData userData = new UserData(username, password, null);
         UserData foundUser = dataAccess.getUser(userData.username());
         if (foundUser == null || !Objects.equals(foundUser.password(), password)) {
@@ -38,10 +38,10 @@ public class ChessService {
         return dataAccess.createUser(userInfo);
     }
 
-    public GameData CreateGame(String gameName, String authToken) throws DataAccessException {
+    public GameData CreateGame(String gameName, String authToken) throws DataAccessException, UnauthorizedAccessException {
         AuthData authData = dataAccess.getAuth(authToken);
         if (authData == null) {
-            throw new DataAccessException("");
+            throw new UnauthorizedAccessException("Invalid auth token");
         }
         return dataAccess.createGame(gameName);
     }
@@ -71,19 +71,19 @@ public class ChessService {
         dataAccess.clear();
     }
 
-    public Collection<GameData> ListGames(String authToken) throws DataAccessException {
+    public Collection<GameData> ListGames(String authToken) throws DataAccessException, UnauthorizedAccessException {
         AuthData authData = dataAccess.getAuth(authToken);
         if (authData == null) {
-            throw new DataAccessException("");
+            throw new UnauthorizedAccessException("Invalid auth token");
         }
         return dataAccess.listGames();
 
     }
 
-    public void Logout(String authToken) throws DataAccessException {
+    public void Logout(String authToken) throws DataAccessException, UnauthorizedAccessException {
         AuthData authData = dataAccess.getAuth(authToken);
         if (authData == null) {
-            throw new DataAccessException("");
+            throw new UnauthorizedAccessException("Invalid auth token");
         }
         dataAccess.deleteAuth(authData);
     }
