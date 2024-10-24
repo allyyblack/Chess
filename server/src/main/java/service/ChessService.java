@@ -54,14 +54,17 @@ public class ChessService {
         if (Objects.equals(playerGame.playerColor(), "WHITE")) {
             if (dataAccess.getGame(playerGame.gameID()).whiteUsername() != null) {
                 throw new DataAccessException("White player slot is already filled");
+            } else {
+                dataAccess.updateGame(playerGame.gameID(), authToken, playerGame.playerColor());
             }
         }
         if (Objects.equals(playerGame.playerColor(), "BLACK")) {
             if (dataAccess.getGame(playerGame.gameID()).blackUsername() != null) {
                 throw new DataAccessException("Black player slot is already filled");
+            } else {
+                dataAccess.updateGame(playerGame.gameID(), authToken, playerGame.playerColor());
             }
         }
-        dataAccess.updateGame(playerGame.gameID(), authToken, playerGame.playerColor());
     }
 
     public void ClearApplication() {

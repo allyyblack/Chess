@@ -53,7 +53,7 @@ public class MemoryDataAccess implements DataAccess{
                 return gameData;
             }
         }
-        return null;
+        throw new DataAccessException("Game not found for ID: " + gameID);
     }
 
     @Override
@@ -65,6 +65,10 @@ public class MemoryDataAccess implements DataAccess{
     public void updateGame(int gameID, String authToken, String color) throws DataAccessException {
         GameData gameData = getGame(gameID);
         AuthData authData = getAuth(authToken);
+        if (authToken == null) {
+            throw new DataAccessException("authtoken null");
+        }
+
         if (Objects.equals(color, "WHITE")) {
             GameData updatedGame = new GameData(gameID, authData.username(), gameData.blackUsername(), gameData.gameName(), gameData.game());
             games.remove(gameData);
@@ -87,6 +91,9 @@ public class MemoryDataAccess implements DataAccess{
 
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
+        if (authToken == null) {
+            throw new DataAccessException("authtoken null");
+        }
         for (AuthData authData : tokens) {
             if (Objects.equals(authData.authToken(), authToken)) {
                 return authData;
