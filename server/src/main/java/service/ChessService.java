@@ -20,7 +20,7 @@ public class ChessService {
 
     // Chess is not very simple
 
-    public AuthData Login(String username, String password) throws DataAccessException{
+    public AuthData login(String username, String password) throws DataAccessException{
         UserData userData = new UserData(username, password, null);
         UserData foundUser = dataAccess.getUser(userData.username());
         if (foundUser == null || !Objects.equals(foundUser.password(), password)) {
@@ -29,7 +29,7 @@ public class ChessService {
         return dataAccess.createAuth(username);
     }
 
-    public UserData Register(String username, String password, String email) throws DataAccessException {
+    public UserData register(String username, String password, String email) throws DataAccessException {
         UserData userInfo = new UserData(username, password, email);
         UserData foundUser = dataAccess.getUser(userInfo.username());
         if (foundUser != null) {
@@ -38,7 +38,7 @@ public class ChessService {
         return dataAccess.createUser(userInfo);
     }
 
-    public GameData CreateGame(String gameName, String authToken) throws DataAccessException, UnauthorizedAccessException {
+    public GameData createGame(String gameName, String authToken) throws DataAccessException, UnauthorizedAccessException {
         AuthData authData = dataAccess.getAuth(authToken);
         if (authData == null) {
             throw new UnauthorizedAccessException("Invalid auth token");
@@ -46,7 +46,7 @@ public class ChessService {
         return dataAccess.createGame(gameName);
     }
 
-    public void JoinGame(PlayerGame playerGame, String authToken) throws DataAccessException, UnauthorizedAccessException {
+    public void joinGame(PlayerGame playerGame, String authToken) throws DataAccessException, UnauthorizedAccessException {
         AuthData authData = dataAccess.getAuth(authToken);
         if (authData == null) {
             throw new UnauthorizedAccessException("Invalid auth token");
@@ -67,7 +67,7 @@ public class ChessService {
         }
     }
 
-    public void ClearApplication() {
+    public void clearApplication() {
         dataAccess.clear();
     }
 
@@ -80,7 +80,7 @@ public class ChessService {
 
     }
 
-    public void Logout(String authToken) throws DataAccessException, UnauthorizedAccessException {
+    public void logout(String authToken) throws DataAccessException, UnauthorizedAccessException {
         AuthData authData = dataAccess.getAuth(authToken);
         if (authData == null) {
             throw new UnauthorizedAccessException("Invalid auth token");

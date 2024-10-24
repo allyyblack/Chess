@@ -25,9 +25,9 @@ public class ServiceTests {
         ChessService service = new ChessService(memoryDataAccess);
         String gameName = "Test Game";
         AuthData validAuthToken = memoryDataAccess.createAuth("username");
-        service.CreateGame(gameName, validAuthToken.authToken());
+        service.createGame(gameName, validAuthToken.authToken());
 
-        service.ClearApplication();
+        service.clearApplication();
 
         Assertions.assertTrue(memoryDataAccess.listGames().isEmpty(), "Games should be cleared");
         Assertions.assertNull(memoryDataAccess.getUser("username"), "User should be cleared");
@@ -36,117 +36,117 @@ public class ServiceTests {
 
     @Test
     @DisplayName("Register")
-    public void testRegister_Success() throws DataAccessException {
+    public void testRegisterSuccess() throws DataAccessException {
         MemoryDataAccess memoryDataAccess = new MemoryDataAccess();
         ChessService service = new ChessService(memoryDataAccess);
         String username = "username";
         String password = "password";
         String email = "email";
-        UserData userData = service.Register(username, password, email);
+        UserData userData = service.register(username, password, email);
         Assertions.assertEquals(username, userData.username(), "Username should match the provided username");
     }
 
     @Test
     @DisplayName("Register with taken username")
-    public void testRegister_Failure() throws DataAccessException {
+    public void testRegisterFailure() throws DataAccessException {
         MemoryDataAccess memoryDataAccess = new MemoryDataAccess();
         ChessService service = new ChessService(memoryDataAccess);
         String username = "username";
         String password = "password";
         String email = "email";
-        service.Register(username, password, email);
+        service.register(username, password, email);
         assertThrows(DataAccessException.class, () -> {
-            service.Register(username, "difpassword", "difemail");
+            service.register(username, "difpassword", "difemail");
         });
     }
 
     @Test
     @DisplayName("Login")
-    public void testLogin_Success() throws DataAccessException {
+    public void testLoginSuccess() throws DataAccessException {
         MemoryDataAccess memoryDataAccess = new MemoryDataAccess();
         ChessService service = new ChessService(memoryDataAccess);
         String username = "username";
         String password = "password";
         String email = "email";
-        service.Register(username, password, email);
-        AuthData authData = service.Login(username, password);
+        service.register(username, password, email);
+        AuthData authData = service.login(username, password);
         Assertions.assertEquals(username, authData.username(), "The username should match after login");
     }
 
     @Test
     @DisplayName("Login with wrong password")
-    public void testLogin_Failure() throws DataAccessException {
+    public void testLoginFailure() throws DataAccessException {
         MemoryDataAccess memoryDataAccess = new MemoryDataAccess();
         ChessService service = new ChessService(memoryDataAccess);
         String username = "username";
         String password = "password";
         String email = "email";
-        service.Register(username, password, email);
-        AuthData authData = service.Login(username, password);
+        service.register(username, password, email);
+        AuthData authData = service.login(username, password);
         assertThrows(DataAccessException.class, () -> {
-            service.Login(username, "wrong password");
+            service.login(username, "wrong password");
         });
     }
 
     @Test
     @DisplayName("Logout")
-    public void testLogout_Success() throws DataAccessException, UnauthorizedAccessException {
+    public void testLogoutSuccess() throws DataAccessException, UnauthorizedAccessException {
         MemoryDataAccess memoryDataAccess = new MemoryDataAccess();
         ChessService service = new ChessService(memoryDataAccess);
         String username = "username";
         String password = "password";
         String email = "email";
-        service.Register(username, password, email);
-        AuthData authData = service.Login(username, password);
-        service.Logout(authData.authToken());
+        service.register(username, password, email);
+        AuthData authData = service.login(username, password);
+        service.logout(authData.authToken());
         Assertions.assertThrows(UnauthorizedAccessException.class, () -> {
-            service.Logout(authData.authToken());
+            service.logout(authData.authToken());
         });
     }
 
     @Test
     @DisplayName("Logout with invalid authToken")
-    public void testLogout_Failure() throws DataAccessException, UnauthorizedAccessException {
+    public void testLogoutFailure() throws DataAccessException, UnauthorizedAccessException {
         MemoryDataAccess memoryDataAccess = new MemoryDataAccess();
         ChessService service = new ChessService(memoryDataAccess);
         String username = "username";
         String password = "password";
         String email = "email";
-        service.Register(username, password, email);
-        AuthData authData = service.Login(username, password);
+        service.register(username, password, email);
+        AuthData authData = service.login(username, password);
         Assertions.assertThrows(UnauthorizedAccessException.class, () -> {
-            service.Logout("invalid authToken");
+            service.logout("invalid authToken");
         });
     }
 
     @Test
     @DisplayName("List Games")
-    public void testListGames_Success() throws DataAccessException, UnauthorizedAccessException {
+    public void testListGamesSuccess() throws DataAccessException, UnauthorizedAccessException {
         MemoryDataAccess memoryDataAccess = new MemoryDataAccess();
         ChessService service = new ChessService(memoryDataAccess);
         String username = "username";
         String password = "password";
         String email = "email";
-        service.Register(username, password, email);
-        AuthData authData = service.Login(username, password);
-        service.CreateGame("gameName", authData.authToken());
-        service.CreateGame("gameName2", authData.authToken());
+        service.register(username, password, email);
+        AuthData authData = service.login(username, password);
+        service.createGame("gameName", authData.authToken());
+        service.createGame("gameName2", authData.authToken());
         Collection<GameData> games = service.ListGames(authData.authToken());
         Assertions.assertEquals(2, games.size(), "There should be 2 games in the list");
     }
 
     @Test
     @DisplayName("List Games with invalid authToken")
-    public void testListGames_Failure() throws DataAccessException, UnauthorizedAccessException {
+    public void testListGamesFailure() throws DataAccessException, UnauthorizedAccessException {
         MemoryDataAccess memoryDataAccess = new MemoryDataAccess();
         ChessService service = new ChessService(memoryDataAccess);
         String username = "username";
         String password = "password";
         String email = "email";
-        service.Register(username, password, email);
-        AuthData authData = service.Login(username, password);
-        service.CreateGame("gameName", authData.authToken());
-        service.CreateGame("gameName2", authData.authToken());
+        service.register(username, password, email);
+        AuthData authData = service.login(username, password);
+        service.createGame("gameName", authData.authToken());
+        service.createGame("gameName2", authData.authToken());
         Collection<GameData> games = service.ListGames(authData.authToken());
         Assertions.assertThrows(UnauthorizedAccessException.class, () -> {
             service.ListGames("invalid authToken");
@@ -156,64 +156,64 @@ public class ServiceTests {
 
     @Test
     @DisplayName("Create Game")
-    public void testCreateGame_Success() throws DataAccessException, UnauthorizedAccessException {
+    public void testCreateGameSuccess() throws DataAccessException, UnauthorizedAccessException {
         MemoryDataAccess memoryDataAccess = new MemoryDataAccess();
         ChessService service = new ChessService(memoryDataAccess);
         String gameName = "Test Game";
         AuthData validAuthToken = memoryDataAccess.createAuth("username");
-        GameData gameData = service.CreateGame(gameName, validAuthToken.authToken());
+        GameData gameData = service.createGame(gameName, validAuthToken.authToken());
 
         Assertions.assertEquals(gameName, gameData.gameName(), "Game name should match the provided name");
     }
 
     @Test
     @DisplayName("Create Game with Invalid Authtoken")
-    public void testCreateGame_Failure() throws DataAccessException, UnauthorizedAccessException {
+    public void testCreateGameFailure() throws DataAccessException, UnauthorizedAccessException {
         MemoryDataAccess memoryDataAccess = new MemoryDataAccess();
         ChessService service = new ChessService(memoryDataAccess);
         String gameName = "Test Game";
         String invalidAuthToken = "invalid token";
 
         assertThrows(UnauthorizedAccessException.class, () -> {
-            service.CreateGame(gameName, invalidAuthToken);
+            service.createGame(gameName, invalidAuthToken);
         });
     }
 
     @Test
     @DisplayName("Join Game")
-    public void testJoinGame_Success() throws DataAccessException, UnauthorizedAccessException {
+    public void testJoinGameSuccess() throws DataAccessException, UnauthorizedAccessException {
         MemoryDataAccess memoryDataAccess = new MemoryDataAccess();
         ChessService service = new ChessService(memoryDataAccess);
         String username = "username";
         String password = "password";
         String email = "email";
         String gameName = "gamename";
-        service.Register(username, password, email);
-        AuthData authData = service.Login(username, password);
-        GameData gameData = service.CreateGame(gameName, authData.authToken());
+        service.register(username, password, email);
+        AuthData authData = service.login(username, password);
+        GameData gameData = service.createGame(gameName, authData.authToken());
         PlayerGame playerGame = new PlayerGame("BLACK", gameData.gameID());
-        service.JoinGame(playerGame, authData.authToken());
+        service.joinGame(playerGame, authData.authToken());
         GameData updatedGame = memoryDataAccess.getGame(gameData.gameID());
         Assertions.assertEquals(authData.username(), updatedGame.blackUsername(), "The BLACK player should match the logged-in user.");
     }
 
     @Test
     @DisplayName("Join Game with same color")
-    public void testJoinGame_Failure() throws DataAccessException, UnauthorizedAccessException {
+    public void testJoinGameFailure() throws DataAccessException, UnauthorizedAccessException {
         MemoryDataAccess memoryDataAccess = new MemoryDataAccess();
         ChessService service = new ChessService(memoryDataAccess);
         String username = "username";
         String password = "password";
         String email = "email";
         String gameName = "gamename";
-        service.Register(username, password, email);
-        AuthData authData = service.Login(username, password);
-        GameData gameData = service.CreateGame(gameName, authData.authToken());
+        service.register(username, password, email);
+        AuthData authData = service.login(username, password);
+        GameData gameData = service.createGame(gameName, authData.authToken());
         PlayerGame playerGame = new PlayerGame("BLACK", gameData.gameID());
-        service.JoinGame(playerGame, authData.authToken());
+        service.joinGame(playerGame, authData.authToken());
         GameData updatedGame = memoryDataAccess.getGame(gameData.gameID());
         assertThrows(DataAccessException.class, () -> {
-            service.JoinGame(playerGame, authData.authToken());
+            service.joinGame(playerGame, authData.authToken());
         });
     }
 }
