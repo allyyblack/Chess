@@ -65,13 +65,14 @@ public class MemoryDataAccess implements DataAccess{
     public void updateGame(int gameID, String authToken, String color) throws DataAccessException {
         GameData gameData = getGame(gameID);
         AuthData authData = getAuth(authToken);
-        games.remove(gameData);
-        if (Objects.equals(color, "white")) {
+        if (Objects.equals(color, "WHITE")) {
             GameData updatedGame = new GameData(gameID, authData.username(), gameData.blackUsername(), gameData.gameName(), gameData.game());
+            games.remove(gameData);
             games.add(updatedGame);
         }
-        if (Objects.equals(color, "black")) {
+        if (Objects.equals(color, "BLACK")) {
             GameData updatedGame = new GameData(gameID, gameData.whiteUsername(), authData.username(), gameData.gameName(), gameData.game());
+            games.remove(gameData);
             games.add(updatedGame);
         }
     }
