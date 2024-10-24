@@ -48,18 +48,20 @@ public class ChessMove {
     public ChessPiece.PieceType getPromotionPiece() {
         return this.promotionPiece;
     }
-
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
         ChessMove chessMove = (ChessMove) o;
-        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
+        return positionsEqual(chessMove) && promotionPiece == chessMove.promotionPiece;
     }
+
+    private boolean positionsEqual(ChessMove chessMove) {
+        return Objects.equals(startPosition, chessMove.startPosition) &&
+                Objects.equals(endPosition, chessMove.endPosition);
+    }
+
 
     @Override
     public int hashCode() {
