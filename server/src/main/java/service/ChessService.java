@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.DataAccess;
+import dataaccess.UnauthorizedAccessException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -45,19 +46,19 @@ public class ChessService {
         return dataAccess.createGame(gameName);
     }
 
-    public void JoinGame(PlayerGame playerGame, String authToken) throws DataAccessException {
+    public void JoinGame(PlayerGame playerGame, String authToken) throws DataAccessException, UnauthorizedAccessException {
         AuthData authData = dataAccess.getAuth(authToken);
         if (authData == null) {
-            throw new DataAccessException("Invalid authorization token");
+            throw new UnauthorizedAccessException("Invalid auth token");
         }
         if (Objects.equals(playerGame.playerColor(), "WHITE")) {
             if (dataAccess.getGame(playerGame.gameID()).whiteUsername() != null) {
-                throw new DataAccessException("already taken");
+                throw new DataAccessException("White player slot is already filled");
             }
         }
         if (Objects.equals(playerGame.playerColor(), "BLACK")) {
             if (dataAccess.getGame(playerGame.gameID()).blackUsername() != null) {
-                throw new DataAccessException("already taken");
+                throw new DataAccessException("Black player slot is already filled");
             }
         }
         dataAccess.updateGame(playerGame.gameID(), authToken, playerGame.playerColor());
