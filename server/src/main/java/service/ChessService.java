@@ -4,6 +4,7 @@ import dataaccess.DataAccess;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import model.PlayerGame;
 import dataaccess.DataAccessException;
 
 import java.util.Collection;
@@ -18,7 +19,7 @@ public class ChessService {
 
     // Chess is not very simple
 
-    public String Login(String username, String password) throws DataAccessException {
+    public AuthData Login(String username, String password) throws DataAccessException {
         UserData userData = new UserData(username, password, null);
         UserData foundUser = dataAccess.getUser(userData.username());
         if (foundUser == null || !Objects.equals(foundUser.password(), password)) {
@@ -34,6 +35,45 @@ public class ChessService {
             throw new DataAccessException("");
         }
         return dataAccess.createUser(userInfo);
+    }
+
+    public GameData CreateGame(String gameName, String authToken) throws DataAccessException {
+        AuthData authData = dataAccess.getAuth(authToken);
+        if (authData == null) {
+            throw new DataAccessException("");
+        }
+        return dataAccess.createGame(gameName);
+    }
+
+    public void JoinGame(PlayerGame playerGame, String authToken) throws DataAccessException {
+        AuthData authData = dataAccess.getAuth(authToken);
+        if (authData == null) {
+            throw new DataAccessException("Invalid authorization token");
+        }
+        if (Objects.equals(playerGame.playerColor(), "WHITE")) {
+            if (dataAccess.getGame(playerGame.gameID()).whiteUsername() != null) {
+                throw new DataAccessException("already taken");
+            }
+        }
+        if (Objects.equals(playerGame.playerColor(), "BLACK")) {
+            if (dataAccess.getGame(playerGame.gameID()).blackUsername() != null) {
+                throw new DataAccessException("already taken");
+            }
+        }
+        dataAccess.updateGame(playerGame.gameID(), authToken, playerGame.playerColor());
+    }
+
+    public void ClearApplication() {
+        dataAccess.clear();
+    }
+
+    public Collection<GameData> ListGames(String authToken) throws DataAccessException {
+        AuthData authData = dataAccess.getAuth(authToken);
+        if (authData == null) {
+            throw new DataAccessException("");
+        }
+        return dataAccess.listGames();
+
     }
 
     public void Logout(String authToken) throws DataAccessException {
