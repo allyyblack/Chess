@@ -18,18 +18,6 @@ public class TestUtilities {
 
     static public void validateMoves(ChessBoard board, ChessPiece testPiece, ChessPosition startPosition, Set<ChessMove> validMoves) {
         var pieceMoves = new HashSet<>(testPiece.pieceMoves(board, startPosition));
-        for (ChessMove a : pieceMoves) {
-            System.out.println(a.getEndPosition().getRow() + " " + a.getEndPosition().getColumn());
-            System.out.println(a.getStartPosition().getRow() + " " + a.getStartPosition().getColumn());
-            System.out.println();
-        }
-        System.out.println("BREAK");
-        for (ChessMove a : validMoves) {
-            System.out.println(a.getEndPosition().getRow() + " " + a.getEndPosition().getColumn());
-            System.out.println(a.getStartPosition().getRow() + " " + a.getStartPosition().getColumn());
-            System.out.println();
-
-        }
         assertCollectionsEquals(validMoves, pieceMoves, "Wrong moves");
     }
 

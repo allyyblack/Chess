@@ -69,9 +69,6 @@ public class ChessBoard {
         if (position.getRow() == squares.length + 1 || position.getColumn() == squares.length + 1) {
             return null;
         }
-//        if (position.getRow() == 8 || position.getColumn() == 8) {
-//            return null;
-//        }
         return squares[position.getRow()-1][position.getColumn()-1];
     }
 
@@ -110,8 +107,12 @@ public class ChessBoard {
 
         @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ChessBoard that = (ChessBoard) o;
         return Objects.deepEquals(squares, that.squares);
     }
