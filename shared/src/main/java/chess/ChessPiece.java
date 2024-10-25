@@ -475,7 +475,6 @@ public class ChessPiece {
                 if (board.getPiece(kingMoveUp) == null) {
                     if (myPosition.getRow() + 1 == 8) {
                         addPromotionMoves(validMoves, myPosition, kingMoveUp);
-
                     } else {
                         validMoves.add(new ChessMove(myPosition, kingMoveUp));
                     }
@@ -486,10 +485,8 @@ public class ChessPiece {
                         if (myPosition.getRow() + 1 == 8) {
                             if (board.getPiece(diagonalLeft).getPieceType() == PieceType.KING) {
                                 validMoves.add(new ChessMove(myPosition, diagonalLeft, null));
-
                             } else {
                                 addPromotionMoves(validMoves, myPosition, diagonalLeft);
-
                             }
                         } else {
                             validMoves.add(new ChessMove(myPosition, diagonalLeft));
@@ -504,7 +501,6 @@ public class ChessPiece {
                                 validMoves.add(new ChessMove(myPosition, diagonalRight, null));
                             }
                             addPromotionMoves(validMoves, myPosition, diagonalRight);
-
                         } else {
                             validMoves.add(new ChessMove(myPosition, diagonalRight));
                         }
@@ -529,7 +525,6 @@ public class ChessPiece {
                     if (board.getPiece(diagonalLeft).pieceColor != this.pieceColor) {
                         if (myPosition.getRow() - 1 == 1) {
                             addPromotionMoves(validMoves, myPosition, diagonalLeft);
-
                         } else {
                             validMoves.add(new ChessMove(myPosition, diagonalLeft));
                         }
