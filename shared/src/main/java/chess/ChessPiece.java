@@ -474,10 +474,8 @@ public class ChessPiece {
                 ChessPosition kingMoveUp = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn());
                 if (board.getPiece(kingMoveUp) == null) {
                     if (myPosition.getRow() + 1 == 8) {
-                        validMoves.add(new ChessMove(myPosition, kingMoveUp, PieceType.QUEEN));
-                        validMoves.add(new ChessMove(myPosition, kingMoveUp, PieceType.KNIGHT));
-                        validMoves.add(new ChessMove(myPosition, kingMoveUp, PieceType.ROOK));
-                        validMoves.add(new ChessMove(myPosition, kingMoveUp, PieceType.BISHOP));
+                        addPromotionMoves(validMoves, myPosition, kingMoveUp);
+
                     } else {
                         validMoves.add(new ChessMove(myPosition, kingMoveUp));
                     }
@@ -490,10 +488,8 @@ public class ChessPiece {
                                 validMoves.add(new ChessMove(myPosition, diagonalLeft, null));
 
                             } else {
-                                validMoves.add(new ChessMove(myPosition, diagonalLeft, PieceType.QUEEN));
-                                validMoves.add(new ChessMove(myPosition, diagonalLeft, PieceType.KNIGHT));
-                                validMoves.add(new ChessMove(myPosition, diagonalLeft, PieceType.ROOK));
-                                validMoves.add(new ChessMove(myPosition, diagonalLeft, PieceType.BISHOP));
+                                addPromotionMoves(validMoves, myPosition, diagonalLeft);
+
                             }
                         } else {
                             validMoves.add(new ChessMove(myPosition, diagonalLeft));
@@ -507,10 +503,8 @@ public class ChessPiece {
                             if (board.getPiece(diagonalRight).getPieceType() == PieceType.KING) {
                                 validMoves.add(new ChessMove(myPosition, diagonalRight, null));
                             }
-                            validMoves.add(new ChessMove(myPosition, diagonalRight, PieceType.QUEEN));
-                            validMoves.add(new ChessMove(myPosition, diagonalRight, PieceType.KNIGHT));
-                            validMoves.add(new ChessMove(myPosition, diagonalRight, PieceType.ROOK));
-                            validMoves.add(new ChessMove(myPosition, diagonalRight, PieceType.BISHOP));
+                            addPromotionMoves(validMoves, myPosition, diagonalRight);
+
                         } else {
                             validMoves.add(new ChessMove(myPosition, diagonalRight));
                         }
@@ -525,10 +519,7 @@ public class ChessPiece {
                 ChessPosition kingMoveUp = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn());
                 if (board.getPiece(kingMoveUp) == null) {
                     if (myPosition.getRow() - 1 == 1) {
-                        validMoves.add(new ChessMove(myPosition, kingMoveUp, PieceType.QUEEN));
-                        validMoves.add(new ChessMove(myPosition, kingMoveUp, PieceType.KNIGHT));
-                        validMoves.add(new ChessMove(myPosition, kingMoveUp, PieceType.ROOK));
-                        validMoves.add(new ChessMove(myPosition, kingMoveUp, PieceType.BISHOP));
+                        addPromotionMoves(validMoves, myPosition, kingMoveUp);
                     } else {
                         validMoves.add(new ChessMove(myPosition, kingMoveUp));
                     }
@@ -537,10 +528,8 @@ public class ChessPiece {
                 if (board.getPiece(diagonalLeft) != null) {
                     if (board.getPiece(diagonalLeft).pieceColor != this.pieceColor) {
                         if (myPosition.getRow() - 1 == 1) {
-                            validMoves.add(new ChessMove(myPosition, diagonalLeft, PieceType.QUEEN));
-                            validMoves.add(new ChessMove(myPosition, diagonalLeft, PieceType.KNIGHT));
-                            validMoves.add(new ChessMove(myPosition, diagonalLeft, PieceType.ROOK));
-                            validMoves.add(new ChessMove(myPosition, diagonalLeft, PieceType.BISHOP));
+                            addPromotionMoves(validMoves, myPosition, diagonalLeft);
+
                         } else {
                             validMoves.add(new ChessMove(myPosition, diagonalLeft));
                         }
@@ -551,11 +540,9 @@ public class ChessPiece {
                 if (board.getPiece(diagonalRight) != null) {
                     if (board.getPiece(diagonalRight).pieceColor != this.pieceColor) {
                         if (myPosition.getRow() - 1 == 1) {
-                            validMoves.add(new ChessMove(myPosition, diagonalRight, PieceType.QUEEN));
-                            validMoves.add(new ChessMove(myPosition, diagonalRight, PieceType.KNIGHT));
-                            validMoves.add(new ChessMove(myPosition, diagonalRight, PieceType.ROOK));
-                            validMoves.add(new ChessMove(myPosition, diagonalRight, PieceType.BISHOP));
-                        } else {
+                            addPromotionMoves(validMoves, myPosition, diagonalRight);
+                        }
+                        else {
                             validMoves.add(new ChessMove(myPosition, diagonalRight));
                         }
 
@@ -583,6 +570,13 @@ public class ChessPiece {
                 }
             }
         }
+    }
+
+    private void addPromotionMoves(ArrayList<ChessMove> validMoves, ChessPosition from, ChessPosition to) {
+        validMoves.add(new ChessMove(from, to, PieceType.QUEEN));
+        validMoves.add(new ChessMove(from, to, PieceType.KNIGHT));
+        validMoves.add(new ChessMove(from, to, PieceType.ROOK));
+        validMoves.add(new ChessMove(from, to, PieceType.BISHOP));
     }
 
 
