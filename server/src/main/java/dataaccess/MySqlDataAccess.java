@@ -21,13 +21,13 @@ public class MySqlDataAccess implements DataAccess {
 
 
     public void clear() throws DataAccessException {
-        executeUpdate("TRUNCATE TABLE user");
-        executeUpdate("TRUNCATE TABLE game");
-        executeUpdate("TRUNCATE TABLE auth");
+        executeUpdate("TRUNCATE TABLE users");
+        executeUpdate("TRUNCATE TABLE games");
+        executeUpdate("TRUNCATE TABLE tokens");
     }
 
     public UserData createUser(UserData userData) throws DataAccessException {
-        var statement = "INSERT INTO user (username, password_hash, email) VALUES (?, ?, ?)";
+        var statement = "INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)";
         executeUpdate(statement, userData.username(), userData.password(), userData.email());
         return userData;
     }
@@ -89,16 +89,33 @@ public class MySqlDataAccess implements DataAccess {
 
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS  pet (
-              `id` int NOT NULL AUTO_INCREMENT,
-              `name` varchar(256) NOT NULL,
-              `type` ENUM('CAT', 'DOG', 'FISH', 'FROG', 'ROCK') DEFAULT 'CAT',
-              `json` TEXT DEFAULT NULL,
-              PRIMARY KEY (`id`),
-              INDEX(type),
-              INDEX(name)
+            CREATE TABLE IF NOT EXISTS  users (
+              `username` VARCHAR(50) NOT NULL,
+              `password_hash` VARCHAR(256) NOT NULL,
+             `email` VARCHAR(100) NOT NULL,
+              PRIMARY KEY (`username`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """,
             """
+            CREATE TABLE IF NOT EXISTS tokens (
+               `auth_token` VARCHAR(256) NOT NULL,
+               `username` VARCHAR(50) NOT NULL,
+               PRIMARY KEY (`auth_token`),
+               FOREIGN KEY (`username`) REFERENCES users(`username`) ON DELETE CASCADE
+            )  ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS games (
+                `gameID` INT NOT NULL AUTO_INCREMENT,
+                `whiteUsername` VARCHAR(50) NOT NULL,
+                `blackUsername` VARCHAR(50) NOT NULL,
+                 `gameName` VARCHAR(100) NOT NULL,
+                `game` TEXT NOT NULL, -- This can hold the serialized ChessGame data
+                 PRIMARY KEY (`gameID`),
+                FOREIGN KEY (`whiteUsername`) REFERENCES users(`username`) ON DELETE CASCADE,
+                 FOREIGN KEY (`blackUsername`) REFERENCES users(`username`) ON DELETE CASCADE
+                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """,
     };
 
     private void configureDatabase() {
