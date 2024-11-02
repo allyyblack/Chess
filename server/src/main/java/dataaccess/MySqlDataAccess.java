@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import dataaccess.DatabaseManager;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -126,7 +127,10 @@ public class MySqlDataAccess implements DataAccess {
                     preparedStatement.executeUpdate();
                 }
             }
-        } catch (SQLException ex) {
+        }
+        catch (SQLException e) {
+            System.err.println("Error configuring database: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

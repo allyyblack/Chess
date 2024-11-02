@@ -17,7 +17,7 @@ import java.util.Map;
 public class Server {
     private final ChessService service;
 
-    public Server() {
+    public Server() throws DataAccessException {
         this.service = new ChessService(new MySqlDataAccess());
     }
 
