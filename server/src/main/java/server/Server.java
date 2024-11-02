@@ -2,7 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import dataaccess.MemoryDataAccess;
+import dataaccess.MySqlDataAccess;
 import dataaccess.UnauthorizedAccessException;
 import spark.*;
 import service.ChessService;
@@ -18,7 +18,7 @@ public class Server {
     private final ChessService service;
 
     public Server() {
-        this.service = new ChessService(new MemoryDataAccess());
+        this.service = new ChessService(new MySqlDataAccess());
     }
 
     public Server(ChessService service) {

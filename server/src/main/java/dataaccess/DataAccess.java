@@ -6,7 +6,7 @@ import model.UserData;
 import java.util.Collection;
 
 public interface DataAccess {
-    void clear();
+    void clear() throws DataAccessException;
 
     UserData createUser(UserData userData) throws DataAccessException;
 

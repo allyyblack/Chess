@@ -67,7 +67,7 @@ public class ChessService {
         }
     }
 
-    public void clearApplication() {
+    public void clearApplication() throws DataAccessException {
         dataAccess.clear();
     }
 

@@ -1,0 +1,117 @@
+package dataaccess;
+
+import com.google.gson.Gson;
+import model.AuthData;
+import model.GameData;
+import model.UserData;
+
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
+
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import static java.sql.Types.NULL;
+
+public class MySqlDataAccess implements DataAccess {
+
+    public MySqlDataAccess() {
+        configureDatabase();
+    }
+
+
+
+    public void clear() throws DataAccessException {
+        executeUpdate("TRUNCATE TABLE user");
+        executeUpdate("TRUNCATE TABLE game");
+        executeUpdate("TRUNCATE TABLE auth");
+    }
+
+    public UserData createUser(UserData userData) throws DataAccessException {
+        var statement = "INSERT INTO user (username, password_hash, email) VALUES (?, ?, ?)";
+        executeUpdate(statement, userData.username(), userData.password(), userData.email());
+        return userData;
+    }
+
+    public UserData getUser(String username) throws DataAccessException {
+        return null;
+    }
+
+    public GameData createGame(String gameName) throws DataAccessException {
+        return null;
+    }
+
+    public GameData getGame(int gameID) throws DataAccessException {
+        return null;
+    }
+
+    public Collection<GameData> listGames() throws DataAccessException {
+        return List.of();
+    }
+
+    public void updateGame(int gameID, String authToken, String color) throws DataAccessException {
+
+    }
+
+    public AuthData createAuth(String username) throws DataAccessException {
+        return null;
+    }
+
+    public AuthData getAuth(String authToken) throws DataAccessException {
+        return null;
+    }
+
+    public void deleteAuth(AuthData authToken) throws DataAccessException {
+
+    }
+
+    private int executeUpdate(String statement, Object... params) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
+                for (var i = 0; i < params.length; i++) {
+                    var param = params[i];
+                    if (param instanceof String p) ps.setString(i + 1, p);
+                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
+                    else if (param == null) ps.setNull(i + 1, NULL);
+                }
+                ps.executeUpdate();
+
+                var rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+
+                return 0;
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Unable to update database: " + statement);
+        }
+    }
+
+    private final String[] createStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS  pet (
+              `id` int NOT NULL AUTO_INCREMENT,
+              `name` varchar(256) NOT NULL,
+              `type` ENUM('CAT', 'DOG', 'FISH', 'FROG', 'ROCK') DEFAULT 'CAT',
+              `json` TEXT DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              INDEX(type),
+              INDEX(name)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """
+    };
+
+    private void configureDatabase() {
+        DatabaseManager.createDatabase();
+        try (var conn = DatabaseManager.getConnection()) {
+            for (var statement : createStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+        }
+    }
+}
+
+
