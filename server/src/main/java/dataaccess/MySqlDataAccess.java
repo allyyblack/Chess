@@ -1,21 +1,17 @@
 package dataaccess;
-
-import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import dataaccess.DatabaseManager;
-
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
+import java.sql.*;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 
 public class MySqlDataAccess implements DataAccess {
 
-    public MySqlDataAccess() {
+    public MySqlDataAccess() throws DataAccessException {
         configureDatabase();
     }
 
@@ -119,7 +115,7 @@ public class MySqlDataAccess implements DataAccess {
             """,
     };
 
-    private void configureDatabase() {
+    private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {
