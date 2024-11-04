@@ -1,43 +1,66 @@
 package dataaccess;
+import chess.ChessGame;
+import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.util.Collection;
 import java.util.List;
 import java.sql.*;
+import java.util.UUID;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 
 public class MySqlDataAccess implements DataAccess {
 
-    public MySqlDataAccess() throws DataAccessException {
+    public MySqlDataAccess() {
         configureDatabase();
     }
 
 
 
     public void clear() throws DataAccessException {
-        executeUpdate("TRUNCATE TABLE users");
-        executeUpdate("TRUNCATE TABLE games");
-        executeUpdate("TRUNCATE TABLE tokens");
+        executeUpdate("DELETE FROM tokens");
+        executeUpdate("DELETE FROM games");
+        executeUpdate("DELETE FROM users");
     }
 
     public UserData createUser(UserData userData) throws DataAccessException {
         var statement = "INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)";
-        executeUpdate(statement, userData.username(), userData.password(), userData.email());
+        String hashedPassword = BCrypt.hashpw(userData.password(), BCrypt.gensalt());
+        executeUpdate(statement, userData.username(), hashedPassword, userData.email());
         return userData;
     }
 
     public UserData getUser(String username) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username, password_hash, email FROM users WHERE username=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readUser(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
         return null;
     }
 
     public GameData createGame(String gameName) throws DataAccessException {
-        return null;
-    }
+        var statement = "INSERT INTO games (gameName, whiteUsername, blackUsername) VALUES (?, ?, ?)";
+        int gameID = executeUpdate(statement, gameName, null, null);
+        ChessGame game = new ChessGame();
+        return new GameData(gameID, null, null, gameName, game);
+        }
 
-    public GameData getGame(int gameID) throws DataAccessException {
+
+        public GameData getGame(int gameID) throws DataAccessException {
         return null;
     }
 
@@ -50,7 +73,11 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     public AuthData createAuth(String username) throws DataAccessException {
-        return null;
+        String token =  UUID.randomUUID().toString();
+        AuthData authData = new AuthData(token, username);
+        String statement = "INSERT INTO tokens (auth_token, username) VALUES (?, ?)";
+        executeUpdate(statement, token, username);
+        return authData;
     }
 
     public AuthData getAuth(String authToken) throws DataAccessException {
@@ -60,6 +87,13 @@ public class MySqlDataAccess implements DataAccess {
     public void deleteAuth(AuthData authToken) throws DataAccessException {
 
     }
+    private UserData readUser(ResultSet rs) throws SQLException {
+        var username = rs.getString("username");
+        var passwordHash = rs.getString("password_hash");
+        var email = rs.getString("email");
+        return new UserData(username, passwordHash, email);
+    }
+
 
     private int executeUpdate(String statement, Object... params) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
@@ -115,7 +149,7 @@ public class MySqlDataAccess implements DataAccess {
             """,
     };
 
-    private void configureDatabase() throws DataAccessException {
+    private void configureDatabase() {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {

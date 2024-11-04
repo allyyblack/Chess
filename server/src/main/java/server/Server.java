@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import dataaccess.MemoryDataAccess;
 import dataaccess.MySqlDataAccess;
 import dataaccess.UnauthorizedAccessException;
 import spark.*;
@@ -17,7 +18,7 @@ import java.util.Map;
 public class Server {
     private final ChessService service;
 
-    public Server() throws DataAccessException {
+    public Server() {
         this.service = new ChessService(new MySqlDataAccess());
     }
 
@@ -152,8 +153,8 @@ public class Server {
             res.status(200);
             return new Gson().toJson(authData);
         } catch (DataAccessException e) {
-            res.status(403);
-            return new Gson().toJson(Map.of("message", "Error: already taken"));
+           res.status(403);
+           return new Gson().toJson(Map.of("message", "Error: already taken"));
         } catch (JsonSyntaxException e) {
             res.status(400);
             return new Gson().toJson(Map.of("message", "Error: bad request"));

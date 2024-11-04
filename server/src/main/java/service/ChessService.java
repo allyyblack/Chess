@@ -7,6 +7,7 @@ import model.GameData;
 import model.UserData;
 import model.PlayerGame;
 import dataaccess.DataAccessException;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -23,7 +24,8 @@ public class ChessService {
     public AuthData login(String username, String password) throws DataAccessException{
         UserData userData = new UserData(username, password, null);
         UserData foundUser = dataAccess.getUser(userData.username());
-        if (foundUser == null || !Objects.equals(foundUser.password(), password)) {
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+        if (foundUser == null || !BCrypt.checkpw(password, foundUser.password())) {
             throw new DataAccessException("");
         }
         return dataAccess.createAuth(username);
