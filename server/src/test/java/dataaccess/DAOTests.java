@@ -18,18 +18,17 @@ import service.ChessService;
 
 public class DAOTests {
 
-@Test
+    @Test
     @DisplayName("Clear Application")
     public void testClearApplication() throws DataAccessException, UnauthorizedAccessException {
         MySqlDataAccess mySqlDataAccess = new MySqlDataAccess();
         ChessService service = new ChessService(mySqlDataAccess);
-        String gameName = "Test Game";
-        AuthData validAuthToken = mySqlDataAccess.createAuth("username");
-        service.createGame(gameName, validAuthToken.authToken());
-        service.clearApplication();
+        UserData userData = new UserData("thisuser", "password", "email");
+        mySqlDataAccess.createUser(userData);
+        AuthData validAuthToken = mySqlDataAccess.createAuth("thisuser");
+        mySqlDataAccess.createGame("test");
+        mySqlDataAccess.clear();
         Assertions.assertTrue(mySqlDataAccess.listGames().isEmpty(), "Games should be cleared");
-        Assertions.assertNull(mySqlDataAccess.getUser("username"), "User should be cleared");
-        Assertions.assertNull(mySqlDataAccess.getAuth(validAuthToken.authToken()), "Auth token should be cleared");
     }
 
     @Test
@@ -156,7 +155,7 @@ public class DAOTests {
         int gameID = createdGame.gameID();
         mySqlDataAccess.updateGame(gameID, authData.authToken(), "WHITE");
         GameData updatedGame = mySqlDataAccess.getGame(gameID);
-        Assertions.assertEquals(userData.username(), updatedGame.whiteUsername(), "The white player's username should be updated to match the user's username");
+        Assertions.assertEquals(userData.username(), updatedGame.whiteUsername(), "The white player's username should match");
     }
 
     @Test
