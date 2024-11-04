@@ -135,6 +135,9 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     public AuthData getAuth(String authToken) throws DataAccessException {
+        if (authToken == null) {
+            throw new DataAccessException("authtoken null");
+        }
         try (var conn = DatabaseManager.getConnection()) {
             String statement = "SELECT auth_token, username FROM tokens WHERE auth_token = ?";
             try (var ps = conn.prepareStatement(statement)) {
