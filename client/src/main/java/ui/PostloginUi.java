@@ -27,7 +27,7 @@ public class PostloginUi extends ClientUI{
                 case "creategame" -> createGame(params);
                 case "listgames" -> listGames(params);
                 case "joingame" -> joinGame(params);
-//                case "observeGame" -> observeGame(params);
+                case "observegame" -> observeGame(params);
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -69,6 +69,23 @@ public class PostloginUi extends ClientUI{
             var playerGame = new PlayerGame(color, game.gameID());
             server.joinGame(playerGame, authToken);
             return String.format("Successfully joined game '%s' as %s.", game.gameName(), color);
+        } catch (NumberFormatException e) {
+            throw new ResponseException(400, "Game ID must be an integer.");
+        }
+    }
+
+    public String observeGame(String... params) throws ResponseException {
+        if (params.length < 1) {
+            throw new ResponseException(400, "Expected: <id>");
+        }
+
+        try {
+            int id = Integer.parseInt(params[0]);
+            var game = gameMap.get(id);
+            if (game == null) {
+                throw new ResponseException(404, "Game with ID " + id + " not found.");
+            }
+            return String.format("Successfully observing game '%s'", game.gameName());
         } catch (NumberFormatException e) {
             throw new ResponseException(400, "Game ID must be an integer.");
         }
