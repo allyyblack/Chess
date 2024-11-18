@@ -7,11 +7,11 @@ import java.util.Arrays;
 
 public class PostloginUi extends ClientUI{
     private final ServerFacade server;
-    private final String serverUrl;
+    private final String authToken = "";
 
-    public PostloginUi() {
-        server = new ServerFacade(serverUrl);
-        this.serverUrl = serverUrl;
+    public PostloginUi(String authToken) {
+        server = new ServerFacade("http://localhost:8080");
+        authToken = this.authToken;
     }
     public String eval(String input) {
         try {
@@ -33,29 +33,24 @@ public class PostloginUi extends ClientUI{
     }
 
     public String logout(String... params) throws ResponseException {
-        if (params.length >= 1) {
-            var authToken = params[0];
             server.logout(authToken);
             return String.format("Goodbye");
-        }
-        throw new ResponseException(400, "Expected: <authToken>");
     }
 
     public String createGame(String... params) throws ResponseException {
-        if (params.length >= 2) {
-            var authToken = params[0];
-            var gameName = params[1];
+        if (params.length >= 1) {
+            var gameName = params[0];
             var gameData = new GameData(0, null, null, gameName, null);
             server.createGame(gameData, authToken);
             return String.format("Game " + gameName + " created.");
         }
-        throw new ResponseException(400, "Expected: <authToken> <gameName>");
+        throw new ResponseException(400, "Expected: <gameName>");
     }
 
     public String listGames(String... params) throws ResponseException {
         if (params.length >= 1) {
             var authToken = params[0];
-            var games = server.listGames();
+            var games = server.listGames(authToken);
             var result = new StringBuilder();
             var gson = new Gson();
             for (var game : games) {
@@ -68,9 +63,9 @@ public class PostloginUi extends ClientUI{
     public String help() {
 
         return """
-                - logout <authToken>
-                - create game <authToken> <gameName>
-                - list games <authToken>
+                - logout
+                - create game <gameName>
+                - list games
                 - play game
                 - observe game
                 - quit

@@ -13,8 +13,8 @@ public class Repl {
         this.serverUrl = serverUrl;
         client = new PreloginUi(serverUrl);
     }
-    public void switchToPostLogin() {
-        client = new PostloginUi();
+    public void switchToPostLogin(String authToken) {
+        client = new PostloginUi(authToken);
     }
 
     public void run() {
@@ -26,8 +26,10 @@ public class Repl {
             try {
                 result = client.eval(line);
                 System.out.print(result);
-                if (line.equals("login") && result.contains("Success")) {
-                    switchToPostLogin();
+                if (line.contains("login") || line.contains("register") && result.contains("Welcome")) {
+                    String key = "Your authToken is ";
+                    String newAuth = result.substring(result.indexOf(key) + key.length()).trim();
+                    switchToPostLogin(newAuth);
                     System.out.println("\nYou are now logged in.");
                 }
             } catch (Throwable e) {

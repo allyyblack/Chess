@@ -1,5 +1,6 @@
 package ui;
 import com.google.gson.Gson;
+import model.AuthData;
 import model.GameData;
 import model.PlayerGame;
 import model.UserData;
@@ -15,14 +16,14 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    public UserData register(UserData userData) throws ResponseException {
+    public AuthData register(UserData userData) throws ResponseException {
         var path = "/user";
-        return this.makeRequest("POST", path, userData, UserData.class);
+        return this.makeRequest("POST", path, userData, AuthData.class);
     }
 
-    public UserData login(UserData userData) throws ResponseException {
+    public AuthData login(UserData userData) throws ResponseException {
         var path = "/session";
-        return this.makeRequest("POST", path, userData, UserData.class);
+        return this.makeRequest("POST", path, userData, AuthData.class);
     }
 
     public void logout(String authToken) throws ResponseException {

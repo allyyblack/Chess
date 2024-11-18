@@ -1,5 +1,6 @@
 package ui;
 
+import model.AuthData;
 import model.UserData;
 
 import java.util.Arrays;
@@ -35,8 +36,8 @@ public class PreloginUi extends ClientUI{
             var username = params[0];
             var password = params[1];
             var userData = new UserData(username, password, null);
-            server.login(userData);
-            return String.format("Welcome " + username);
+             var response = server.login(userData).authToken();
+            return String.format("Welcome " + username + "\nYour authToken is " + response);
         }
         throw new ResponseException(400, "Expected: <username> <password>");
     }
@@ -47,7 +48,8 @@ public class PreloginUi extends ClientUI{
             var password = params[1];
             var email = params[2];
             var userData = new UserData(username, password, email);
-            server.register(userData);
+            var response = server.register(userData);
+            String authToken = response.authToken();
             return String.format("Welcome " + username);
         }
         throw new ResponseException(400, "Expected: <username> <password> <email>");
