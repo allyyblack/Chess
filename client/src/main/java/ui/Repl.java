@@ -26,7 +26,7 @@ public class Repl {
             try {
                 result = client.eval(line);
                 System.out.print(result);
-                if (line.contains("login") || line.contains("register") && result.contains("Welcome")) {
+                if ((line.contains("login") || line.contains("register")) && result.contains("Welcome")) {
                     String key = "Your authToken is ";
                     String newAuth = result.substring(result.indexOf(key) + key.length()).trim();
                     switchToPostLogin(newAuth);

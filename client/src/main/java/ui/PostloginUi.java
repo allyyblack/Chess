@@ -7,11 +7,11 @@ import java.util.Arrays;
 
 public class PostloginUi extends ClientUI{
     private final ServerFacade server;
-    private final String authToken = "";
+    private String authToken;
 
     public PostloginUi(String authToken) {
-        server = new ServerFacade("http://localhost:8080");
-        authToken = this.authToken;
+        this.server = new ServerFacade("http://localhost:8080");
+        this.authToken = authToken;
     }
     public String eval(String input) {
         try {
