@@ -38,7 +38,8 @@ public class PostloginUi extends ClientUI{
 
     public String logout(String... params) throws ResponseException {
             server.logout(authToken);
-            return String.format("Goodbye");
+            System.out.println("Goodbye\n");
+            return String.format("Goodbye\n");
     }
 
     public String createGame(String... params) throws ResponseException {
@@ -46,31 +47,33 @@ public class PostloginUi extends ClientUI{
             var gameName = params[0];
             var gameData = new GameData(0, null, null, gameName, null);
             server.createGame(gameData, authToken);
-            return String.format("Game " + gameName + " created.");
+            System.out.println("Game " + gameName + " created.");
+            return String.format("Game " + gameName + " created.\n");
         }
-        throw new ResponseException(400, "Expected: <gameName>");
+        throw new ResponseException(400, "Expected: <gameName>\n");
     }
 
     public String joinGame(String... params) throws ResponseException {
         if (params.length < 2) {
-            throw new ResponseException(400, "Expected: <id> <color>");
+            throw new ResponseException(400, "Expected: <id> <color>\n");
         }
 
         try {
             int id = Integer.parseInt(params[0]);
             String color = params[1].toUpperCase();
             if (!color.equals("WHITE") && !color.equals("BLACK")) {
-                throw new ResponseException(400, "Color must be 'WHITE' or 'BLACK'.");
+                throw new ResponseException(400, "Color must be 'WHITE' or 'BLACK'.\n");
             }
             var game = gameMap.get(id);
             if (game == null) {
-                throw new ResponseException(404, "Game with ID " + id + " not found.");
+                throw new ResponseException(404, "Game with ID " + id + " not found.\n");
             }
             var playerGame = new PlayerGame(color, game.gameID());
             server.joinGame(playerGame, authToken);
-            return String.format("Successfully joined game '%s' as %s.", game.gameName(), color);
+            System.out.println("Successfully joined game " + game.gameName() + " as " + color);
+            return String.format("Successfully joined game '%s' as '%s'", game.gameName(), color);
         } catch (NumberFormatException e) {
-            throw new ResponseException(400, "Game ID must be an integer.");
+            throw new ResponseException(400, "Game ID must be an integer. \n");
         }
     }
 
@@ -83,11 +86,12 @@ public class PostloginUi extends ClientUI{
             int id = Integer.parseInt(params[0]);
             var game = gameMap.get(id);
             if (game == null) {
-                throw new ResponseException(404, "Game with ID " + id + " not found.");
+                throw new ResponseException(404, "Game with ID " + id + " not found.\n");
             }
-            return String.format("Successfully observing game '%s'", game.gameName());
+            System.out.println("Successfully observing game " + game.gameName());
+            return String.format("Successfully observing game '%s'", game.gameName() + "\n");
         } catch (NumberFormatException e) {
-            throw new ResponseException(400, "Game ID must be an integer.");
+            throw new ResponseException(400, "Game ID must be an integer.\n");
         }
     }
 
@@ -107,19 +111,21 @@ public class PostloginUi extends ClientUI{
             result.append("Black Player: ").append(game.blackUsername() == null ? "None" : game.blackUsername()).append('\n');
             result.append('\n');
         }
+        System.out.println(result.toString());
         return result.toString();
     }
 
 
     public String help() {
 
-        return """
+        System.out.println( """
                 - logout
                 - creategame <gameName>
                 - listgames
                 - playgame
                 - observegame
                 - quit
-                """;
+                """);
+        return null;
     }
 }

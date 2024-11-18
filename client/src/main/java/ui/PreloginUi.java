@@ -37,9 +37,10 @@ public class PreloginUi extends ClientUI{
             var password = params[1];
             var userData = new UserData(username, password, null);
              var response = server.login(userData).authToken();
-            return String.format("Welcome " + username + "\nYour authToken is " + response);
+             System.out.println("Welcome " + username);
+            return String.format("Welcome " + username + "\nYour authToken is " + response + "\n");
         }
-        throw new ResponseException(400, "Expected: <username> <password>");
+        throw new ResponseException(400, "Expected: <username> <password>\n");
     }
 
     public String register(String... params) throws ResponseException {
@@ -50,9 +51,14 @@ public class PreloginUi extends ClientUI{
             var userData = new UserData(username, password, email);
             var response = server.register(userData);
             String authToken = response.authToken();
-            return String.format("Welcome " + username);
+            System.out.println("Welcome " + username);
+            return String.format("Welcome " + username + "\nYour authToken is " + authToken + "\n");
+
+            //instead of returning,
+            //just print the message without authtoken
+            //and then create an instance of postlogin UI here, and run it.
         }
-        throw new ResponseException(400, "Expected: <username> <password> <email>");
+        throw new ResponseException(400, "Expected: <username> <password> <email>\n");
     }
 
     public String help() {
