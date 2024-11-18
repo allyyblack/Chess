@@ -2,12 +2,16 @@ package ui;
 
 import com.google.gson.Gson;
 import model.GameData;
+import model.PlayerGame;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PostloginUi extends ClientUI{
     private final ServerFacade server;
     private String authToken;
+    private final Map<Integer, GameData> gameMap = new HashMap<>();
 
     public PostloginUi(String authToken) {
         this.server = new ServerFacade("http://localhost:8080");
@@ -20,10 +24,10 @@ public class PostloginUi extends ClientUI{
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "logout" -> logout(params);
-                case "create game" -> createGame(params);
-                case "list games" -> listGames(params);
-//                case "play game" -> playGame(params);
-//                case "observe game" -> observeGame(params);
+                case "creategame" -> createGame(params);
+                case "listgames" -> listGames(params);
+                case "joingame" -> joinGame(params);
+//                case "observeGame" -> observeGame(params);
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -47,27 +51,57 @@ public class PostloginUi extends ClientUI{
         throw new ResponseException(400, "Expected: <gameName>");
     }
 
-    public String listGames(String... params) throws ResponseException {
-        if (params.length >= 1) {
-            var authToken = params[0];
-            var games = server.listGames(authToken);
-            var result = new StringBuilder();
-            var gson = new Gson();
-            for (var game : games) {
-                result.append(gson.toJson(game)).append('\n');
-            }
-            return result.toString();
+    public String joinGame(String... params) throws ResponseException {
+        if (params.length < 2) {
+            throw new ResponseException(400, "Expected: <id> <color>");
         }
-        throw new ResponseException(400, "Expected: <authToken>");
+
+        try {
+            int id = Integer.parseInt(params[0]);
+            String color = params[1].toUpperCase();
+            if (!color.equals("WHITE") && !color.equals("BLACK")) {
+                throw new ResponseException(400, "Color must be 'WHITE' or 'BLACK'.");
+            }
+            var game = gameMap.get(id);
+            if (game == null) {
+                throw new ResponseException(404, "Game with ID " + id + " not found.");
+            }
+            var playerGame = new PlayerGame(color, game.gameID());
+            server.joinGame(playerGame, authToken);
+            return String.format("Successfully joined game '%s' as %s.", game.gameName(), color);
+        } catch (NumberFormatException e) {
+            throw new ResponseException(400, "Game ID must be an integer.");
+        }
     }
+
+
+    public String listGames(String... params) throws ResponseException {
+        gameMap.clear();
+        var games = server.listGames(authToken);
+        var result = new StringBuilder();
+        int i = 0;
+
+        for (var game : games) {
+            i++;
+            gameMap.put(i, game);
+            result.append("Game ").append(i).append(": ");
+            result.append(game.gameName()).append('\n');
+            result.append("White Player: ").append(game.whiteUsername() == null ? "None" : game.whiteUsername()).append('\n');
+            result.append("Black Player: ").append(game.blackUsername() == null ? "None" : game.blackUsername()).append('\n');
+            result.append('\n');
+        }
+        return result.toString();
+    }
+
+
     public String help() {
 
         return """
                 - logout
-                - create game <gameName>
-                - list games
-                - play game
-                - observe game
+                - creategame <gameName>
+                - listgames
+                - playgame
+                - observegame
                 - quit
                 """;
     }

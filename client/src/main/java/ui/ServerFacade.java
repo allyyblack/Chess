@@ -32,15 +32,16 @@ public class ServerFacade {
     }
 
     public GameData createGame(GameData gameData, String authToken) throws ResponseException {
-        var path = String.format("/game/%s", authToken);
-        return this.makeRequest("POST", path, gameData, GameData.class, null);
+        var path = "/game";
+        return this.makeRequest("POST", path, gameData, GameData.class, authToken);
     }
 
+
     public Collection<GameData> listGames(String authToken) throws ResponseException {
-        var path = String.format("/game/%s", authToken);
+        var path = "/game";
         record listGameResponse(Collection<GameData> games) {
         }
-        var response = this.makeRequest("GET", path, null, listGameResponse.class, null);
+        var response = this.makeRequest("GET", path, null, listGameResponse.class, authToken);
         return response.games();
     }
 
@@ -50,8 +51,8 @@ public class ServerFacade {
     }
 
     public PlayerGame joinGame(PlayerGame playerGame, String authToken) throws ResponseException {
-        var path = String.format("/game/%s", authToken);
-        return this.makeRequest("POST", path, playerGame, PlayerGame.class, null);
+        var path = "/game";
+        return this.makeRequest("PUT", path, playerGame, PlayerGame.class, authToken);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {
