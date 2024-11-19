@@ -45,18 +45,20 @@ public class PostloginUi extends ClientUI{
     }
 
     public String createGame(String... params) throws ResponseException {
-        if (params.length >= 1) {
+        if (params.length == 1) {
             var gameName = params[0];
             var gameData = new GameData(0, null, null, gameName, null);
             server.createGame(gameData, authToken);
             System.out.println(SET_TEXT_COLOR_YELLOW + "Game " + gameName + " created.");
             return String.format("Game " + gameName + " created.\n");
         }
+        System.out.println(SET_TEXT_COLOR_RED + "Expected: <gameName>\n");
         throw new ResponseException(400, SET_TEXT_COLOR_RED + "Expected: <gameName>\n");
     }
 
     public String joinGame(String... params) throws ResponseException {
         if (params.length < 2) {
+            System.out.println(SET_TEXT_COLOR_RED + "Expected: <id> <color>\n");
             throw new ResponseException(400, SET_TEXT_COLOR_RED + "Expected: <id> <color>\n");
         }
 
@@ -64,10 +66,12 @@ public class PostloginUi extends ClientUI{
             int id = Integer.parseInt(params[0]);
             String color = params[1].toUpperCase();
             if (!color.equals("WHITE") && !color.equals("BLACK")) {
+                System.out.println(SET_TEXT_COLOR_RED + "Color must be 'WHITE' or 'BLACK'.\n");
                 throw new ResponseException(400, SET_TEXT_COLOR_RED + "Color must be 'WHITE' or 'BLACK'.\n");
             }
             var game = gameMap.get(id);
             if (game == null) {
+                System.out.println(SET_TEXT_COLOR_RED + "Game with ID " + id + " not found.\n");
                 throw new ResponseException(404, SET_TEXT_COLOR_RED + "Game with ID " + id + " not found.\n");
             }
             var playerGame = new PlayerGame(color, game.gameID());
@@ -75,12 +79,14 @@ public class PostloginUi extends ClientUI{
             System.out.println(SET_TEXT_COLOR_GREEN + "Successfully joined game " + game.gameName() + " as " + color);
             return String.format(SET_TEXT_COLOR_GREEN + "Successfully joined game '%s' as '%s'", game.gameName(), color);
         } catch (NumberFormatException e) {
+            System.out.println(SET_TEXT_COLOR_RED + "Game ID must be an integer. \n");
             throw new ResponseException(400, SET_TEXT_COLOR_RED + "Game ID must be an integer. \n");
         }
     }
 
     public String observeGame(String... params) throws ResponseException {
         if (params.length < 1) {
+            System.out.println(SET_TEXT_COLOR_RED + "Expected: <id>");
             throw new ResponseException(400,SET_TEXT_COLOR_RED + "Expected: <id>");
         }
 
@@ -88,11 +94,13 @@ public class PostloginUi extends ClientUI{
             int id = Integer.parseInt(params[0]);
             var game = gameMap.get(id);
             if (game == null) {
+                System.out.println(SET_TEXT_COLOR_RED + "Game with ID " + id + " not found.\n");
                 throw new ResponseException(404, SET_TEXT_COLOR_RED + "Game with ID " + id + " not found.\n");
             }
             System.out.println(SET_TEXT_COLOR_GREEN + "Successfully observing game " + game.gameName());
             return String.format("Successfully observing game '%s'", game.gameName() + "\n");
         } catch (NumberFormatException e) {
+            System.out.println(SET_TEXT_COLOR_RED + "Game ID must be an integer.\n");
             throw new ResponseException(400, SET_TEXT_COLOR_RED + "Game ID must be an integer.\n");
         }
     }
@@ -124,10 +132,17 @@ public class PostloginUi extends ClientUI{
                 - logout
                 - creategame <gameName>
                 - listgames
-                - playgame
+                - joingame <id> <color>
                 - observegame
                 - quit
                 """);
-        return null;
+        return """
+                - logout
+                - creategame <gameName>
+                - listgames
+                - playgame
+                - observegame
+                - quit
+                """;
     }
 }

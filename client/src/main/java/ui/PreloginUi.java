@@ -30,17 +30,22 @@ public class PreloginUi extends ClientUI{
                 default -> help();
             };
         } catch (ResponseException ex) {
+            System.out.println(ex.getMessage());
             return ex.getMessage();
         }
     }
     public String login(String... params) throws ResponseException {
-        if (params.length >= 2) {
-            var username = params[0];
-            var password = params[1];
-            var userData = new UserData(username, password, null);
-             var response = server.login(userData).authToken();
-             System.out.println("Welcome " + username + SET_TEXT_COLOR_MAGENTA);
-            return String.format("Welcome " + username + "\nYour authToken is " + response + "\n");
+        if (params.length == 2) {
+            try {
+                var username = params[0];
+                var password = params[1];
+                var userData = new UserData(username, password, null);
+                var response = server.login(userData).authToken();
+                System.out.println(SET_TEXT_COLOR_MAGENTA + "Welcome " + username);
+                return String.format("Welcome " + username + "\nYour authToken is " + response + "\n");
+            } catch (Throwable e) {
+                System.out.println(SET_TEXT_COLOR_RED + "invalid input");
+            }
         }
         throw new ResponseException(400, SET_TEXT_COLOR_RED + "Expected: <username> <password>\n");
     }
@@ -64,6 +69,11 @@ public class PreloginUi extends ClientUI{
     }
 
     public String help() {
+        System.out.println("""
+                - login <username> <password> <email>
+                - register <username> <password> <email>
+                - quit
+                """);
         return """
                 - login <username> <password> <email>
                 - register <username> <password> <email>

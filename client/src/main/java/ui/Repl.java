@@ -19,6 +19,10 @@ public class Repl {
     public void switchToGameplayUi() {
         client = new GameplayUi();
     }
+    public void switchToPreloginUi() {
+        client = new PreloginUi(serverUrl);
+    }
+
 
     public void run() {
         System.out.println(SET_TEXT_COLOR_BLUE + "Welcome to the game of chess. Register or sign in to start. \n");
@@ -43,6 +47,9 @@ public class Repl {
                     else {
                         ((GameplayUi) client).main("WHITE");
                     }
+                }
+                if (line.contains("logout") && result.contains("Goodbye")) {
+                    switchToPreloginUi();
                 }
             } catch (Throwable e) {
                 var msg = e.toString();
