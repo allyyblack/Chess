@@ -61,15 +61,12 @@ public class PreloginUi extends ClientUI{
             System.out.println(SET_TEXT_COLOR_MAGENTA + "Welcome " + username);
             return String.format("Welcome " + username + "\nYour authToken is " + authToken + "\n");
 
-            //instead of returning,
-            //just print the message without authtoken
-            //and then create an instance of postlogin UI here, and run it.
         }
         throw new ResponseException(400, SET_TEXT_COLOR_RED + "Expected: <username> <password> <email>\n");
     }
 
     public String help() {
-        System.out.println("""
+        System.out.println(SET_TEXT_COLOR_GREEN + """
                 - login <username> <password> <email>
                 - register <username> <password> <email>
                 - quit
