@@ -33,7 +33,7 @@ public class Repl {
                     String key = "Your authToken is ";
                     String newAuth = result.substring(result.indexOf(key) + key.length()).trim();
                     switchToPostLogin(newAuth);
-                    System.out.println("\nYou are now logged in.\n");
+                    System.out.println(SET_TEXT_COLOR_GREEN + "\nYou are now logged in.\n");
                 }
                 if ((line.contains("joingame") || line.contains("observegame")) && result.contains("Successful")) {
                     switchToGameplayUi();
@@ -46,7 +46,7 @@ public class Repl {
                 }
             } catch (Throwable e) {
                 var msg = e.toString();
-                System.out.print(msg);
+                System.out.print(msg + SET_TEXT_COLOR_RED);
             }
         }
         System.out.println();
