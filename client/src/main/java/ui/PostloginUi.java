@@ -57,31 +57,36 @@ public class PostloginUi extends ClientUI{
     }
 
     public String joinGame(String... params) throws ResponseException {
-        if (params.length < 2) {
-            System.out.println(SET_TEXT_COLOR_RED + "Expected: <id> <color>\n");
-            throw new ResponseException(400, SET_TEXT_COLOR_RED + "Expected: <id> <color>\n");
-        }
-
-        try {
-            int id = Integer.parseInt(params[0]);
-            String color = params[1].toUpperCase();
-            if (!color.equals("WHITE") && !color.equals("BLACK")) {
-                System.out.println(SET_TEXT_COLOR_RED + "Color must be 'WHITE' or 'BLACK'.\n");
-                throw new ResponseException(400, SET_TEXT_COLOR_RED + "Color must be 'WHITE' or 'BLACK'.\n");
+        if (params.length == 2) {
+            try {
+                int id = Integer.parseInt(params[0]);
+                String color = params[1].toUpperCase();
+                if (!color.equals("WHITE") && !color.equals("BLACK")) {
+                    System.out.println(SET_TEXT_COLOR_RED + "Color must be 'WHITE' or 'BLACK'.\n");
+                    throw new ResponseException(400, SET_TEXT_COLOR_RED + "Color must be 'WHITE' or 'BLACK'.\n");
+                }
+                var game = gameMap.get(id);
+                if (game == null) {
+                    System.out.println(SET_TEXT_COLOR_RED + "Game with ID " + id + " not found.\n");
+                    throw new ResponseException(404, SET_TEXT_COLOR_RED + "Game with ID " + id + " not found.\n");
+                }
+                var playerGame = new PlayerGame(color, game.gameID());
+                try {
+                    server.joinGame(playerGame, authToken);
+                } catch (ResponseException ex) {
+                    System.out.println(ex.getMessage());
+                    return ex.getMessage();
+                }
+                System.out.println(SET_TEXT_COLOR_GREEN + "Successfully joined game " + game.gameName() + " as " + color);
+                return String.format(SET_TEXT_COLOR_GREEN + "Successfully joined game '%s' as '%s'", game.gameName(), color);
+            } catch (NumberFormatException e) {
+                System.out.println(SET_TEXT_COLOR_RED + "Game ID must be an integer. \n");
+                throw new ResponseException(400, SET_TEXT_COLOR_RED + "Game ID must be an integer. \n");
             }
-            var game = gameMap.get(id);
-            if (game == null) {
-                System.out.println(SET_TEXT_COLOR_RED + "Game with ID " + id + " not found.\n");
-                throw new ResponseException(404, SET_TEXT_COLOR_RED + "Game with ID " + id + " not found.\n");
-            }
-            var playerGame = new PlayerGame(color, game.gameID());
-            server.joinGame(playerGame, authToken);
-            System.out.println(SET_TEXT_COLOR_GREEN + "Successfully joined game " + game.gameName() + " as " + color);
-            return String.format(SET_TEXT_COLOR_GREEN + "Successfully joined game '%s' as '%s'", game.gameName(), color);
-        } catch (NumberFormatException e) {
-            System.out.println(SET_TEXT_COLOR_RED + "Game ID must be an integer. \n");
-            throw new ResponseException(400, SET_TEXT_COLOR_RED + "Game ID must be an integer. \n");
         }
+        System.out.println(SET_TEXT_COLOR_RED + "invalid input");
+        System.out.println(SET_TEXT_COLOR_RED + "Expected: <id> <color>\n");
+        throw new ResponseException(400, SET_TEXT_COLOR_RED + "Expected: <id> <color>\n");
     }
 
     public String observeGame(String... params) throws ResponseException {

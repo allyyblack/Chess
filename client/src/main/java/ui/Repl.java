@@ -8,6 +8,7 @@ import static ui.EscapeSequences.*;
 public class Repl {
     private ClientUI client;
     private final String serverUrl;
+    String newAuth = "";
 
     public Repl(String serverUrl) {
         this.serverUrl = serverUrl;
@@ -35,7 +36,7 @@ public class Repl {
 //                System.out.print(result);
                 if ((line.contains("login") || line.contains("register")) && result.contains("Welcome")) {
                     String key = "Your authToken is ";
-                    String newAuth = result.substring(result.indexOf(key) + key.length()).trim();
+                    newAuth = result.substring(result.indexOf(key) + key.length()).trim();
                     switchToPostLogin(newAuth);
                     System.out.println(SET_TEXT_COLOR_GREEN + "\nYou are now logged in.\n");
                 }
@@ -47,6 +48,7 @@ public class Repl {
                     else {
                         ((GameplayUi) client).main("WHITE");
                     }
+                    switchToPostLogin(newAuth);
                 }
                 if (line.contains("logout") && result.contains("Goodbye")) {
                     switchToPreloginUi();

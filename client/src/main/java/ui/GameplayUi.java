@@ -68,16 +68,16 @@ public class GameplayUi extends ClientUI {
 
     public static void initializeBoard(String[][] board, boolean whiteAtBottom) {
             String[] whiteBottom = {EscapeSequences.WHITE_ROOK, EscapeSequences.WHITE_KNIGHT, EscapeSequences.WHITE_BISHOP,
-                    EscapeSequences.WHITE_KING, EscapeSequences.WHITE_QUEEN, EscapeSequences.WHITE_BISHOP,
-                    EscapeSequences.WHITE_KNIGHT, EscapeSequences.WHITE_ROOK};
-            String[] whiteTop = {EscapeSequences.WHITE_ROOK, EscapeSequences.WHITE_KNIGHT, EscapeSequences.WHITE_BISHOP,
                     EscapeSequences.WHITE_QUEEN, EscapeSequences.WHITE_KING, EscapeSequences.WHITE_BISHOP,
                     EscapeSequences.WHITE_KNIGHT, EscapeSequences.WHITE_ROOK};
+            String[] whiteTop = {EscapeSequences.WHITE_ROOK, EscapeSequences.WHITE_KNIGHT, EscapeSequences.WHITE_BISHOP,
+                    EscapeSequences.WHITE_KING, EscapeSequences.WHITE_QUEEN, EscapeSequences.WHITE_BISHOP,
+                    EscapeSequences.WHITE_KNIGHT, EscapeSequences.WHITE_ROOK};
             String[] blackBottom = {EscapeSequences.BLACK_ROOK, EscapeSequences.BLACK_KNIGHT, EscapeSequences.BLACK_BISHOP,
-                    EscapeSequences.BLACK_QUEEN, EscapeSequences.BLACK_KING, EscapeSequences.BLACK_BISHOP,
+                    EscapeSequences.BLACK_KING, EscapeSequences.BLACK_QUEEN, EscapeSequences.BLACK_BISHOP,
                     EscapeSequences.BLACK_KNIGHT, EscapeSequences.BLACK_ROOK};
             String[] blackTop = {EscapeSequences.BLACK_ROOK, EscapeSequences.BLACK_KNIGHT, EscapeSequences.BLACK_BISHOP,
-                    EscapeSequences.BLACK_KING, EscapeSequences.BLACK_QUEEN, EscapeSequences.BLACK_BISHOP,
+                    EscapeSequences.BLACK_QUEEN, EscapeSequences.BLACK_KING, EscapeSequences.BLACK_BISHOP,
                     EscapeSequences.BLACK_KNIGHT, EscapeSequences.BLACK_ROOK};
             String[] whitePawns = {EscapeSequences.WHITE_PAWN, EscapeSequences.WHITE_PAWN, EscapeSequences.WHITE_PAWN,
                     EscapeSequences.WHITE_PAWN, EscapeSequences.WHITE_PAWN, EscapeSequences.WHITE_PAWN,
