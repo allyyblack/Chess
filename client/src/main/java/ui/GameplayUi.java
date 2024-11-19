@@ -1,5 +1,8 @@
 package ui;
 
+import static ui.EscapeSequences.SET_TEXT_COLOR_BLUE;
+import static ui.EscapeSequences.SET_TEXT_COLOR_RED;
+
 public class GameplayUi extends ClientUI {
 
         public void main(String color) {
@@ -14,7 +17,7 @@ public class GameplayUi extends ClientUI {
     public static void drawBoard(boolean whiteAtBottom) {
         String[][] board = new String[8][8];
         initializeBoard(board, whiteAtBottom);
-        System.out.print("\n");
+        System.out.print("\n " + SET_TEXT_COLOR_BLUE);
         System.out.print("   ");
         if (whiteAtBottom) {
             for (char letter = 'a'; letter <= 'h'; letter++) {

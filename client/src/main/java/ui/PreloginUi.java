@@ -39,7 +39,7 @@ public class PreloginUi extends ClientUI{
             var password = params[1];
             var userData = new UserData(username, password, null);
              var response = server.login(userData).authToken();
-             System.out.println(SET_TEXT_COLOR_MAGENTA + "Welcome " + username);
+             System.out.println("Welcome " + username + SET_TEXT_COLOR_MAGENTA);
             return String.format("Welcome " + username + "\nYour authToken is " + response + "\n");
         }
         throw new ResponseException(400, SET_TEXT_COLOR_RED + "Expected: <username> <password>\n");
