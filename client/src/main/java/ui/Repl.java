@@ -1,11 +1,14 @@
 package ui;
 
+import chess.ChessGame;
+import ui.NotificationHandler;
+import websocket.messages.ServerMessage;
+
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
 
-
-public class Repl {
+public class Repl implements NotificationHandler {
     private ClientUI client;
     private final String serverUrl;
     String newAuth = "";
@@ -15,10 +18,10 @@ public class Repl {
         client = new PreloginUi(serverUrl);
     }
     public void switchToPostLogin(String authToken) {
-        client = new PostloginUi(authToken);
+        client = new PostloginUi(authToken, this);
     }
-    public void switchToGameplayUi() {
-        client = new GameplayUi();
+    public void switchToGameplayUi(String authToken, ChessGame game, String color) {
+        client = new GameplayUi(authToken, game, color, this);
     }
     public void switchToPreloginUi() {
         client = new PreloginUi(serverUrl);
@@ -41,17 +44,17 @@ public class Repl {
                     System.out.println(SET_TEXT_COLOR_GREEN + "\nYou are now logged in.\n");
                 }
                 if ((line.contains("joingame") || line.contains("observegame")) && result.contains("Successful")) {
-                    switchToGameplayUi();
-                    if(line.contains("joingame") && result.contains("BLACK")) {
-                        ((GameplayUi) client).main("BLACK");
-                    }
-                    else {
-                        ((GameplayUi) client).main("WHITE");
-                    }
-                    switchToPostLogin(newAuth);
+                    String[] parts = line.split(" ");
+                    String color = parts[2];
+                    int gameNumber = Integer.parseInt(parts[1]);
+                    var game = PostloginUi.gameMap.get(gameNumber);
+                    switchToGameplayUi(newAuth, game.game(), color);
                 }
                 if (line.contains("logout") && result.contains("Goodbye")) {
                     switchToPreloginUi();
+                }
+                if (line.equalsIgnoreCase("leave")) {
+                    switchToPostLogin(newAuth);
                 }
             } catch (Throwable e) {
                 var msg = e.toString();
@@ -59,5 +62,14 @@ public class Repl {
             }
         }
         System.out.println();
+    }
+
+    public void notify(ServerMessage notification) {
+        System.out.println(SET_TEXT_COLOR_RED + notification);
+        printPrompt();
+    }
+
+    private void printPrompt() {
+        System.out.print("\n" + RESET_TEXT_COLOR + ">>> " + SET_TEXT_COLOR_GREEN);
     }
 }

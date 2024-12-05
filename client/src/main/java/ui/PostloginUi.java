@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
 import model.PlayerGame;
@@ -13,9 +14,16 @@ import static ui.EscapeSequences.*;
 public class PostloginUi extends ClientUI{
     private final ServerFacade server;
     private String authToken;
-    private final Map<Integer, GameData> gameMap = new HashMap<>();
+    public static final Map<Integer, GameData> gameMap = new HashMap<>();
+    public ChessGame game;
+    private final NotificationHandler notificationHandler;
+    private WebSocketFacade ws;
+    String serverUrl = "http://localhost:8080";
 
-    public PostloginUi(String authToken) {
+
+
+    public PostloginUi(String authToken, NotificationHandler notificationHandler) {
+        this.notificationHandler = notificationHandler;
         this.server = new ServerFacade("http://localhost:8080");
         this.authToken = authToken;
     }
@@ -48,8 +56,9 @@ public class PostloginUi extends ClientUI{
         if (params.length == 1) {
             var gameName = params[0];
             var gameData = new GameData(0, null, null, gameName, null);
-            server.createGame(gameData, authToken);
+            gameData = server.createGame(gameData, authToken);
             System.out.println(SET_TEXT_COLOR_YELLOW + "Game " + gameName + " created.");
+            game = gameData.game();
             return String.format("Game " + gameName + " created.\n");
         }
         System.out.println(SET_TEXT_COLOR_RED + "Expected: <gameName>\n");
@@ -77,6 +86,8 @@ public class PostloginUi extends ClientUI{
                     System.out.println(ex.getMessage());
                     return ex.getMessage();
                 }
+                ws = new WebSocketFacade(serverUrl, notificationHandler);
+                ws.joinGame(playerGame, authToken);
                 System.out.println(SET_TEXT_COLOR_GREEN + "Successfully joined game " + game.gameName() + " as " + color);
                 return String.format(SET_TEXT_COLOR_GREEN + "Successfully joined game '%s' as '%s'", game.gameName(), color);
             } catch (NumberFormatException e) {
