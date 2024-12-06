@@ -81,6 +81,8 @@ public class PostloginUi extends ClientUI{
                 }
                 var playerGame = new PlayerGame(color, game.gameID());
                 server.joinGame(playerGame, authToken);
+                ws = new WebSocketFacade(serverUrl, notificationHandler);
+                ws.joinGame(playerGame, authToken);
                 System.out.println(SET_TEXT_COLOR_GREEN + "Successfully joined game " + game.gameName() + " as " + color);
                 return String.format(SET_TEXT_COLOR_GREEN + "Successfully joined game '%s' as '%s'", game.gameName(), color);
             } catch (NumberFormatException e) {
