@@ -25,6 +25,7 @@ public class WebSocketHandler {
     public void onMessage(Session session, String message) throws IOException {
         UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
         switch (action.getCommandType()) {
+            case CONNECT -> joinGame(action.getAuthToken(), action.getGameID());
             case MAKE_MOVE -> makeMove(action.getAuthToken(), action.getGameID());
 //            case LEAVE -> leave(action.user);
 //            case RESIGN -> resign(action.user);
@@ -37,6 +38,12 @@ public class WebSocketHandler {
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
         connections.broadcast(authToken, notification, message);
 
+    }
+
+    public void joinGame(String authToken, int gameID) throws IOException {
+        var message = String.format("%s joined the game", authToken);
+        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        connections.broadcast(authToken, notification, message);
     }
 
 //    private void enter(String visitorName, Session session) throws IOException {
