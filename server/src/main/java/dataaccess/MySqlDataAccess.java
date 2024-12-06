@@ -1,5 +1,7 @@
 package dataaccess;
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
@@ -50,6 +52,8 @@ public class MySqlDataAccess implements DataAccess {
         return null;
     }
 
+
+
     public GameData createGame(String gameName) throws DataAccessException {
         var statement = "INSERT INTO games (gameName, whiteUsername, blackUsername, game) VALUES (?, ?, ?, ?)";
         ChessGame game = new ChessGame();
@@ -59,8 +63,46 @@ public class MySqlDataAccess implements DataAccess {
         return new GameData(gameID, null, null, gameName, game);
         }
 
+    public GameData makeMove(ChessMove move, int gameID) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT game FROM games WHERE gameID = ?";
+            ChessGame chessGame = null;
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setInt(1, gameID);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        String gameJson = rs.getString("game");
+                        var serializer = new Gson();
+                        chessGame = serializer.fromJson(gameJson, ChessGame.class);
+                    }
+                }
+            }
+            if (chessGame == null) {
+                throw new DataAccessException("Game not found for gameID: " + gameID);
+            }
+            try {
+                chessGame.makeMove(move);
+            } catch (InvalidMoveException e) {
+                throw new DataAccessException("Invalid move: " + e.getMessage());
+            }
+            var serializer = new Gson();
+            String updatedGameJson = serializer.toJson(chessGame);
+            statement = "UPDATE games SET game = ? WHERE gameID = ?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, updatedGameJson);
+                ps.setInt(2, gameID);
+                ps.executeUpdate();
+            }
+            return getGame(gameID);
+        } catch (SQLException e) {
+            throw new DataAccessException("Error updating game state: " + e.getMessage());
+        }
+    }
 
-        public GameData getGame(int gameID) throws DataAccessException {
+
+
+
+    public GameData getGame(int gameID) throws DataAccessException {
             try (var conn = DatabaseManager.getConnection()) {
                 var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM games WHERE gameID=?";
                 try (var ps = conn.prepareStatement(statement)) {
@@ -125,6 +167,18 @@ public class MySqlDataAccess implements DataAccess {
 
 
     }
+
+    public void updateGameState(int gameID, ChessGame chessGame) throws DataAccessException {
+        // Serialize the ChessGame object to JSON
+        String gameJson = new Gson().toJson(chessGame);
+
+        // Define the SQL update statement
+        String statement = "UPDATE games SET game = ? WHERE gameID = ?";
+
+        // Execute the update
+        executeUpdate(statement, gameJson, gameID);
+    }
+
 
     public AuthData createAuth(String username) throws DataAccessException {
         String token =  UUID.randomUUID().toString();

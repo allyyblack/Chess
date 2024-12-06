@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessMove;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -101,6 +102,16 @@ public class MemoryDataAccess implements DataAccess{
             }
         }
         return null;
+    }
+
+    @Override
+    public GameData makeMove(ChessMove move, int gameID) throws DataAccessException {
+        return null;
+    }
+
+    @Override
+    public void updateGameState(int gameID, ChessGame chessGame) throws DataAccessException {
+
     }
 
     @Override

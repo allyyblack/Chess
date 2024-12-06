@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessMove;
 import com.google.gson.Gson;
 import model.PlayerGame;
 import ui.ResponseException;
@@ -45,6 +46,9 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
+    public void makeMove(ChessMove move) {
+
+    }
     public void joinGame(PlayerGame playerGame, String authToken) throws ResponseException {
         try {
             var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, playerGame.gameID());

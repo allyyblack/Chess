@@ -65,6 +65,14 @@ public class GameplayUi extends ClientUI {
         return String.format("Board redrawn");
     }
 
+    public void makeMove(String... params) throws ResponseException {
+        if (params.length == 2) {
+            var initial = params[0];
+            var destination = params[1];
+
+        }
+    }
+
     public static void printBoard(ChessBoard board, boolean whiteAtBottom) {
         String[][] chessBoard = new String[8][8];
         String whitePieceColor = SET_TEXT_COLOR_WHITE;
@@ -140,7 +148,7 @@ public class GameplayUi extends ClientUI {
         System.out.println( """
                 - redrawboard
                 - leave
-                - makeMove
+                - makeMove <initial> <destination>
                 - resign
                 - highlightMoves
                 """);

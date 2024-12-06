@@ -80,14 +80,7 @@ public class PostloginUi extends ClientUI{
                     throw new ResponseException(404, SET_TEXT_COLOR_RED + "Game with ID " + id + " not found.\n");
                 }
                 var playerGame = new PlayerGame(color, game.gameID());
-                try {
-                    server.joinGame(playerGame, authToken);
-                } catch (ResponseException ex) {
-                    System.out.println(ex.getMessage());
-                    return ex.getMessage();
-                }
-                ws = new WebSocketFacade(serverUrl, notificationHandler);
-                ws.joinGame(playerGame, authToken);
+                server.joinGame(playerGame, authToken);
                 System.out.println(SET_TEXT_COLOR_GREEN + "Successfully joined game " + game.gameName() + " as " + color);
                 return String.format(SET_TEXT_COLOR_GREEN + "Successfully joined game '%s' as '%s'", game.gameName(), color);
             } catch (NumberFormatException e) {

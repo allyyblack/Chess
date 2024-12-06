@@ -1,5 +1,7 @@
 package dataaccess;
 
+import chess.ChessGame;
+import chess.ChessMove;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -23,6 +25,10 @@ public interface DataAccess {
     AuthData createAuth(String username) throws DataAccessException;
 
     AuthData getAuth(String authToken) throws DataAccessException;
+
+    GameData makeMove(ChessMove move, int gameID) throws DataAccessException;
+
+    void updateGameState(int gameID, ChessGame chessGame) throws DataAccessException;
 
     void deleteAuth(AuthData authToken) throws DataAccessException;
 }

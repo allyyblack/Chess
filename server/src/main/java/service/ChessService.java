@@ -1,5 +1,8 @@
 package service;
 
+import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import dataaccess.DataAccess;
 import dataaccess.UnauthorizedAccessException;
 import model.AuthData;
@@ -47,6 +50,28 @@ public class ChessService {
         }
         return dataAccess.createGame(gameName);
     }
+
+    public GameData makeMove(ChessMove move, int gameID, String authToken)
+            throws DataAccessException, UnauthorizedAccessException {
+        AuthData authData = dataAccess.getAuth(authToken);
+        if (authData == null) {
+            throw new UnauthorizedAccessException("Invalid auth token");
+        }
+        GameData gameData = dataAccess.getGame(gameID);
+        if (gameData == null) {
+            throw new DataAccessException("Game not found for gameID: " + gameID);
+        }
+
+        ChessGame chessGame = gameData.game();
+        try {
+            chessGame.makeMove(move);
+        } catch (InvalidMoveException e) {
+            throw new DataAccessException("Invalid move: " + e.getMessage());
+        }
+        dataAccess.updateGameState(gameID, chessGame);
+        return dataAccess.getGame(gameID);
+    }
+
 
     public void joinGame(PlayerGame playerGame, String authToken) throws DataAccessException, UnauthorizedAccessException {
         AuthData authData = dataAccess.getAuth(authToken);
