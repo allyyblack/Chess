@@ -6,6 +6,12 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import ui.NotificationHandler;
+import ui.ServerFacade;
+import ui.WebSocketFacade;
+
+
+
 
 
 
@@ -19,6 +25,7 @@ public class GameplayUi extends ClientUI {
     public ChessBoard board;
     private WebSocketFacade ws;
     private final NotificationHandler notificationHandler;
+    private final String serverUrl = "http://localhost:8080";
 
 
 
@@ -45,7 +52,7 @@ public class GameplayUi extends ClientUI {
             return switch (cmd) {
                 case "redrawboard" -> redrawBoard(params);
 //                case "leave" -> leave();
-//                case "makemove" -> makeMove(params);
+                case "makemove" -> makeMove(params);
 //                case "resign" -> resign(params);
 //                case "highlightmoves" -> highlightMoves(params);
                 default -> help();
@@ -65,12 +72,13 @@ public class GameplayUi extends ClientUI {
         return String.format("Board redrawn");
     }
 
-    public void makeMove(String... params) throws ResponseException {
+    public String makeMove(String... params) throws ResponseException {
         if (params.length == 2) {
             var initial = params[0];
             var destination = params[1];
 
         }
+        return ("worked");
     }
 
     public static void printBoard(ChessBoard board, boolean whiteAtBottom) {

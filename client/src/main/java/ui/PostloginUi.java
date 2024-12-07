@@ -87,8 +87,6 @@ public class PostloginUi extends ClientUI{
                 }
                 var playerGame = new PlayerGame(color, game.gameID());
                 server.joinGame(playerGame, authToken);
-                ws = new WebSocketFacade(serverUrl, notificationHandler);
-                ws.joinGame(playerGame, authToken);
                 try {
                     ws = new WebSocketFacade(serverUrl, notificationHandler);
                     ws.joinGame(playerGame, authToken);
