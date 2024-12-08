@@ -83,6 +83,8 @@ public class PostloginUi extends ClientUI{
                 var game = gameMap.get(id);
                 if (game == null) {
                     System.out.println(SET_TEXT_COLOR_RED + "Game with ID " + id + " not found.\n");
+                    ws = new WebSocketFacade(serverUrl, notificationHandler);
+                    ws.showError(authToken);
                     throw new ResponseException(404, SET_TEXT_COLOR_RED + "Game with ID " + id + " not found.\n");
                 }
                 var playerGame = new PlayerGame(color, game.gameID());

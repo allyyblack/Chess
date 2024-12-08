@@ -67,6 +67,13 @@ public class GameplayUi extends ClientUI {
         }
     }
 
+//    public String highlightMoves(String... params) throws ResponseException {
+//        if (params.length == 1) {
+//            var position = params[0];
+//        }
+//
+//    }
+
     public String redrawBoard(String... params) throws ResponseException {
         if (color.equalsIgnoreCase("WHITE")) {
             printBoard(board, true);
@@ -98,10 +105,8 @@ public class GameplayUi extends ClientUI {
 
 
     public String makeMove(String... params) throws ResponseException {
-        if (params.length == 2) {
-            var initial = params[0];
-            var destination = params[1];
-
+        if (params.length == 1) {
+            var position = params[0];
         }
         return ("worked");
     }
@@ -183,14 +188,14 @@ public class GameplayUi extends ClientUI {
                 - leave
                 - makeMove <initial> <destination>
                 - resign
-                - highlightMoves
+                - highlightMoves <position>
                 """);
         return """
                 - redrawboard
                 - leave
-                - makeMove
+                - makeMove <initial> <destination>
                 - resign
-                - highlightMoves
+                - highlightMoves <position>
                 """;
     }
     }

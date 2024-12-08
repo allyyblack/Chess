@@ -70,7 +70,7 @@ public class WebSocketTests {
     @Order(2)
     @DisplayName("Connect Bad GameID")
     public void connectBadGameID() {
-        connectToGame(white, gameID + 1, false, Set.of(), Set.of()); //player connect with an incorrect game id
+           connectToGame(white, gameID + 1, false, Set.of(), Set.of()); //player connect with an incorrect game id
         connectToGame(observer, gameID + 1, false, Set.of(white), Set.of()); //observer incorrect game id
     }
 
