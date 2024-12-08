@@ -6,6 +6,8 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import model.GameData;
+import model.PlayerGame;
 import ui.NotificationHandler;
 import ui.ServerFacade;
 import ui.WebSocketFacade;
@@ -20,23 +22,26 @@ import static ui.EscapeSequences.*;
 public class GameplayUi extends ClientUI {
     private final ServerFacade server;
     private String authToken;
-    private ChessGame game;
+    private GameData gameData;
     public String color;
     public ChessBoard board;
-    private WebSocketFacade ws;
+    public WebSocketFacade ws;
     private final NotificationHandler notificationHandler;
     private final String serverUrl = "http://localhost:8080";
+    private final PlayerGame playergame;
 
 
 
-
-    public GameplayUi(String authToken, ChessGame game, String color, NotificationHandler notificationHandler) {
+    public GameplayUi(String authToken, GameData gameData, String color, NotificationHandler notificationHandler, WebSocketFacade ws) {
         this.notificationHandler = notificationHandler;
         this.server = new ServerFacade("http://localhost:8080");
         this.authToken = authToken;
-        this.game = game;
         this.color = color;
+        this.gameData = gameData;
+        this.ws = ws;
+        ChessGame game = gameData.game();
         board = game.getBoard();
+        playergame = new PlayerGame(color, gameData.gameID());
         if (color.equalsIgnoreCase("BLACK")) {
             printBoard(board, false);
         }
@@ -51,7 +56,7 @@ public class GameplayUi extends ClientUI {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "redrawboard" -> redrawBoard(params);
-//                case "leave" -> leave();
+                case "leave" -> leave();
                 case "makemove" -> makeMove(params);
 //                case "resign" -> resign(params);
 //                case "highlightmoves" -> highlightMoves(params);
@@ -71,6 +76,26 @@ public class GameplayUi extends ClientUI {
         }
         return String.format("Board redrawn");
     }
+
+
+    public String leave(String... params) throws ResponseException {
+        try {
+            if (ws != null) {
+                ws.leave(playergame, authToken);
+                System.out.println("WebSocket connection closed.");
+            } else {
+                System.out.println("No WebSocket connection found.");
+            }
+            System.out.println("You have successfully left the game.");
+            return "You have successfully left the game.\n";
+        } catch (Exception e) {
+            System.err.println("An error occurred while trying to leave the game: " + e.getMessage());
+            e.printStackTrace();
+            throw new ResponseException(500, "An error occurred while trying to leave the game.\n");
+        }
+    }
+
+
 
     public String makeMove(String... params) throws ResponseException {
         if (params.length == 2) {
@@ -102,8 +127,8 @@ public class GameplayUi extends ClientUI {
         }
         printColumnHeaders(whiteAtBottom);
         for (int row = 0; row < 8; row++) {
-            int displayRow = whiteAtBottom ? 8 - row : row + 1; // Adjust row labels
-            System.out.print(SET_TEXT_COLOR_GREEN + displayRow + " "); // Row labels on the left
+            int displayRow = whiteAtBottom ? 8 - row : row + 1;
+            System.out.print(SET_TEXT_COLOR_GREEN + displayRow + " ");
 
             for (int col = 0; col < 8; col++) {
                 boolean isLightSquare = (row + col) % 2 == 0;
@@ -111,7 +136,7 @@ public class GameplayUi extends ClientUI {
                 String bgColor = isLightSquare ? SET_BG_COLOR_LIGHT_GREY : SET_BG_COLOR_DARK_GREEN;
                 System.out.print(bgColor + chessBoard[row][col] + EscapeSequences.RESET_BG_COLOR);
             }
-            System.out.print(SET_TEXT_COLOR_GREEN + " " + displayRow); // Row labels on the right
+            System.out.print(SET_TEXT_COLOR_GREEN + " " + displayRow);
             System.out.println();
         }
 

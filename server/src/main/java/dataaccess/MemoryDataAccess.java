@@ -118,5 +118,10 @@ public class MemoryDataAccess implements DataAccess{
     public void deleteAuth(AuthData authToken) {
         tokens.remove(authToken);
     }
+
+    @Override
+    public void removeUser(int id, String color) throws DataAccessException {
+
+    }
 }
 

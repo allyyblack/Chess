@@ -24,12 +24,12 @@ public class Server {
 
     public Server() {
         this.service = new ChessService(new MySqlDataAccess());
-        this.webSocketHandler = new WebSocketHandler();
+        this.webSocketHandler = new WebSocketHandler(service);
     }
 
     public Server(ChessService service) {
         this.service = service;
-        webSocketHandler = new WebSocketHandler();
+        webSocketHandler = new WebSocketHandler(service);
 
     }
 
@@ -64,7 +64,6 @@ public class Server {
                 return new Gson().toJson(Map.of("message", "Error: Game ID is required"));
             }
             service.joinGame(playerGame, authToken);
-            webSocketHandler.joinGame(authToken, playerGame.gameID());
             res.status(200);
             return new Gson().toJson(Map.of("message", "Joined game"));
         } catch (UnauthorizedAccessException e) {

@@ -31,4 +31,6 @@ public interface DataAccess {
     void updateGameState(int gameID, ChessGame chessGame) throws DataAccessException;
 
     void deleteAuth(AuthData authToken) throws DataAccessException;
+
+    void removeUser(int id, String color) throws DataAccessException;
 }

@@ -117,7 +117,8 @@ public class MySqlDataAccess implements DataAccess {
                 throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
             }
             return null;
-        }
+    }
+
 
     public Collection<GameData> listGames() throws DataAccessException {
         List<GameData> gamesList = new ArrayList<>();
@@ -168,6 +169,31 @@ public class MySqlDataAccess implements DataAccess {
 
     }
 
+    public void removeUser(int gameID, String color) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            String updateStatement;
+            if (color.equalsIgnoreCase("WHITE")) {
+                updateStatement = "UPDATE games SET whiteUsername = NULL WHERE gameID = ?";
+            } else {
+                updateStatement = "UPDATE games SET blackUsername = NULL WHERE gameID = ?";
+            }
+
+            try (var ps = conn.prepareStatement(updateStatement)) {
+                ps.setInt(1, gameID);
+                int rowsAffected = ps.executeUpdate();
+
+                if (rowsAffected == 0) {
+                    throw new DataAccessException("No game found with the provided gameID or the specified color was not set.");
+                }
+            } catch (DataAccessException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error removing user from game: " + e.getMessage());
+        }
+    }
+
+
     public void updateGameState(int gameID, ChessGame chessGame) throws DataAccessException {
         // Serialize the ChessGame object to JSON
         String gameJson = new Gson().toJson(chessGame);
@@ -189,25 +215,26 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     public AuthData getAuth(String authToken) throws DataAccessException {
-        if (authToken == null) {
-            throw new DataAccessException("authtoken null");
-        }
         try (var conn = DatabaseManager.getConnection()) {
-            String statement = "SELECT auth_token, username FROM tokens WHERE auth_token = ?";
+            var statement = "SELECT auth_token, username FROM tokens WHERE auth_token = ?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, authToken);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
                         String username = rs.getString("username");
                         return new AuthData(authToken, username);
+                    } else {
+                        System.out.println("No matching token found for: " + authToken);
                     }
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException(String.format("Unable to read auth data", e.getMessage()));
+            System.err.println("Database error: " + e.getMessage());
+            throw new DataAccessException(String.format("Unable to read auth data: %s", e.getMessage()));
         }
         return null;
     }
+
 
     public void deleteAuth(AuthData authToken) throws DataAccessException {
         String statement = "DELETE FROM tokens WHERE auth_token = ?";

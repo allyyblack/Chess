@@ -94,8 +94,43 @@ public class ChessService {
         }
     }
 
+    public void leave(PlayerGame playerGame, String authToken) throws DataAccessException, UnauthorizedAccessException {
+        AuthData authData = dataAccess.getAuth(authToken);
+        if (authData == null) {
+            throw new UnauthorizedAccessException("Invalid auth token");
+        }
+        GameData gameData = dataAccess.getGame(playerGame.gameID());
+        if (gameData == null) {
+            throw new DataAccessException("Game not found for gameID: " + playerGame.gameID());
+        }
+
+        if (authToken.equals(gameData.whiteUsername())) {
+            gameData = gameData.withWhiteUsername(null);
+            dataAccess.removeUser(gameData.gameID(), playerGame.playerColor());
+            System.out.println("Player with authToken " + authToken + " left as white player.");
+        }
+        else if (authToken.equals(gameData.blackUsername())) {
+            // Create a new GameData instance with black player removed
+            gameData = gameData.withBlackUsername(null);
+            dataAccess.removeUser(gameData.gameID(), playerGame.playerColor());
+            System.out.println("Player with authToken " + authToken + " left as black player.");
+        } else {
+            throw new DataAccessException("Player with authToken " + authToken + " is not part of this game.");
+        }
+    }
+
     public void clearApplication() throws DataAccessException {
         dataAccess.clear();
+    }
+
+    public GameData getgame(int gameId) throws DataAccessException {
+        GameData game = dataAccess.getGame(gameId);
+        return game;
+    }
+
+    public String getUser(String authToken) throws DataAccessException {
+        AuthData authData = dataAccess.getAuth(authToken);
+        return authData.username();
     }
 
     public Collection<GameData> listGames(String authToken) throws DataAccessException, UnauthorizedAccessException {

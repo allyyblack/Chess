@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessGame;
+import model.GameData;
 import ui.NotificationHandler;
 import websocket.messages.ServerMessage;
 
@@ -20,8 +21,9 @@ public class Repl implements NotificationHandler {
     public void switchToPostLogin(String authToken) {
         client = new PostloginUi(authToken, this);
     }
-    public void switchToGameplayUi(String authToken, ChessGame game, String color) {
-        client = new GameplayUi(authToken, game, color, this);
+    public void switchToGameplayUi(String authToken, GameData game, String color) {
+        var ws = PostloginUi.ws; // Retrieve the WebSocket instance
+        client = new GameplayUi(authToken, game, color, this, ws);
     }
     public void switchToPreloginUi() {
         client = new PreloginUi(serverUrl);
@@ -48,7 +50,7 @@ public class Repl implements NotificationHandler {
                     String color = parts[2];
                     int gameNumber = Integer.parseInt(parts[1]);
                     var game = PostloginUi.gameMap.get(gameNumber);
-                    switchToGameplayUi(newAuth, game.game(), color);
+                    switchToGameplayUi(newAuth, game, color);
                 }
                 if (line.contains("logout") && result.contains("Goodbye")) {
                     switchToPreloginUi();
@@ -65,7 +67,7 @@ public class Repl implements NotificationHandler {
     }
 
     public void notify(ServerMessage notification) {
-        System.out.println(SET_TEXT_COLOR_RED + notification);
+        System.out.println(SET_TEXT_COLOR_RED + notification.getMessage());
         printPrompt();
     }
 

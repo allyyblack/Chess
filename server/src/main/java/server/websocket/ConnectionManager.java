@@ -11,31 +11,35 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
     public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Integer, ArrayList<Connection>> gameConnections = new ConcurrentHashMap<>();
 
-    public void joinGame(String user, Session session) {
+
+    public void joinGame(String user, int gameId, Session session) {
         var connection = new Connection(user, session);
+        gameConnections.computeIfAbsent(gameId, k -> new ArrayList<>()).add(connection); // Add player to the game
         connections.put(user, connection);
     }
 
-//    public void leave(String user) {
-//        connections.remove(user);
-//    }
-
-    public void broadcast(String excludeVisitorName, ServerMessage notification, String message) throws IOException {
-        var removeList = new ArrayList<Connection>();
-        for (var c : connections.values()) {
-            if (c.session.isOpen()) {
-                if (!c.user.equals(excludeVisitorName)) {
-                    c.send(message);
-                }
-            } else {
-                removeList.add(c);
+    public void leaveGame(String user, int gameId) {
+        var gameList = gameConnections.get(gameId);
+        if (gameList != null) {
+            gameList.removeIf(c -> c.user.equals(user)); // Remove the player from the game
+            if (gameList.isEmpty()) {
+                gameConnections.remove(gameId); // Clean up if the game is empty
             }
         }
+        connections.remove(user); // Remove player globally
+    }
 
-        // Clean up any connections that were left open.
-        for (var c : removeList) {
-            connections.remove(c.user);
+    public void broadcastToGame(int gameID, ServerMessage message) throws IOException {
+        var gameList = gameConnections.get(gameID);
+        if (gameList != null) {
+            for (var c : gameList) {
+                if (c.session.isOpen()) {
+                    c.send(message.toString());
+                }
+            }
         }
     }
 }
+

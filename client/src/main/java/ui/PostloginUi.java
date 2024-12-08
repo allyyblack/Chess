@@ -23,7 +23,7 @@ public class PostloginUi extends ClientUI{
     public static final Map<Integer, GameData> gameMap = new HashMap<>();
     public ChessGame game;
     private final NotificationHandler notificationHandler;
-    private WebSocketFacade ws;
+    public static WebSocketFacade ws;
     String serverUrl = "http://localhost:8080";
 
 
@@ -86,14 +86,16 @@ public class PostloginUi extends ClientUI{
                     throw new ResponseException(404, SET_TEXT_COLOR_RED + "Game with ID " + id + " not found.\n");
                 }
                 var playerGame = new PlayerGame(color, game.gameID());
-                server.joinGame(playerGame, authToken);
                 try {
                     ws = new WebSocketFacade(serverUrl, notificationHandler);
                     ws.joinGame(playerGame, authToken);
+
                 } catch (Exception e) {
                     System.err.println("WebSocket connection failed: " + e.getMessage());
                     e.printStackTrace();
                 }
+                server.joinGame(playerGame, authToken);
+
                 System.out.println(SET_TEXT_COLOR_GREEN + "Successfully joined game " + game.gameName() + " as " + color);
                 return String.format(SET_TEXT_COLOR_GREEN + "Successfully joined game '%s' as '%s'", game.gameName(), color);
             } catch (NumberFormatException e) {
