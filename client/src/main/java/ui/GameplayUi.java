@@ -51,7 +51,7 @@ public class GameplayUi extends ClientUI {
                 case "redrawboard" -> redrawBoard(params);
                 case "leave" -> leave();
                 case "makemove" -> makeMove(params);
-//                case "resign" -> resign(params);
+                case "resign" -> resign(params);
 //                case "highlightmoves" -> highlightMoves(params);
                 default -> help();
             };
@@ -79,6 +79,22 @@ public class GameplayUi extends ClientUI {
             printBoard(board, false);
         }
         return String.format("Board redrawn");
+    }
+
+    public String resign(String... params) {
+        try {
+            if (ws != null) {
+                ws.resign(playergame, authToken);
+                System.out.println("WebSocket connection closed.");
+            } else {
+                System.out.println("No WebSocket connection found.");
+            }
+            return "You have sucessfully resigned";
+        } catch (Exception e) {
+            System.err.println("An error occurred while trying to resign the game: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return "You have not resigned";
     }
 
 

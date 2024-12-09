@@ -44,7 +44,7 @@ public class WebSocketHandler {
             case CONNECT -> connect(action.getAuthToken(), action.getGameID(), session);
             case MAKE_MOVE -> makeMove(action.getAuthToken(), action.getGameID());
             case LEAVE -> leave(action.getAuthToken(), action.getGameID());
-//            case RESIGN -> resign(action.user);
+            case RESIGN -> resign(action.getAuthToken(), action.getGameID());
         }
     }
 
@@ -58,7 +58,7 @@ public class WebSocketHandler {
         ChessGame game = service.getgame(gameId).game();
         String otherUser = service.getOtherUser(authToken, gameId);
         String color = service.getUserColor(gameId, authToken);
-        if (!color.equals("BLACK") || !color.equals("WHITE")) {
+        if (!color.equalsIgnoreCase("BLACK") && !color.equalsIgnoreCase("WHITE")) {
             var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: You can't make a turn as an observer");
             connections.broadcastToUser(user, error);
             return;
@@ -149,5 +149,18 @@ public class WebSocketHandler {
         var m = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
 
         connections.broadcastToGame(user, gameId, m);
+    }
+
+    public void resign(String authToken, int gameId) throws IOException, DataAccessException {
+        String color = service.getUserColor(gameId, authToken);
+        String user = service.getUser(authToken);
+        if (!color.equalsIgnoreCase("BLACK") && !color.equalsIgnoreCase("WHITE")) {
+            var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: You can't resign as an observer");
+            connections.broadcastToUser(user, error);
+            return;
+        }
+        var message = String.format("%s resigned the game", user);
+        var m = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connections.broadcastToGame(null, gameId, m);
     }
 }
