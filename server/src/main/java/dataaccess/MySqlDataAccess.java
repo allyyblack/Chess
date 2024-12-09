@@ -1,6 +1,7 @@
 package dataaccess;
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPosition;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import model.AuthData;
@@ -230,6 +231,32 @@ public class MySqlDataAccess implements DataAccess {
             throw new DataAccessException("Error updating game status: " + e.getMessage());
         }
     }
+
+    public Collection<ChessMove> getValidMoves(ChessPosition position, int gameID) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "SELECT game FROM games WHERE gameID = ?";
+            ChessGame chessGame = null;
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setInt(1, gameID);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        String gameJson = rs.getString("game");
+                        var serializer = new Gson();
+                        chessGame = serializer.fromJson(gameJson, ChessGame.class);
+                    }
+                }
+            }
+
+            if (chessGame == null) {
+                throw new DataAccessException("Game not found for gameID: " + gameID);
+            }
+            Collection<ChessMove> validMoves = chessGame.validMoves(position);
+            return validMoves;
+        } catch (SQLException e) {
+            throw new DataAccessException("Error retrieving valid moves for gameID: " + gameID, e);
+        }
+    }
+
 
     public boolean isGameEnded(int gameID) throws DataAccessException {
         String query = "SELECT gameStatus FROM games WHERE gameID = ?";

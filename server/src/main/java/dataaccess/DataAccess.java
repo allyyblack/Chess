@@ -2,6 +2,7 @@ package dataaccess;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPosition;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -51,5 +52,7 @@ public interface DataAccess {
     void endGame(int gameID) throws DataAccessException;
 
     boolean isGameEnded(int gameID) throws DataAccessException;
+
+    Collection<ChessMove> getValidMoves(ChessPosition position, int gameID) throws DataAccessException;
 
     }

@@ -50,6 +50,11 @@ public class WebSocketHandler {
 
     private void makeMove(String authToken, int gameId) throws IOException, DataAccessException {
         String user = service.getUser(authToken);
+        if(service.isGameEnded(gameId)) {
+            var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: You can't move in a finished game");
+            connections.broadcastToUser(user, error);
+            return;
+        }
         if (!service.isAuthTokenValid(authToken)) {
             var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: Not a valid authtoken");
             connections.broadcastToUser(user, error);

@@ -1,6 +1,7 @@
 package ui;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 import chess.*;
 import dataaccess.DataAccessException;
@@ -52,7 +53,7 @@ public class GameplayUi extends ClientUI {
                 case "leave" -> leave();
                 case "makemove" -> makeMove(params);
                 case "resign" -> resign(params);
-//                case "highlightmoves" -> highlightMoves(params);
+                case "highlightmoves" -> highlightMoves(params);
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -64,12 +65,13 @@ public class GameplayUi extends ClientUI {
         }
     }
 
-//    public String highlightMoves(String... params) throws ResponseException {
-//        if (params.length == 1) {
-//            var position = params[0];
-//        }
-//
-//    }
+    public String highlightMoves(String... params) throws ResponseException, DataAccessException {
+        if (params.length == 1) {
+            var position = params[0];
+            Collection<ChessMove> validMove = service.validMoves(parsePosition(position), gameData.gameID());
+        }
+
+    }
 
     public String redrawBoard(String... params) throws ResponseException {
         if (color.equalsIgnoreCase("WHITE")) {

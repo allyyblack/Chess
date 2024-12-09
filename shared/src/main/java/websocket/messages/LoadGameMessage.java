@@ -1,10 +1,8 @@
 package websocket.messages;
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import com.google.gson.Gson;
 
+import java.util.Collection;
 
 
 public class LoadGameMessage extends ServerMessage {
@@ -19,6 +17,7 @@ public class LoadGameMessage extends ServerMessage {
     @Override
     public String getMessage() {
         ChessBoard board = game.getBoard();
+        ChessPosition startPosition;
 
         String[][] chessBoard = new String[8][8];
         String whitePieceColor = EscapeSequences.SET_TEXT_COLOR_WHITE;

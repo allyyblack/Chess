@@ -2,6 +2,7 @@ package service;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPosition;
 import chess.InvalidMoveException;
 import dataaccess.DataAccess;
 import dataaccess.UnauthorizedAccessException;
@@ -214,5 +215,9 @@ public class ChessService {
 
     public boolean isGameEnded(int gameId) throws DataAccessException {
         return dataAccess.isGameEnded(gameId);
+    }
+
+    public Collection<ChessMove> validMoves(ChessPosition position, int gameId) throws DataAccessException {
+        return dataAccess.getValidMoves(position, gameId);
     }
 }
