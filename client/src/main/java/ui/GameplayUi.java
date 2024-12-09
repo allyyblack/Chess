@@ -6,8 +6,6 @@ import dataaccess.DataAccessException;
 import dataaccess.UnauthorizedAccessException;
 import model.GameData;
 import model.PlayerGame;
-import service.ChessService;
-import dataaccess.MySqlDataAccess;
 
 
 
@@ -26,7 +24,6 @@ public class GameplayUi extends ClientUI {
     private final NotificationHandler notificationHandler;
     private final String serverUrl = "http://localhost:8080";
     private final PlayerGame playergame;
-    private ChessService service;
 
 
     public GameplayUi(String authToken, GameData gameData, String color, NotificationHandler notificationHandler, WebSocketFacade ws) {
@@ -36,7 +33,6 @@ public class GameplayUi extends ClientUI {
         this.color = color;
         this.gameData = gameData;
         this.ws = ws;
-        this.service = new ChessService(new MySqlDataAccess());
         ChessGame game = gameData.game();
         board = game.getBoard();
         playergame = new PlayerGame(color, gameData.gameID());
@@ -106,7 +102,7 @@ public class GameplayUi extends ClientUI {
             } else {
                 System.out.println("No WebSocket connection found.");
             }
-            service.leave(playergame, authToken);
+            server.leave(playergame, authToken);
             System.out.println("You have successfully left the game.");
             return "You have successfully left the game.\n";
         } catch (Exception e) {
@@ -138,7 +134,7 @@ public class GameplayUi extends ClientUI {
                     return "Move not successful";
                 }
                 ChessMove move = convertToChessMove(position, destination, promotionPiece);
-                service.makeMove(move, gameData.gameID(), authToken);
+                server.makeMove(move, gameData.gameID(), authToken);
                 return "Move successful!";
             } else {
                 throw new IllegalArgumentException("Invalid number of parameters. Expected start and end positions, with an optional promotion piece.");

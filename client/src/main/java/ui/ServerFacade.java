@@ -1,9 +1,8 @@
 package ui;
+import chess.ChessMove;
 import com.google.gson.Gson;
-import model.AuthData;
-import model.GameData;
-import model.PlayerGame;
-import model.UserData;
+import model.*;
+
 import java.io.*;
 import java.net.*;
 import java.util.Collection;
@@ -36,7 +35,6 @@ public class ServerFacade {
         return this.makeRequest("POST", path, gameData, GameData.class, authToken);
     }
 
-
     public Collection<GameData> listGames(String authToken) throws ResponseException {
         var path = "/game";
         record ListGameResponse(Collection<GameData> games) {
@@ -53,6 +51,17 @@ public class ServerFacade {
     public PlayerGame joinGame(PlayerGame playerGame, String authToken) throws ResponseException {
         var path = "/game";
         return this.makeRequest("PUT", path, playerGame, PlayerGame.class, authToken);
+    }
+
+    public void leave(PlayerGame playergame, String authToken) throws ResponseException {
+        var path = "/leave";
+        this.makeRequest("POST", path, playergame, null, authToken);
+    }
+
+    public void makeMove(ChessMove move, int i, String authToken) throws ResponseException {
+        var path = "/makeMove";
+
+        this.makeRequest("POST", path, new Move(move, i), null, authToken);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ResponseException {

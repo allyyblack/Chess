@@ -2,9 +2,9 @@ package server;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import dataaccess.MemoryDataAccess;
 import dataaccess.MySqlDataAccess;
 import dataaccess.UnauthorizedAccessException;
+import model.Move;
 import spark.*;
 import service.ChessService;
 import model.GameData;
@@ -49,12 +49,47 @@ public class Server {
         Spark.get("/game", this::listGames);
         Spark.delete("/db", this::clearApplication);
         Spark.put("/game", this::joinGame);
+        Spark.post("/leave", this::leaveGame);
+        Spark.post("/makeMove", this::makeMove);
+
 
         Spark.awaitInitialization();
         return Spark.port();
     }
 
-//    Joins game given a valid authToken, player color, and gameID
+    private Object makeMove(Request req, Response res) {
+        try {
+            String authToken = req.headers("Authorization");
+            var move = new Gson().fromJson(req.body(), Move.class);
+            service.makeMove(move.getMove(), move.getGameId(), authToken);
+            res.status(200);
+            return new Gson().toJson(Map.of("message", "Made move"));
+        } catch (UnauthorizedAccessException e) {
+            res.status(401);
+            return new Gson().toJson(Map.of("message", "Error: unauthorized"));
+        } catch (Exception e) {
+            res.status(500);
+            return new Gson().toJson(Map.of("message", "Error: internal server error"));
+        }
+    }
+
+    private Object leaveGame(Request req, Response res) {
+        try {
+            String authToken = req.headers("Authorization");
+            var playerGame = new Gson().fromJson(req.body(), PlayerGame.class);
+            service.leave(playerGame, authToken);
+            res.status(200);
+            return new Gson().toJson(Map.of("message", "Left Game"));
+        } catch (UnauthorizedAccessException e) {
+            res.status(401);
+            return new Gson().toJson(Map.of("message", "Error: unauthorized"));
+        } catch (Exception e) {
+            res.status(500);
+            return new Gson().toJson(Map.of("message", "Error: internal server error"));
+        }
+    }
+
+    //    Joins game given a valid authToken, player color, and gameID
     private Object joinGame(Request req, Response res) {
         try {
             var playerGame = new Gson().fromJson(req.body(), PlayerGame.class);
@@ -148,7 +183,7 @@ public class Server {
     }
 
 //    registers user with a username, password, and email
-    private Object register(Request req, Response res) throws DataAccessException {
+    private Object register(Request req, Response res) {
         try {
             var registerInfo = new Gson().fromJson(req.body(), UserData.class);
             if (registerInfo.username() == null || registerInfo.username().isEmpty() ||
@@ -175,7 +210,7 @@ public class Server {
     }
 
 //    logs in user with valid username and password
-    private Object login(Request req, Response res) throws DataAccessException {
+    private Object login(Request req, Response res) {
         try {
             var loginInfo = new Gson().fromJson(req.body(), UserData.class);
             var authData = service.login(loginInfo.username(), loginInfo.password());
