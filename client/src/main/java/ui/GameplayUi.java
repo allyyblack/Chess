@@ -2,15 +2,13 @@ package ui;
 
 import java.util.Arrays;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
+import dataaccess.DataAccessException;
+import dataaccess.UnauthorizedAccessException;
 import model.GameData;
 import model.PlayerGame;
-import ui.NotificationHandler;
-import ui.ServerFacade;
-import ui.WebSocketFacade;
+import service.ChessService;
+import dataaccess.MySqlDataAccess;
 
 
 
@@ -29,7 +27,7 @@ public class GameplayUi extends ClientUI {
     private final NotificationHandler notificationHandler;
     private final String serverUrl = "http://localhost:8080";
     private final PlayerGame playergame;
-
+    private ChessService service;
 
 
     public GameplayUi(String authToken, GameData gameData, String color, NotificationHandler notificationHandler, WebSocketFacade ws) {
@@ -39,15 +37,10 @@ public class GameplayUi extends ClientUI {
         this.color = color;
         this.gameData = gameData;
         this.ws = ws;
+        this.service = new ChessService(new MySqlDataAccess());
         ChessGame game = gameData.game();
         board = game.getBoard();
         playergame = new PlayerGame(color, gameData.gameID());
-        if (color.equalsIgnoreCase("BLACK")) {
-            printBoard(board, false);
-        }
-        else {
-            printBoard(board, true);
-        }
     }
     public String eval(String input) {
         try {
@@ -64,6 +57,10 @@ public class GameplayUi extends ClientUI {
             };
         } catch (ResponseException ex) {
             return ex.getMessage();
+        } catch (UnauthorizedAccessException e) {
+            throw new RuntimeException(e);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -93,6 +90,7 @@ public class GameplayUi extends ClientUI {
             } else {
                 System.out.println("No WebSocket connection found.");
             }
+            service.leave(playergame, authToken);
             System.out.println("You have successfully left the game.");
             return "You have successfully left the game.\n";
         } catch (Exception e) {
@@ -104,14 +102,52 @@ public class GameplayUi extends ClientUI {
 
 
 
-    public String makeMove(String... params) throws ResponseException {
-        if (params.length == 1) {
-            var position = params[0];
+    public String makeMove(String... params) throws ResponseException, UnauthorizedAccessException, DataAccessException {
+        try {
+            if (ws != null) {
+                ws.makeMove(playergame, authToken);
+            } else {
+                System.out.println("No WebSocket connection found.");
+            }
+            if (params.length == 2 || params.length == 3) {
+                var position = params[0];
+                var destination = params[1];
+                ChessPiece.PieceType promotionPiece = null;
+
+                if (params.length == 3) {
+                    promotionPiece = ChessPiece.PieceType.valueOf(params[2].toUpperCase());
+                }
+                ChessMove move = convertToChessMove(position, destination, promotionPiece);
+                service.makeMove(move, gameData.gameID(), authToken);
+                return "Move successful!";
+            } else {
+                throw new IllegalArgumentException("Invalid number of parameters. Expected start and end positions, with an optional promotion piece.");
+            }
+        } catch (Exception e) {
+            System.err.println("An error occurred while trying to leave the game: " + e.getMessage());
+            e.printStackTrace();
+            throw new ResponseException(500, "An error occurred while trying to leave the game.\n");
         }
-        return ("worked");
     }
 
-    public static void printBoard(ChessBoard board, boolean whiteAtBottom) {
+    public ChessMove convertToChessMove(String start, String end, ChessPiece.PieceType promotionPiece) {
+        ChessPosition startPosition = parsePosition(start);
+        ChessPosition endPosition = parsePosition(end);
+
+        return new ChessMove(startPosition, endPosition, null);
+    }
+
+
+    public ChessPosition parsePosition(String position) {
+            char col = position.charAt(0);
+            int row = Character.getNumericValue(position.charAt(1));
+            int colIndex = col - 'a' + 1;
+            int rowIndex = row;
+            return new ChessPosition(rowIndex, colIndex);
+        }
+
+
+        public static void printBoard(ChessBoard board, boolean whiteAtBottom) {
         String[][] chessBoard = new String[8][8];
         String whitePieceColor = SET_TEXT_COLOR_WHITE;
         String blackPieceColor = SET_TEXT_COLOR_BLACK;

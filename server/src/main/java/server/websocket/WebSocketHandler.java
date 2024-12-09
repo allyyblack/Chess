@@ -43,11 +43,22 @@ public class WebSocketHandler {
         }
     }
 
-    private void makeMove(String authToken, int gameID) throws IOException {
-////        var sendBoard = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, board);
-//        var message = String.format("%s made the move FILL IN", authToken);
-//        var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-////        connections.broadcastToGame(authToken, notification, message);
+    private void makeMove(String authToken, int gameId) throws IOException, DataAccessException {
+//        var sendBoard = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, board);
+        String user = service.getUser(authToken);
+
+        var message = String.format("%s made the move FILL IN", user);
+        var sendToAllUsersIncludingCurrent = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), true); //FIXME change true to whether white or black
+        var allOtherUsers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+
+        connections.broadcastToGame(null, sendToAllUsersIncludingCurrent);
+        connections.broadcastToGame(user, allOtherUsers);
+
+        // FIXME If the move results in check, checkmate or stalemate the server sends a Notification message to all clients.
+        //                 var checkMessage = String.format("move results in check, checkmate, or stalemate")
+        //                 var everrrbody = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, checkMessage);
+        //         connections.broadcastToGame(null, everrrbody);
+
 
     }
 
@@ -55,7 +66,7 @@ public class WebSocketHandler {
         String user = service.getUser(authToken);
         connections.joinGame(user, gameId, session);
         var message = String.format("%s joined the game as %s", user, service.getgame(gameId).blackUsername()); //FIXME add in what color is joining or observer
-        var m = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameId);
+        var m = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), true); //FIXME change true to whether white or black
         var all = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
 
         connections.broadcastToUser(user, m);
@@ -70,18 +81,4 @@ public class WebSocketHandler {
 
         connections.broadcastToGame(user, m);
     }
-
-//    private void enter(String visitorName, Session session) throws IOException {
-//        connections.add(visitorName, session);
-//        var message = String.format("%s is in the shop", visitorName);
-//        var notification = new Notification(Notification.Type.ARRIVAL, message);
-//        connections.broadcast(visitorName, notification);
-//    }
-
-//    private void exit(String visitorName) throws IOException {
-//        connections.remove(visitorName);
-//        var message = String.format("%s left the shop", visitorName);
-//        var notification = new Notification(Notification.Type.DEPARTURE, message);
-//        connections.broadcast(visitorName, notification);
-//    }
 }

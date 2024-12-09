@@ -2,6 +2,7 @@
 package server.websocket;
 
 import chess.ChessMove;
+import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
@@ -38,6 +39,10 @@ public class ConnectionManager {
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
                 if (!c.user.equals(excludeVisitorName)) {
+                    if (message.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
+                        message = new Gson().fromJson(message.toString(), LoadGameMessage.class);
+                    }
+                    // check if message
                     c.send(message.toString());
                 }
             } else {
@@ -56,7 +61,12 @@ public class ConnectionManager {
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
                 if (c.user.equals(user)) {
+                    if (m.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
+                        m = new Gson().fromJson(m.toString(), LoadGameMessage.class);
+
+                    }
                     c.send(m.toString());
+
                 }
             } else {
                 removeList.add(c);

@@ -3,6 +3,7 @@ package ui;
 import chess.ChessGame;
 import model.GameData;
 import ui.NotificationHandler;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
@@ -68,10 +69,12 @@ public class Repl implements NotificationHandler {
 
     public void notify(ServerMessage notification) {
         System.out.println(SET_TEXT_COLOR_RED + notification.getMessage());
+
         printPrompt();
+
     }
 
     private void printPrompt() {
-        System.out.print("\n" + RESET_TEXT_COLOR + ">>> " + SET_TEXT_COLOR_GREEN);
+        System.out.print("\n" + RESET_TEXT_COLOR + ">>> " + SET_TEXT_COLOR_GREEN + "\n");
     }
 }

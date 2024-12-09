@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import model.PlayerGame;
 import ui.ResponseException;
 import websocket.commands.UserGameCommand;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 
 import javax.websocket.*;
@@ -38,7 +39,13 @@ public class WebSocketFacade extends Endpoint {
                 @Override
                 public void onMessage(String message) {
                     ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
-                    notificationHandler.notify(serverMessage);
+                    if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
+                        LoadGameMessage m = new Gson().fromJson(message, LoadGameMessage.class);
+                        notificationHandler.notify(m);
+
+                    } else {
+                        notificationHandler.notify(serverMessage);
+                    }
                 }
             });
         } catch (URISyntaxException ex) {
@@ -67,6 +74,15 @@ public class WebSocketFacade extends Endpoint {
     public void leave(PlayerGame playerGame, String authToken) throws ResponseException {
         try {
             var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, playerGame.gameID());
+            this.session.getBasicRemote().sendText((new Gson().toJson(command)));
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+      }
+
+    public void makeMove(PlayerGame playerGame, String authToken) throws ResponseException {
+        try {
+            var command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, playerGame.gameID());
             this.session.getBasicRemote().sendText((new Gson().toJson(command)));
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());

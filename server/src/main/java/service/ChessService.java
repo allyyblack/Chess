@@ -104,18 +104,16 @@ public class ChessService {
             throw new DataAccessException("Game not found for gameID: " + playerGame.gameID());
         }
 
-        if (authToken.equals(gameData.whiteUsername())) {
+        if (authData.username().equals(gameData.whiteUsername())) {
             gameData = gameData.withWhiteUsername(null);
             dataAccess.removeUser(gameData.gameID(), playerGame.playerColor());
-            System.out.println("Player with authToken " + authToken + " left as white player.");
         }
         else if (authToken.equals(gameData.blackUsername())) {
             // Create a new GameData instance with black player removed
             gameData = gameData.withBlackUsername(null);
             dataAccess.removeUser(gameData.gameID(), playerGame.playerColor());
-            System.out.println("Player with authToken " + authToken + " left as black player.");
         } else {
-            throw new DataAccessException("Player with authToken " + authToken + " is not part of this game.");
+            throw new DataAccessException(authData.username() + " is not part of this game.");
         }
     }
 
