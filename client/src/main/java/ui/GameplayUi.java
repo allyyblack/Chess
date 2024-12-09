@@ -1,8 +1,6 @@
 package ui;
 
 import java.util.Arrays;
-import java.util.Collection;
-
 import chess.*;
 import dataaccess.DataAccessException;
 import dataaccess.UnauthorizedAccessException;
