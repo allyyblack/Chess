@@ -104,16 +104,19 @@ public class WebSocketHandler {
                 var everrrbody = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, checkMessage);
                 connections.broadcastToGame(null, gameId, everrrbody);
             }
+            // FIXME If the move results in check, checkmate or stalemate the server sends a Notification message to all clients.
+
             if (isInCheckMate) {
+                //                 var checkMessage = String.format("move results in check, checkmate, or stalemate")
+
                 var checkmateMessage = String.format("move results in checkmate");
                 var everrrbody = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, checkmateMessage);
+                //                 var everrrbody = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, checkMessage);
+
                 connections.broadcastToGame(null, gameId, everrrbody);
             }
 
 
-            // FIXME If the move results in check, checkmate or stalemate the server sends a Notification message to all clients.
-            //                 var checkMessage = String.format("move results in check, checkmate, or stalemate")
-            //                 var everrrbody = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, checkMessage);
             //         connections.broadcastToGame(null, everrrbody);
 
         }

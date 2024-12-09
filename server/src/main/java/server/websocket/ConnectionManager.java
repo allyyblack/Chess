@@ -21,14 +21,6 @@ public class ConnectionManager {
         connections.put(user, connection);
     }
 
-    public static boolean isUserInGame(String user, int gameId) {
-        var gameList = GAME_CONNECTIONS.get(gameId);
-        if (gameList == null) {
-            return false;
-        }
-        return gameList.stream().anyMatch(connection -> connection.user.equals(user));
-    }
-
 
     public void leaveGame(String user, int gameId) {
         var gameList = GAME_CONNECTIONS.get(gameId);

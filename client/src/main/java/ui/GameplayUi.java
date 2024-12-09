@@ -1,6 +1,8 @@
 package ui;
 
 import java.util.Arrays;
+import java.util.Collection;
+
 import chess.*;
 import model.GameData;
 import model.PlayerGame;
@@ -53,13 +55,13 @@ public class GameplayUi extends ClientUI {
         }
     }
 
-//    public String highlightMoves(String... params) throws ResponseException {
-//        if (params.length == 1) {
-//            var position = params[0];
-//            Collection<ChessMove> validMove = service.validMoves(parsePosition(position), gameData.gameID());
-//        }
-//
-//    }
+    public String highlightMoves(String... params) throws ResponseException {
+        if (params.length == 1) {
+            var position = params[0];
+            Collection<ChessMove> validMove;
+        }
+        return null;
+    }
 
     public String redrawBoard(String... params) throws ResponseException {
         try {
