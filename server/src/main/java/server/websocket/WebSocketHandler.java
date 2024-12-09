@@ -9,6 +9,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.UserGameCommand;
 import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 import service.ChessService;
 
@@ -33,16 +34,15 @@ public class WebSocketHandler {
             case CONNECT -> connect(action.getAuthToken(), action.getGameID(), session);
             case MAKE_MOVE -> makeMove(action.getAuthToken(), action.getGameID());
             case LEAVE -> leave(action.getAuthToken(), action.getGameID());
-            case ERROR -> error(action.getAuthToken(), action.getGameID(), session);
 //            case RESIGN -> resign(action.user);
         }
     }
 
     private void makeMove(String authToken, int gameID) throws IOException {
-//        var sendBoard = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, board);
-        var message = String.format("%s made the move FILL IN", authToken);
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-//        connections.broadcastToGame(authToken, notification, message);
+////        var sendBoard = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, board);
+//        var message = String.format("%s made the move FILL IN", authToken);
+//        var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+////        connections.broadcastToGame(authToken, notification, message);
 
     }
 
@@ -50,24 +50,20 @@ public class WebSocketHandler {
         String user = service.getUser(authToken);
         connections.joinGame(user, gameId, session);
         var message = String.format("%s joined the game", user);
-        var m = new LoadGameMessage(ServerMessage.ServerMessageType.NOTIFICATION, message, null);
-        connections.broadcastToGame(user, gameId, m);
-    }
-    public void error(String authToken, int gameId, Session session) throws DataAccessException, IOException {
-        String user = service.getUser(authToken);
-        connections.joinGame(user, gameId, session);
-        var message = String.format("%s joined the game", user);
-        var m = new LoadGameMessage(ServerMessage.ServerMessageType.ERROR, "There was an error", null);
-        connections.broadcastToGame(user, gameId, m);
+        var m = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameId);
+        var all = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+
+        connections.broadcastToUser(user, m);
+        connections.broadcastToGame(user, all);
     }
 
     public void leave(String authToken, int gameId) throws IOException, DataAccessException {
-        connections.leaveGame(authToken, gameId);
-        String user = service.getUser(authToken);
-        var message = String.format("%s left the game", user);
-        var m = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-
-        connections.broadcastToGame(user, gameId, m);
+//        connections.leaveGame(authToken, gameId);
+//        String user = service.getUser(authToken);
+//        var message = String.format("%s left the game", user);
+//        var m = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+//
+//        connections.broadcastToGame(user, m);
     }
 
 //    private void enter(String visitorName, Session session) throws IOException {

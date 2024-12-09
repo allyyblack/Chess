@@ -3,6 +3,7 @@ package server.websocket;
 
 import chess.ChessMove;
 import org.eclipse.jetty.websocket.api.Session;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 
@@ -32,18 +33,30 @@ public class ConnectionManager {
         connections.remove(user); // Remove player globally
     }
 
-    public void broadcastToGame(String excludeVisitorName, int gameID, ServerMessage message) throws IOException {
+    public void broadcastToGame(String excludeVisitorName, ServerMessage message) throws IOException {
         var removeList = new ArrayList<Connection>();
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
                 if (!c.user.equals(excludeVisitorName)) {
                     c.send(message.toString());
                 }
-                else {
-                    if (gameID == 1) {
-                        c.send(new LoadGameMessage(ServerMessage.ServerMessageType.ERROR, null, null).toString());
-                    }
-                    c.send(new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, null, gameID).toString());
+            } else {
+                removeList.add(c);
+            }
+        }
+
+        // Clean up any connections that were left open.
+        for (var c : removeList) {
+            connections.remove(c.user);
+        }
+    }
+
+    public void broadcastToUser(String user, ServerMessage m) throws IOException {
+        var removeList = new ArrayList<Connection>();
+        for (var c : connections.values()) {
+            if (c.session.isOpen()) {
+                if (c.user.equals(user)) {
+                    c.send(m.toString());
                 }
             } else {
                 removeList.add(c);
