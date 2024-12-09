@@ -62,13 +62,16 @@ public class GameplayUi extends ClientUI {
 //    }
 
     public String redrawBoard(String... params) throws ResponseException {
-        if (color.equalsIgnoreCase("WHITE")) {
-            printBoard(board, true);
+        try {
+            if (ws != null) {
+                ws.redrawBoard(playergame, authToken);
+            } else {
+                System.out.println("No WebSocket connection found.");
+            }
+        } catch (ResponseException e) {
+            return "Redraw board not successful";
         }
-        else {
-            printBoard(board, false);
-        }
-        return String.format("Board redrawn");
+        return "Redrew board";
     }
 
     public String resign(String... params) {
@@ -158,6 +161,8 @@ public class GameplayUi extends ClientUI {
 
 
         public static void printBoard(ChessBoard board, boolean whiteAtBottom) {
+
+
         String[][] chessBoard = new String[8][8];
         String whitePieceColor = SET_TEXT_COLOR_WHITE;
         String blackPieceColor = SET_TEXT_COLOR_BLACK;
