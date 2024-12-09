@@ -207,4 +207,12 @@ public class ChessService {
         }
         dataAccess.deleteAuth(authData);
     }
+
+    public void endGame(int gameId) throws DataAccessException {
+        dataAccess.endGame(gameId);
+    }
+
+    public boolean isGameEnded(int gameId) throws DataAccessException {
+        return dataAccess.isGameEnded(gameId);
+    }
 }

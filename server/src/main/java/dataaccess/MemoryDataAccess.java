@@ -158,5 +158,15 @@ public class MemoryDataAccess implements DataAccess{
     public void removeUser(int id, String color) throws DataAccessException {
 
     }
+
+    @Override
+    public void endGame(int gameID) throws DataAccessException {
+
+    }
+
+    @Override
+    public boolean isGameEnded(int gameID) throws DataAccessException {
+        return false;
+    }
 }
 

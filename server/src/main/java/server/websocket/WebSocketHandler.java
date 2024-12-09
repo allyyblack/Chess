@@ -152,8 +152,14 @@ public class WebSocketHandler {
     }
 
     public void resign(String authToken, int gameId) throws IOException, DataAccessException {
-        String color = service.getUserColor(gameId, authToken);
+        ChessGame game = service.getgame(gameId).game();
         String user = service.getUser(authToken);
+        if(service.isGameEnded(gameId)) {
+            var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: You can't resign a finished game");
+            connections.broadcastToUser(user, error);
+            return;
+        }
+        String color = service.getUserColor(gameId, authToken);
         if (!color.equalsIgnoreCase("BLACK") && !color.equalsIgnoreCase("WHITE")) {
             var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: You can't resign as an observer");
             connections.broadcastToUser(user, error);
@@ -162,5 +168,6 @@ public class WebSocketHandler {
         var message = String.format("%s resigned the game", user);
         var m = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.broadcastToGame(null, gameId, m);
+        service.endGame(gameId);
     }
 }

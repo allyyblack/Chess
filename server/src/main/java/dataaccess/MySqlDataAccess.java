@@ -216,6 +216,43 @@ public class MySqlDataAccess implements DataAccess {
 
     }
 
+    public void endGame(int gameID) throws DataAccessException {
+        String statement = "UPDATE games SET gameStatus = 'FINISHED' WHERE gameID = ?";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setInt(1, gameID);
+                int rowsAffected = ps.executeUpdate();
+                if (rowsAffected == 0) {
+                    throw new DataAccessException("No game found with the provided gameID.");
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error updating game status: " + e.getMessage());
+        }
+    }
+
+    public boolean isGameEnded(int gameID) throws DataAccessException {
+        String query = "SELECT gameStatus FROM games WHERE gameID = ?";
+
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var ps = conn.prepareStatement(query)) {
+                ps.setInt(1, gameID);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        String status = rs.getString("gameStatus");
+                        return "FINISHED".equalsIgnoreCase(status);
+                    } else {
+                        throw new DataAccessException("No game found with the provided gameID.");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error checking game status: " + e.getMessage());
+        }
+    }
+
+
+
     public void removeUser(int gameID, String color) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             String updateStatement;
@@ -379,6 +416,7 @@ public class MySqlDataAccess implements DataAccess {
             `whiteUsername` VARCHAR(50) DEFAULT NULL,
             `blackUsername` VARCHAR(50) DEFAULT NULL,
             `gameName` VARCHAR(100) NOT NULL,
+            `gameStatus` ENUM('ONGOING', 'CHECKMATE', 'STALEMATE', 'DRAW') DEFAULT 'ONGOING',
             `game` TEXT NOT NULL, -- This can hold the serialized ChessGame data
              PRIMARY KEY (`gameID`),
             FOREIGN KEY (`whiteUsername`) REFERENCES users(`username`) ON DELETE SET NULL,

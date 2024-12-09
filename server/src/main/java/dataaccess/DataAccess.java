@@ -47,4 +47,9 @@ public interface DataAccess {
     void deleteAuth(AuthData authToken) throws DataAccessException;
 
     void removeUser(int id, String color) throws DataAccessException;
-}
+
+    void endGame(int gameID) throws DataAccessException;
+
+    boolean isGameEnded(int gameID) throws DataAccessException;
+
+    }

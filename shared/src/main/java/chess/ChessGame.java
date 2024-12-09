@@ -13,10 +13,12 @@ import java.util.Collection;
 public class ChessGame {
     private TeamColor team;
     private ChessBoard board = new ChessBoard();
+    public boolean gameOver;
 
     public ChessGame() {
         board.resetBoard();
         team = TeamColor.WHITE;
+        setGameOver(false);
     }
 
     /**
@@ -31,6 +33,11 @@ public class ChessGame {
      *
      * @param team the team whose turn it is
      */
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
+    }
+
     public void setTeamTurn(TeamColor team) {
         this.team = team;
     }
