@@ -114,27 +114,27 @@ public class MySqlDataAccess implements DataAccess {
     public GameData makeMove(ChessMove move, int gameID) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT game FROM games WHERE gameID = ?";
-            ChessGame chessGame = null;
+            ChessGame game = null;
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setInt(1, gameID);
-                try (var rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        String gameJson = rs.getString("game");
+                try (var resu = ps.executeQuery()) {
+                    if (resu.next()) {
+                        String gameJson = resu.getString("game");
                         var serializer = new Gson();
-                        chessGame = serializer.fromJson(gameJson, ChessGame.class);
+                        game = serializer.fromJson(gameJson, ChessGame.class);
                     }
                 }
             }
-            if (chessGame == null) {
+            if (game == null) {
                 throw new DataAccessException("Game not found for gameID: " + gameID);
             }
             try {
-                chessGame.makeMove(move);
+                game.makeMove(move);
             } catch (InvalidMoveException e) {
                 throw new DataAccessException("Invalid move: " + e.getMessage());
             }
             var serializer = new Gson();
-            String updatedGameJson = serializer.toJson(chessGame);
+            String updatedGameJson = serializer.toJson(game);
             statement = "UPDATE games SET game = ? WHERE gameID = ?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, updatedGameJson);
@@ -238,9 +238,9 @@ public class MySqlDataAccess implements DataAccess {
             ChessGame chessGame = null;
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setInt(1, gameID);
-                try (var rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        String gameJson = rs.getString("game");
+                try (var res = ps.executeQuery()) {
+                    if (res.next()) {
+                        String gameJson = res.getString("game");
                         var serializer = new Gson();
                         chessGame = serializer.fromJson(gameJson, ChessGame.class);
                     }
