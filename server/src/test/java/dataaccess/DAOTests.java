@@ -1,8 +1,7 @@
 package dataaccess;
 
-import chess.ChessGame;
 import model.AuthData;
-import model.GameData;
+import model.Game_Data;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -40,7 +39,7 @@ public class DAOTests {
         AuthData authData = mySqlDataAccess.createAuth("usernameee");
         mySqlDataAccess.createGame("name");
         mySqlDataAccess.createGame("name2");
-        Collection<GameData> games = mySqlDataAccess.listGames();
+        Collection<Game_Data> games = mySqlDataAccess.listGames();
         Assertions.assertTrue(games.stream().anyMatch(game -> game.gameName().equals("name")), "Game 'name' should be in the list");
     }
 
@@ -70,7 +69,7 @@ public class DAOTests {
         ChessService service = new ChessService(mySqlDataAccess);
         String gameName = "Test Game";
         AuthData validAuthToken = mySqlDataAccess.createAuth("username");
-        GameData gameData = service.createGame(gameName, validAuthToken.authToken());
+        Game_Data gameData = service.createGame(gameName, validAuthToken.authToken());
 
         Assertions.assertEquals(gameName, gameData.gameName(), "Game name should match the provided name");
     }
@@ -131,8 +130,8 @@ public class DAOTests {
     @DisplayName("Get Game")
     public void testGetGameSuccess() throws DataAccessException {
         MySqlDataAccess mySqlDataAccess = new MySqlDataAccess();
-        GameData createdGame = mySqlDataAccess.createGame("test"); // Assuming createGame returns the created GameData with an assigned ID
-        GameData retrievedGame = mySqlDataAccess.getGame(createdGame.gameID());
+        Game_Data createdGame = mySqlDataAccess.createGame("test"); // Assuming createGame returns the created GameData with an assigned ID
+        Game_Data retrievedGame = mySqlDataAccess.getGame(createdGame.gameID());
         Assertions.assertNotNull(retrievedGame, "Retrieved game should not be null");
     }
 
@@ -140,7 +139,7 @@ public class DAOTests {
     @DisplayName("Get Game Not Found")
     public void testGetGameFailure() throws DataAccessException {
         MySqlDataAccess mySqlDataAccess = new MySqlDataAccess();
-        GameData retrievedGame = mySqlDataAccess.getGame(9999);
+        Game_Data retrievedGame = mySqlDataAccess.getGame(9999);
         Assertions.assertNull(retrievedGame, "Retrieved game should be null for a nonexistent game ID");
     }
 
@@ -151,10 +150,10 @@ public class DAOTests {
         UserData userData = new UserData("username", "password", "email");
         mySqlDataAccess.createUser(userData);
         AuthData authData = mySqlDataAccess.createAuth("username");
-        GameData createdGame = mySqlDataAccess.createGame("test");
+        Game_Data createdGame = mySqlDataAccess.createGame("test");
         int gameID = createdGame.gameID();
         mySqlDataAccess.updateGame(gameID, authData.authToken(), "WHITE");
-        GameData updatedGame = mySqlDataAccess.getGame(gameID);
+        Game_Data updatedGame = mySqlDataAccess.getGame(gameID);
         Assertions.assertEquals(userData.username(), updatedGame.whiteUsername(), "The white player's username should match");
     }
 
@@ -164,7 +163,7 @@ public class DAOTests {
         MySqlDataAccess mySqlDataAccess = new MySqlDataAccess();
         UserData userData = new UserData("USERUSER", "password", "email");
         mySqlDataAccess.createUser(userData);
-        GameData createdGame = mySqlDataAccess.createGame("test");
+        Game_Data createdGame = mySqlDataAccess.createGame("test");
         int gameID = createdGame.gameID();
         String invalidAuthToken = null;
         assertThrows(DataAccessException.class, () -> {

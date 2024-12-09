@@ -3,7 +3,7 @@ package service;
 import dataaccess.MemoryDataAccess;
 import dataaccess.UnauthorizedAccessException;
 import model.AuthData;
-import model.GameData;
+import model.Game_Data;
 import model.PlayerGame;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
@@ -131,7 +131,7 @@ public class ServiceTests {
         AuthData authData = service.login(username, password);
         service.createGame("gameName", authData.authToken());
         service.createGame("gameName2", authData.authToken());
-        Collection<GameData> games = service.listGames(authData.authToken());
+        Collection<Game_Data> games = service.listGames(authData.authToken());
         Assertions.assertEquals(2, games.size(), "There should be 2 games in the list");
     }
 
@@ -147,7 +147,7 @@ public class ServiceTests {
         AuthData authData = service.login(username, password);
         service.createGame("gameName", authData.authToken());
         service.createGame("gameName2", authData.authToken());
-        Collection<GameData> games = service.listGames(authData.authToken());
+        Collection<Game_Data> games = service.listGames(authData.authToken());
         Assertions.assertThrows(UnauthorizedAccessException.class, () -> {
             service.listGames("invalid authToken");
         });
@@ -161,7 +161,7 @@ public class ServiceTests {
         ChessService service = new ChessService(memoryDataAccess);
         String gameName = "Test Game";
         AuthData validAuthToken = memoryDataAccess.createAuth("username");
-        GameData gameData = service.createGame(gameName, validAuthToken.authToken());
+        Game_Data gameData = service.createGame(gameName, validAuthToken.authToken());
 
         Assertions.assertEquals(gameName, gameData.gameName(), "Game name should match the provided name");
     }
@@ -190,10 +190,10 @@ public class ServiceTests {
         String gameName = "gamename";
         service.register(username, password, email);
         AuthData authData = service.login(username, password);
-        GameData gameData = service.createGame(gameName, authData.authToken());
+        Game_Data gameData = service.createGame(gameName, authData.authToken());
         PlayerGame playerGame = new PlayerGame("BLACK", gameData.gameID());
         service.joinGame(playerGame, authData.authToken());
-        GameData updatedGame = memoryDataAccess.getGame(gameData.gameID());
+        Game_Data updatedGame = memoryDataAccess.getGame(gameData.gameID());
         Assertions.assertEquals(authData.username(), updatedGame.blackUsername(), "The BLACK player should match the logged-in user.");
     }
 
@@ -208,10 +208,10 @@ public class ServiceTests {
         String gameName = "gamename";
         service.register(username, password, email);
         AuthData authData = service.login(username, password);
-        GameData gameData = service.createGame(gameName, authData.authToken());
+        Game_Data gameData = service.createGame(gameName, authData.authToken());
         PlayerGame playerGame = new PlayerGame("BLACK", gameData.gameID());
         service.joinGame(playerGame, authData.authToken());
-        GameData updatedGame = memoryDataAccess.getGame(gameData.gameID());
+        Game_Data updatedGame = memoryDataAccess.getGame(gameData.gameID());
         assertThrows(DataAccessException.class, () -> {
             service.joinGame(playerGame, authData.authToken());
         });

@@ -1,9 +1,6 @@
 package ui;
 
-import chess.ChessGame;
-import model.GameData;
-import ui.NotificationHandler;
-import websocket.messages.LoadGameMessage;
+import model.Game_Data;
 import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
@@ -22,7 +19,7 @@ public class Repl implements NotificationHandler {
     public void switchToPostLogin(String authToken) {
         client = new PostloginUi(authToken, this);
     }
-    public void switchToGameplayUi(String authToken, GameData game, String color) {
+    public void switchToGameplayUi(String authToken, Game_Data game, String color) {
         var ws = PostloginUi.ws; // Retrieve the WebSocket instance
         client = new GameplayUi(authToken, game, color, this, ws);
     }

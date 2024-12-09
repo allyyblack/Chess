@@ -1,18 +1,12 @@
 package ui;
 
 import chess.ChessGame;
-import com.google.gson.Gson;
-import model.GameData;
+import model.Game_Data;
 import model.PlayerGame;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import ui.NotificationHandler;
-import ui.ServerFacade;
-import ui.WebSocketFacade;
-
-
 
 
 import static ui.EscapeSequences.*;
@@ -20,7 +14,7 @@ import static ui.EscapeSequences.*;
 public class PostloginUi extends ClientUI{
     private final ServerFacade server;
     private String authToken;
-    public static final Map<Integer, GameData> gameMap = new HashMap<>();
+    public static final Map<Integer, Game_Data> gameMap = new HashMap<>();
     public ChessGame game;
     private final NotificationHandler notificationHandler;
     public static WebSocketFacade ws;
@@ -61,7 +55,7 @@ public class PostloginUi extends ClientUI{
     public String createGame(String... params) throws ResponseException {
         if (params.length == 1) {
             var gameName = params[0];
-            var gameData = new GameData(0, null, null, gameName, null);
+            var gameData = new Game_Data(0, null, null, gameName, null);
             gameData = server.createGame(gameData, authToken);
             System.out.println(SET_TEXT_COLOR_YELLOW + "Game " + gameName + " created.");
             game = gameData.game();

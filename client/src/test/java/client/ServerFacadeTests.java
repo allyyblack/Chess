@@ -1,7 +1,7 @@
 package client;
 
 import model.AuthData;
-import model.GameData;
+import model.Game_Data;
 import model.PlayerGame;
 import model.UserData;
 import org.junit.jupiter.api.*;
@@ -81,15 +81,15 @@ public class ServerFacadeTests {
     void createGame() throws Exception {
         var user = new UserData("username", "password", "email");
         AuthData authData = facade.register(user);
-        var game = new GameData(999, "username", null, "gamename", null);
+        var game = new Game_Data(999, "username", null, "gamename", null);
 
-        GameData createdGame = facade.createGame(game, authData.authToken());
+        Game_Data createdGame = facade.createGame(game, authData.authToken());
         assertNotNull(createdGame);
     }
 
     @Test
     void createGameNegative() {
-        var game = new GameData(998, "player4", null, "name", null);
+        var game = new Game_Data(998, "player4", null, "name", null);
         assertThrows(ResponseException.class, () -> facade.createGame(game, "invalidAuthToken"));
     }
     @Test
@@ -97,12 +97,12 @@ public class ServerFacadeTests {
         var user = new UserData("username", "password", "email");
         AuthData authData = facade.register(user);
 
-        var game1 = new GameData(997, "username", null, "game", null);
-        var game2 = new GameData(996, "secondusername", null, "gamee", null);
+        var game1 = new Game_Data(997, "username", null, "game", null);
+        var game2 = new Game_Data(996, "secondusername", null, "gamee", null);
         facade.createGame(game1, authData.authToken());
         facade.createGame(game2, authData.authToken());
 
-        Collection<GameData> games = facade.listGames(authData.authToken());
+        Collection<Game_Data> games = facade.listGames(authData.authToken());
         assertEquals(2, games.size());
     }
     @Test
@@ -115,8 +115,8 @@ public class ServerFacadeTests {
         var user = new UserData("username", "password", "email");
         AuthData authData = facade.register(user);
 
-        var game = new GameData(995, "username", null, "game", null);
-        GameData createdGame = facade.createGame(game, authData.authToken());
+        var game = new Game_Data(995, "username", null, "game", null);
+        Game_Data createdGame = facade.createGame(game, authData.authToken());
 
         var playerGame = new PlayerGame("WHITE" , createdGame.gameID());
         PlayerGame joinedGame = facade.joinGame(playerGame, authData.authToken());

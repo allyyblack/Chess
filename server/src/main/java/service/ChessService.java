@@ -7,7 +7,7 @@ import chess.InvalidMoveException;
 import dataaccess.DataAccess;
 import dataaccess.UnauthorizedAccessException;
 import model.AuthData;
-import model.GameData;
+import model.Game_Data;
 import model.UserData;
 import model.PlayerGame;
 import dataaccess.DataAccessException;
@@ -45,7 +45,7 @@ public class ChessService {
         return dataAccess.createUser(userInfo);
     }
 
-    public GameData createGame(String gameName, String authToken) throws DataAccessException, UnauthorizedAccessException {
+    public Game_Data createGame(String gameName, String authToken) throws DataAccessException, UnauthorizedAccessException {
         AuthData authData = dataAccess.getAuth(authToken);
         if (authData == null) {
             throw new UnauthorizedAccessException("Invalid auth token");
@@ -53,13 +53,13 @@ public class ChessService {
         return dataAccess.createGame(gameName);
     }
 
-    public GameData makeMove(ChessMove move, int gameID, String authToken)
+    public Game_Data makeMove(ChessMove move, int gameID, String authToken)
             throws DataAccessException, UnauthorizedAccessException {
         AuthData authData = dataAccess.getAuth(authToken);
         if (authData == null) {
             throw new UnauthorizedAccessException("Invalid auth token");
         }
-        GameData gameData = dataAccess.getGame(gameID);
+        Game_Data gameData = dataAccess.getGame(gameID);
         if (gameData == null) {
             throw new DataAccessException("Game not found for gameID: " + gameID);
         }
@@ -90,7 +90,7 @@ public class ChessService {
         if(authData == null) {
             return "invalid auth";
         }
-        GameData gameData = dataAccess.getGame(gameId);
+        Game_Data gameData = dataAccess.getGame(gameId);
         if (authData.username().equals(gameData.whiteUsername())) {
             return "WHITE";
         } else if (authData.username().equals(gameData.blackUsername())) {
@@ -140,7 +140,7 @@ public class ChessService {
         if (authData == null) {
             throw new UnauthorizedAccessException("Invalid auth token");
         }
-        GameData gameData = dataAccess.getGame(playerGame.gameID());
+        Game_Data gameData = dataAccess.getGame(playerGame.gameID());
         if (gameData == null) {
             throw new DataAccessException("Game not found for gameID: " + playerGame.gameID());
         }
@@ -162,8 +162,8 @@ public class ChessService {
         dataAccess.clear();
     }
 
-    public GameData getgame(int gameId) throws DataAccessException {
-        GameData game = dataAccess.getGame(gameId);
+    public Game_Data getgame(int gameId) throws DataAccessException {
+        Game_Data game = dataAccess.getGame(gameId);
         return game;
     }
 
@@ -192,7 +192,7 @@ public class ChessService {
     }
 
 
-    public Collection<GameData> listGames(String authToken) throws DataAccessException, UnauthorizedAccessException {
+    public Collection<Game_Data> listGames(String authToken) throws DataAccessException, UnauthorizedAccessException {
         AuthData authData = dataAccess.getAuth(authToken);
         if (authData == null) {
             throw new UnauthorizedAccessException("Invalid auth token");

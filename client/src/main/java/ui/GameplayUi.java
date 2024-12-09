@@ -2,7 +2,7 @@ package ui;
 
 import java.util.Arrays;
 import chess.*;
-import model.GameData;
+import model.Game_Data;
 import model.PlayerGame;
 
 
@@ -15,7 +15,7 @@ import static ui.EscapeSequences.*;
 public class GameplayUi extends ClientUI {
     private final ServerFacade server;
     private String authToken;
-    private GameData gameData;
+    private Game_Data gameData;
     public String color;
     public ChessBoard board;
     public WebSocketFacade ws;
@@ -24,7 +24,7 @@ public class GameplayUi extends ClientUI {
     private final PlayerGame playergame;
 
 
-    public GameplayUi(String authToken, GameData gameData, String color, NotificationHandler notificationHandler, WebSocketFacade ws) {
+    public GameplayUi(String authToken, Game_Data gameData, String color, NotificationHandler notificationHandler, WebSocketFacade ws) {
         this.notificationHandler = notificationHandler;
         this.server = new ServerFacade("http://localhost:8080");
         this.authToken = authToken;

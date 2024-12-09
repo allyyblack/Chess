@@ -3,7 +3,7 @@ package dataaccess;
 import chess.ChessMove;
 import chess.ChessPosition;
 import model.AuthData;
-import model.GameData;
+import model.Game_Data;
 import model.UserData;
 import chess.ChessGame;
 import java.util.*;
@@ -11,7 +11,7 @@ import java.util.*;
 public class MemoryDataAccess implements DataAccess{
     final private Collection<UserData> users = new HashSet<>();
     final private Collection<AuthData> tokens = new HashSet<>();
-    final private Collection<GameData> games = new HashSet<>();
+    final private Collection<Game_Data> games = new HashSet<>();
     private int nextId = 1;
 
 
@@ -56,16 +56,16 @@ public class MemoryDataAccess implements DataAccess{
     }
 
     @Override
-    public GameData createGame(String gameName) {
+    public Game_Data createGame(String gameName) {
         ChessGame game = new ChessGame();
-        GameData data = new GameData(nextId++, null, null, gameName, game);
+        Game_Data data = new Game_Data(nextId++, null, null, gameName, game);
         games.add(data);
         return data;
     }
 
     @Override
-    public GameData getGame(int gameID) throws DataAccessException {
-        for (GameData gameData : games) {
+    public Game_Data getGame(int gameID) throws DataAccessException {
+        for (Game_Data gameData : games) {
             if (Objects.equals(gameData.gameID(), gameID)) {
                 return gameData;
             }
@@ -74,25 +74,25 @@ public class MemoryDataAccess implements DataAccess{
     }
 
     @Override
-    public Collection<GameData> listGames() {
+    public Collection<Game_Data> listGames() {
         return games;
     }
 
     @Override
     public void updateGame(int gameID, String authToken, String color) throws DataAccessException {
-        GameData gameData = getGame(gameID);
+        Game_Data gameData = getGame(gameID);
         if (authToken == null) {
             throw new DataAccessException("authtoken null");
         }
         AuthData authData = getAuth(authToken);
         if (authData != null) {
             if (Objects.equals(color, "WHITE")) {
-                GameData updatedGame = new GameData(gameID, authData.username(), gameData.blackUsername(), gameData.gameName(), gameData.game());
+                Game_Data updatedGame = new Game_Data(gameID, authData.username(), gameData.blackUsername(), gameData.gameName(), gameData.game());
                 games.remove(gameData);
                 games.add(updatedGame);
             }
             if (Objects.equals(color, "BLACK")) {
-                GameData updatedGame = new GameData(gameID, gameData.whiteUsername(), authData.username(), gameData.gameName(), gameData.game());
+                Game_Data updatedGame = new Game_Data(gameID, gameData.whiteUsername(), authData.username(), gameData.gameName(), gameData.game());
                 games.remove(gameData);
                 games.add(updatedGame);
             }
@@ -121,7 +121,7 @@ public class MemoryDataAccess implements DataAccess{
     }
 
     @Override
-    public GameData makeMove(ChessMove move, int gameID) throws DataAccessException {
+    public Game_Data makeMove(ChessMove move, int gameID) throws DataAccessException {
         return null;
     }
 

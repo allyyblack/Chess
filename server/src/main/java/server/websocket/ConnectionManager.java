@@ -1,10 +1,8 @@
 
 package server.websocket;
 
-import chess.ChessMove;
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
-import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 
@@ -14,17 +12,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
     public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<Integer, ArrayList<Connection>> gameConnections = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Integer, ArrayList<Connection>> Game_Connections = new ConcurrentHashMap<>();
 
 
     public void joinGame(String user, int gameId, Session session) {
         var connection = new Connection(user, session);
-        gameConnections.computeIfAbsent(gameId, k -> new ArrayList<>()).add(connection); // Add player to the game
+        Game_Connections.computeIfAbsent(gameId, k -> new ArrayList<>()).add(connection); // Add player to the game
         connections.put(user, connection);
     }
 
     public static boolean isUserInGame(String user, int gameId) {
-        var gameList = gameConnections.get(gameId);
+        var gameList = Game_Connections.get(gameId);
         if (gameList == null) {
             return false;
         }
@@ -33,18 +31,18 @@ public class ConnectionManager {
 
 
     public void leaveGame(String user, int gameId) {
-        var gameList = gameConnections.get(gameId);
+        var gameList = Game_Connections.get(gameId);
         if (gameList != null) {
             gameList.removeIf(c -> c.user.equals(user)); // Remove the player from the game
             if (gameList.isEmpty()) {
-                gameConnections.remove(gameId); // Clean up if the game is empty
+                Game_Connections.remove(gameId); // Clean up if the game is empty
             }
         }
         connections.remove(user); // Remove player globally
     }
 
     public void broadcastToGame(String excludeVisitorName, int gameId, ServerMessage message) throws IOException {
-        var gameList = gameConnections.get(gameId);
+        var gameList = Game_Connections.get(gameId);
         if (gameList == null) {
             return;
         }
@@ -56,9 +54,11 @@ public class ConnectionManager {
                         message = new Gson().fromJson(message.toString(), LoadGameMessage.class);
                     }
                     // check if message
+                    System.out.println(c.user + message.toString());
                     c.send(message.toString());
                 }
             } else {
+                System.out.println("UGH"+c.user);
                 removeList.add(c);
             }
         }

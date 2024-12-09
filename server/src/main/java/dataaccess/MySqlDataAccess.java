@@ -5,7 +5,7 @@ import chess.ChessPosition;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import model.AuthData;
-import model.GameData;
+import model.Game_Data;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -102,16 +102,16 @@ public class MySqlDataAccess implements DataAccess {
     }
 
 
-    public GameData createGame(String gameName) throws DataAccessException {
+    public Game_Data createGame(String gameName) throws DataAccessException {
         var statement = "INSERT INTO games (gameName, whiteUsername, blackUsername, game) VALUES (?, ?, ?, ?)";
         ChessGame game = new ChessGame();
         var serializer = new Gson();
         var json = serializer.toJson(game);
         int gameID = executeUpdate(statement, gameName, null, null, json);
-        return new GameData(gameID, null, null, gameName, game);
+        return new Game_Data(gameID, null, null, gameName, game);
         }
 
-    public GameData makeMove(ChessMove move, int gameID) throws DataAccessException {
+    public Game_Data makeMove(ChessMove move, int gameID) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT game FROM games WHERE gameID = ?";
             ChessGame chessGame = null;
@@ -150,7 +150,7 @@ public class MySqlDataAccess implements DataAccess {
 
 
 
-    public GameData getGame(int gameID) throws DataAccessException {
+    public Game_Data getGame(int gameID) throws DataAccessException {
             try (var conn = DatabaseManager.getConnection()) {
                 var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM games WHERE gameID=?";
                 try (var ps = conn.prepareStatement(statement)) {
@@ -168,8 +168,8 @@ public class MySqlDataAccess implements DataAccess {
     }
 
 
-    public Collection<GameData> listGames() throws DataAccessException {
-        List<GameData> gamesList = new ArrayList<>();
+    public Collection<Game_Data> listGames() throws DataAccessException {
+        List<Game_Data> gamesList = new ArrayList<>();
         String statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM games";
 
         try (var conn = DatabaseManager.getConnection()) {
@@ -183,7 +183,7 @@ public class MySqlDataAccess implements DataAccess {
                         String gameJson = rs.getString("game");
                         var serializer = new Gson();
                         ChessGame chessGame = serializer.fromJson(gameJson, ChessGame.class);
-                        gamesList.add(new GameData(gameID, whiteUsername, blackUsername, gameName, chessGame));
+                        gamesList.add(new Game_Data(gameID, whiteUsername, blackUsername, gameName, chessGame));
                     }
                 }
             }
@@ -379,7 +379,7 @@ public class MySqlDataAccess implements DataAccess {
         var email = rs.getString("email");
         return new UserData(username, passwordHash, email);
     }
-    private GameData readGame(ResultSet rs) throws SQLException {
+    private Game_Data readGame(ResultSet rs) throws SQLException {
         var gameID = rs.getInt("gameID");
         var whiteUsername = rs.getString("whiteUsername");
         var blackUsername = rs.getString("blackUsername");
@@ -387,7 +387,7 @@ public class MySqlDataAccess implements DataAccess {
         var gameJson = rs.getString("game");
         var serializer = new Gson();
         ChessGame chessGame = serializer.fromJson(gameJson, ChessGame.class);
-        return new GameData(gameID,whiteUsername, blackUsername, gameName,chessGame);
+        return new Game_Data(gameID,whiteUsername, blackUsername, gameName,chessGame);
     }
 
 

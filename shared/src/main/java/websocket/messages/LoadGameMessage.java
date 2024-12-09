@@ -1,8 +1,5 @@
 package websocket.messages;
 import chess.*;
-import com.google.gson.Gson;
-
-import java.util.Collection;
 
 
 public class LoadGameMessage extends ServerMessage {
@@ -40,7 +37,7 @@ public class LoadGameMessage extends ServerMessage {
         printColumnHeaders(whiteAtBottom);
         for (int row = 0; row < 8; row++) {
             int displayRow = whiteAtBottom ? 8 - row : row + 1;
-            System.out.print(EscapeSequences.SET_TEXT_COLOR_GREEN + displayRow + " ");
+            System.out.print(EscapeSequences.GREEN + displayRow + " ");
 
             for (int col = 0; col < 8; col++) {
                 boolean isLightSquare = (row + col) % 2 == 0;
@@ -48,7 +45,7 @@ public class LoadGameMessage extends ServerMessage {
                 String bgColor = isLightSquare ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY : EscapeSequences.SET_BG_COLOR_DARK_GREEN;
                 System.out.print(bgColor + chessBoard[row][col] + EscapeSequences.RESET_BG_COLOR);
             }
-            System.out.print(EscapeSequences.SET_TEXT_COLOR_GREEN + " " + displayRow);
+            System.out.print(EscapeSequences.GREEN + " " + displayRow);
             System.out.println();
         }
 
@@ -79,11 +76,11 @@ public class LoadGameMessage extends ServerMessage {
         System.out.print("   ");
         if (whiteAtBottom) {
             for (char letter = 'a'; letter <= 'h'; letter++) {
-                System.out.print(EscapeSequences.SET_TEXT_COLOR_GREEN + " " + letter + " ");
+                System.out.print(EscapeSequences.GREEN + " " + letter + " ");
             }
         } else {
             for (char letter = 'h'; letter >= 'a'; letter--) {
-                System.out.print(EscapeSequences.SET_TEXT_COLOR_GREEN + " " + letter + " ");
+                System.out.print(EscapeSequences.GREEN + " " + letter + " ");
             }
         }
         System.out.println();

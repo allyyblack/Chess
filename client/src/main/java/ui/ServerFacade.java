@@ -30,14 +30,14 @@ public class ServerFacade {
         this.makeRequest("DELETE", path, null, null, authToken);
     }
 
-    public GameData createGame(GameData gameData, String authToken) throws ResponseException {
+    public Game_Data createGame(Game_Data gameData, String authToken) throws ResponseException {
         var path = "/game";
-        return this.makeRequest("POST", path, gameData, GameData.class, authToken);
+        return this.makeRequest("POST", path, gameData, Game_Data.class, authToken);
     }
 
-    public Collection<GameData> listGames(String authToken) throws ResponseException {
+    public Collection<Game_Data> listGames(String authToken) throws ResponseException {
         var path = "/game";
-        record ListGameResponse(Collection<GameData> games) {
+        record ListGameResponse(Collection<Game_Data> games) {
         }
         var response = this.makeRequest("GET", path, null, ListGameResponse.class, authToken);
         return response.games();

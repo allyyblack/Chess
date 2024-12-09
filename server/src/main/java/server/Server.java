@@ -7,7 +7,7 @@ import dataaccess.UnauthorizedAccessException;
 import model.Move;
 import spark.*;
 import service.ChessService;
-import model.GameData;
+import model.Game_Data;
 import model.UserData;
 import model.PlayerGame;
 import dataaccess.DataAccessException;
@@ -134,7 +134,7 @@ public class Server {
         try {
             String authToken = req.headers("Authorization");
             res.status(200);
-            Collection<GameData> games = service.listGames(authToken);
+            Collection<Game_Data> games = service.listGames(authToken);
             return new Gson().toJson(Map.of("games", games));
         } catch (UnauthorizedAccessException e) {
             res.status(401);
@@ -149,9 +149,9 @@ public class Server {
     private Object createGame(Request req, Response res) {
         try {
             String authToken = req.headers("Authorization");
-            var gameInfo = new Gson().fromJson(req.body(), GameData.class);
+            var gameInfo = new Gson().fromJson(req.body(), Game_Data.class);
             String gameName = gameInfo.gameName();
-            GameData gameData = service.createGame(gameName, authToken);
+            Game_Data gameData = service.createGame(gameName, authToken);
             res.status(200);
             return new Gson().toJson(Map.of("gameID", gameData.gameID()));
         } catch (JsonSyntaxException e) {
