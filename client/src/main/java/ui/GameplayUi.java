@@ -2,8 +2,6 @@ package ui;
 
 import java.util.Arrays;
 import chess.*;
-import dataaccess.DataAccessException;
-import dataaccess.UnauthorizedAccessException;
 import model.GameData;
 import model.PlayerGame;
 
@@ -52,10 +50,6 @@ public class GameplayUi extends ClientUI {
             };
         } catch (ResponseException ex) {
             return ex.getMessage();
-        } catch (UnauthorizedAccessException e) {
-            throw new RuntimeException(e);
-        } catch (DataAccessException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -114,7 +108,7 @@ public class GameplayUi extends ClientUI {
 
 
 
-    public String makeMove(String... params) throws ResponseException, UnauthorizedAccessException, DataAccessException {
+    public String makeMove(String... params) throws ResponseException {
         try {
             if (params.length == 2 || params.length == 3) {
                 var position = params[0];
