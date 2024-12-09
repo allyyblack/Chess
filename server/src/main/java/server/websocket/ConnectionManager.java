@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
     public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<Integer, ArrayList<Connection>> gameConnections = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Integer, ArrayList<Connection>> gameConnections = new ConcurrentHashMap<>();
 
 
     public void joinGame(String user, int gameId, Session session) {
@@ -22,6 +22,15 @@ public class ConnectionManager {
         gameConnections.computeIfAbsent(gameId, k -> new ArrayList<>()).add(connection); // Add player to the game
         connections.put(user, connection);
     }
+
+    public static boolean isUserInGame(String user, int gameId) {
+        var gameList = gameConnections.get(gameId);
+        if (gameList == null) {
+            return false;
+        }
+        return gameList.stream().anyMatch(connection -> connection.user.equals(user));
+    }
+
 
     public void leaveGame(String user, int gameId) {
         var gameList = gameConnections.get(gameId);
@@ -34,9 +43,13 @@ public class ConnectionManager {
         connections.remove(user); // Remove player globally
     }
 
-    public void broadcastToGame(String excludeVisitorName, ServerMessage message) throws IOException {
-        var removeList = new ArrayList<Connection>();
-        for (var c : connections.values()) {
+    public void broadcastToGame(String excludeVisitorName, int gameId, ServerMessage message) throws IOException {
+        var gameList = gameConnections.get(gameId);
+        if (gameList == null) {
+            return;
+        }
+            var removeList = new ArrayList<Connection>();
+        for (var c : gameList) {
             if (c.session.isOpen()) {
                 if (!c.user.equals(excludeVisitorName)) {
                     if (message.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
@@ -52,6 +65,7 @@ public class ConnectionManager {
 
         // Clean up any connections that were left open.
         for (var c : removeList) {
+            gameList.remove(c);
             connections.remove(c.user);
         }
     }

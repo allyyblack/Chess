@@ -1,6 +1,7 @@
 
 package server.websocket;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import model.PlayerGame;
@@ -31,9 +32,13 @@ public class WebSocketHandler {
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException, DataAccessException {
         UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
-        // FIXME: VALIDATE AUTH TOKEN AND GAMEID
+        try {
+            String user = service.getUser(action.getAuthToken());
+        } catch (DataAccessException e) {
+                String user = action.getAuthToken();
+            }
+            // FIXME: VALIDATE AUTH TOKEN AND GAMEID
         // IF INVALID, you need to send an errorMessage to the current client
-        // EX: connections.broadcastToUser(currentUser, new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: something bad happened"));
 
         switch (action.getCommandType()) {
             case CONNECT -> connect(action.getAuthToken(), action.getGameID(), session);
@@ -46,13 +51,26 @@ public class WebSocketHandler {
     private void makeMove(String authToken, int gameId) throws IOException, DataAccessException {
 //        var sendBoard = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, board);
         String user = service.getUser(authToken);
+        String otherUser = service.getOtherUser(authToken, gameId);
+        String color = service.getUserColor(gameId, authToken);
+        String otherColor = service.getUserColor(gameId, otherUser);
+        boolean whiteAtBottom = color.equals("WHITE");
 
         var message = String.format("%s made the move FILL IN", user);
-        var sendToAllUsersIncludingCurrent = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), true); //FIXME change true to whether white or black
+        var sendToSelf = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), whiteAtBottom);
+        var sendToOther = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), !whiteAtBottom);
         var allOtherUsers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
 
-        connections.broadcastToGame(null, sendToAllUsersIncludingCurrent);
-        connections.broadcastToGame(user, allOtherUsers);
+        connections.broadcastToUser(user, sendToSelf);
+        connections.broadcastToGame(user, gameId, sendToOther);
+        connections.broadcastToGame(user, gameId, allOtherUsers);
+        ChessGame game = service.getgame(gameId).game();
+        boolean isInCheck = service.isInCheck(game, ChessGame.TeamColor.valueOf(otherColor));
+        if (isInCheck) {
+            var checkMessage = String.format("move results in check");
+            var everrrbody = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, checkMessage);
+            connections.broadcastToGame(null, gameId, everrrbody);
+        }
 
         // FIXME If the move results in check, checkmate or stalemate the server sends a Notification message to all clients.
         //                 var checkMessage = String.format("move results in check, checkmate, or stalemate")
@@ -63,14 +81,31 @@ public class WebSocketHandler {
     }
 
     public void connect(String authToken, int gameId, Session session) throws IOException, DataAccessException {
-        String user = service.getUser(authToken);
+        String user;
+        try {
+            user = service.getUser(authToken);
+        } catch(DataAccessException e) {
+            user = authToken;
+        }
         connections.joinGame(user, gameId, session);
-        var message = String.format("%s joined the game as %s", user, service.getgame(gameId).blackUsername()); //FIXME add in what color is joining or observer
-        var m = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), true); //FIXME change true to whether white or black
+        if (!service.isAuthTokenValid(authToken)) {
+            var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: Not a valid authtoken");
+            connections.broadcastToUser(user, error);
+            return;
+        }
+        if (!service.isGameValid(gameId)) {
+            var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: Not a real game");
+            connections.broadcastToUser(user, error);
+            return;
+        }
+        String color = service.getUserColor(gameId, authToken);
+        boolean whiteAtBottom = color.equals("WHITE");
+        var message = String.format("%s joined the game as %s", user, color);
+        var m = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), whiteAtBottom); //FIXME change true to whether white or black
         var all = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
 
         connections.broadcastToUser(user, m);
-        connections.broadcastToGame(user, all);
+        connections.broadcastToGame(user, gameId, all);
     }
 
     public void leave(String authToken, int gameId) throws IOException, DataAccessException {
@@ -79,6 +114,6 @@ public class WebSocketHandler {
         var message = String.format("%s left the game", user);
         var m = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
 
-        connections.broadcastToGame(user, m);
+        connections.broadcastToGame(user, gameId, m);
     }
 }

@@ -17,6 +17,7 @@ import java.util.Objects;
 
 public class ChessService {
     private final DataAccess dataAccess;
+    private int gameId;
 
     public ChessService(DataAccess dataAccess) {
         this.dataAccess = dataAccess;
@@ -72,6 +73,31 @@ public class ChessService {
         return dataAccess.getGame(gameID);
     }
 
+    public boolean isGameValid(int gameId) throws DataAccessException {
+        this.gameId = gameId;
+        return dataAccess.isGameValid(gameId);
+    }
+
+    public boolean isAuthTokenValid(String authToken) throws DataAccessException {
+        return dataAccess.isAuthTokenValid(authToken);
+    }
+
+
+
+    public String getUserColor(int gameId, String authToken) throws DataAccessException {
+        AuthData authData = dataAccess.getAuth(authToken);
+        GameData gameData = dataAccess.getGame(gameId);
+        if (authData.username().equals(gameData.whiteUsername())) {
+            return "WHITE";
+        } else if (authData.username().equals(gameData.blackUsername())) {
+            return "BLACK";
+        }
+        return "not in the game";
+    }
+
+    public boolean isInCheck(ChessGame game, ChessGame.TeamColor color) {
+        return dataAccess.isInCheck(game, color);
+    }
 
     public void joinGame(PlayerGame playerGame, String authToken) throws DataAccessException, UnauthorizedAccessException {
         AuthData authData = dataAccess.getAuth(authToken);
@@ -127,9 +153,25 @@ public class ChessService {
     }
 
     public String getUser(String authToken) throws DataAccessException {
-        AuthData authData = dataAccess.getAuth(authToken);
-        return authData.username();
+            AuthData authData = dataAccess.getAuth(authToken);
+            if(authData == null) {
+                return "invalid auth";
+            }
+            return authData.username();
     }
+
+    public String getOtherUser(String authToken, int gameId) throws DataAccessException {
+        String blackUser = dataAccess.getGame(gameId).blackUsername();
+        String whiteUser = dataAccess.getGame(gameId).whiteUsername();
+        AuthData authData = dataAccess.getAuth(authToken);
+        if(authData.username().equals(whiteUser)) {
+            return dataAccess.getAuthToken(blackUser);
+        }
+        else{
+            return dataAccess.getAuthToken(whiteUser);
+        }
+    }
+
 
     public Collection<GameData> listGames(String authToken) throws DataAccessException, UnauthorizedAccessException {
         AuthData authData = dataAccess.getAuth(authToken);

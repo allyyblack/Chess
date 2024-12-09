@@ -104,11 +104,6 @@ public class GameplayUi extends ClientUI {
 
     public String makeMove(String... params) throws ResponseException, UnauthorizedAccessException, DataAccessException {
         try {
-            if (ws != null) {
-                ws.makeMove(playergame, authToken);
-            } else {
-                System.out.println("No WebSocket connection found.");
-            }
             if (params.length == 2 || params.length == 3) {
                 var position = params[0];
                 var destination = params[1];
@@ -119,6 +114,11 @@ public class GameplayUi extends ClientUI {
                 }
                 ChessMove move = convertToChessMove(position, destination, promotionPiece);
                 service.makeMove(move, gameData.gameID(), authToken);
+                if (ws != null) {
+                    ws.makeMove(playergame, authToken);
+                } else {
+                    System.out.println("No WebSocket connection found.");
+                }
                 return "Move successful!";
             } else {
                 throw new IllegalArgumentException("Invalid number of parameters. Expected start and end positions, with an optional promotion piece.");

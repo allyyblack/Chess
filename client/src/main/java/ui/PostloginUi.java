@@ -86,6 +86,7 @@ public class PostloginUi extends ClientUI{
                     throw new ResponseException(404, SET_TEXT_COLOR_RED + "Game with ID " + id + " not found.\n");
                 }
                 var playerGame = new PlayerGame(color, game.gameID());
+                server.joinGame(playerGame, authToken);
                 try {
                     ws = new WebSocketFacade(serverUrl, notificationHandler);
                     ws.joinGame(playerGame, authToken);
@@ -94,8 +95,6 @@ public class PostloginUi extends ClientUI{
                     System.err.println("WebSocket connection failed: " + e.getMessage());
                     e.printStackTrace();
                 }
-                server.joinGame(playerGame, authToken);
-
                 System.out.println(SET_TEXT_COLOR_GREEN + "Successfully joined game " + game.gameName() + " as " + color);
                 return String.format(SET_TEXT_COLOR_GREEN + "Successfully joined game '%s' as '%s'", game.gameName(), color);
             } catch (NumberFormatException e) {
@@ -120,6 +119,13 @@ public class PostloginUi extends ClientUI{
             if (game == null) {
                 System.out.println(SET_TEXT_COLOR_RED + "Game with ID " + id + " not found.\n");
                 throw new ResponseException(404, SET_TEXT_COLOR_RED + "Game with ID " + id + " not found.\n");
+            }
+            try {
+                ws = new WebSocketFacade(serverUrl, notificationHandler);
+                ws.observeGame(game.gameID(), authToken);
+            } catch (Exception e) {
+                System.err.println("WebSocket connection failed: " + e.getMessage());
+                e.printStackTrace();
             }
             System.out.println(SET_TEXT_COLOR_GREEN + "Successfully observing game " + game.gameName());
             return String.format("Successfully observing game '%s'", game.gameName() + "\n");

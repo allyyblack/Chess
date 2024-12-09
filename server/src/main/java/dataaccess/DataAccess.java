@@ -14,6 +14,12 @@ public interface DataAccess {
 
     UserData getUser(String username) throws DataAccessException;
 
+    String getAuthToken(String username) throws DataAccessException;
+
+    boolean isGameValid(int gameID) throws DataAccessException;
+
+    boolean isAuthTokenValid(String authToken) throws DataAccessException;
+
     GameData createGame(String gameName) throws DataAccessException;
 
     GameData getGame(int gameID) throws DataAccessException;
@@ -27,6 +33,8 @@ public interface DataAccess {
     AuthData getAuth(String authToken) throws DataAccessException;
 
     GameData makeMove(ChessMove move, int gameID) throws DataAccessException;
+
+    boolean isInCheck(ChessGame game, ChessGame.TeamColor color);
 
     void updateGameState(int gameID, ChessGame chessGame) throws DataAccessException;
 

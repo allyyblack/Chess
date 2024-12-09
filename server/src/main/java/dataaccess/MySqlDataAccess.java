@@ -8,6 +8,7 @@ import model.GameData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
+import javax.swing.*;
 import java.util.*;
 import java.sql.*;
 
@@ -35,6 +36,54 @@ public class MySqlDataAccess implements DataAccess {
         return userData;
     }
 
+    public boolean isGameValid(int gameID) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "SELECT 1 FROM games WHERE gameID = ?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setInt(1, gameID);
+                try (var rs = ps.executeQuery()) {
+                    return rs.next();
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error checking if game exists: " + e.getMessage());
+        }
+    }
+
+    public boolean isAuthTokenValid(String authToken) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "SELECT 1 FROM tokens WHERE auth_token = ?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, authToken);
+                try (var rs = ps.executeQuery()) {
+                    return rs.next();
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error checking if auth token exists: " + e.getMessage());
+        }
+    }
+
+
+
+    public String getAuthToken(String username) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "SELECT auth_token FROM tokens WHERE username = ?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getString("auth_token");
+                    } else {
+                        return null;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error retrieving auth token: " + e.getMessage());
+        }
+    }
+
     public UserData getUser(String username) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT username, password_hash, email FROM users WHERE username=?";
@@ -51,7 +100,6 @@ public class MySqlDataAccess implements DataAccess {
         }
         return null;
     }
-
 
 
     public GameData createGame(String gameName) throws DataAccessException {
@@ -235,6 +283,9 @@ public class MySqlDataAccess implements DataAccess {
         return null;
     }
 
+    public boolean isInCheck(ChessGame game, ChessGame.TeamColor color) {
+        return game.isInCheck(color);
+    }
 
     public void deleteAuth(AuthData authToken) throws DataAccessException {
         String statement = "DELETE FROM tokens WHERE auth_token = ?";

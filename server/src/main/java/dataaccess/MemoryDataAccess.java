@@ -40,6 +40,21 @@ public class MemoryDataAccess implements DataAccess{
     }
 
     @Override
+    public String getAuthToken(String username) throws DataAccessException {
+        return "";
+    }
+
+    @Override
+    public boolean isGameValid(int gameID) throws DataAccessException {
+        return false;
+    }
+
+    @Override
+    public boolean isAuthTokenValid(String authToken) throws DataAccessException {
+        return false;
+    }
+
+    @Override
     public GameData createGame(String gameName) {
         ChessGame game = new ChessGame();
         GameData data = new GameData(nextId++, null, null, gameName, game);
@@ -107,6 +122,11 @@ public class MemoryDataAccess implements DataAccess{
     @Override
     public GameData makeMove(ChessMove move, int gameID) throws DataAccessException {
         return null;
+    }
+
+    @Override
+    public boolean isInCheck(ChessGame game, ChessGame.TeamColor color) {
+        return false;
     }
 
     @Override
