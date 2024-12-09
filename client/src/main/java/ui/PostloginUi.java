@@ -1,7 +1,7 @@
 package ui;
 
 import chess.ChessGame;
-import model.Game_Data;
+import model.GameData;
 import model.PlayerGame;
 
 import java.util.Arrays;
@@ -14,7 +14,7 @@ import static ui.EscapeSequences.*;
 public class PostloginUi extends ClientUI{
     private final ServerFacade server;
     private String authToken;
-    public static final Map<Integer, Game_Data> gameMap = new HashMap<>();
+    public static final Map<Integer, GameData> GAME_MAP = new HashMap<>();
     public ChessGame game;
     private final NotificationHandler notificationHandler;
     public static WebSocketFacade ws;
@@ -55,7 +55,7 @@ public class PostloginUi extends ClientUI{
     public String createGame(String... params) throws ResponseException {
         if (params.length == 1) {
             var gameName = params[0];
-            var gameData = new Game_Data(0, null, null, gameName, null);
+            var gameData = new GameData(0, null, null, gameName, null);
             gameData = server.createGame(gameData, authToken);
             System.out.println(SET_TEXT_COLOR_YELLOW + "Game " + gameName + " created.");
             game = gameData.game();
@@ -74,7 +74,7 @@ public class PostloginUi extends ClientUI{
                     System.out.println(SET_TEXT_COLOR_RED + "Color must be 'WHITE' or 'BLACK'.\n");
                     throw new ResponseException(400, SET_TEXT_COLOR_RED + "Color must be 'WHITE' or 'BLACK'.\n");
                 }
-                var game = gameMap.get(id);
+                var game = GAME_MAP.get(id);
                 if (game == null) {
                     System.out.println(SET_TEXT_COLOR_RED + "Game with ID " + id + " not found.\n");
                     throw new ResponseException(404, SET_TEXT_COLOR_RED + "Game with ID " + id + " not found.\n");
@@ -109,7 +109,7 @@ public class PostloginUi extends ClientUI{
 
         try {
             int id = Integer.parseInt(params[0]);
-            var game = gameMap.get(id);
+            var game = GAME_MAP.get(id);
             if (game == null) {
                 System.out.println(SET_TEXT_COLOR_RED + "Game with ID " + id + " not found.\n");
                 throw new ResponseException(404, SET_TEXT_COLOR_RED + "Game with ID " + id + " not found.\n");
@@ -131,14 +131,14 @@ public class PostloginUi extends ClientUI{
 
 
     public String listGames(String... params) throws ResponseException {
-        gameMap.clear();
+        GAME_MAP.clear();
         var games = server.listGames(authToken);
         var result = new StringBuilder();
         int i = 0;
 
         for (var game : games) {
             i++;
-            gameMap.put(i, game);
+            GAME_MAP.put(i, game);
             result.append("Game ").append(i).append(": ");
             result.append(game.gameName()).append('\n');
             result.append("White Player: ").append(game.whiteUsername() == null ? "None" : game.whiteUsername()).append('\n');

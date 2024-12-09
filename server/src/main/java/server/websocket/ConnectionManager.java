@@ -12,17 +12,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
     public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<Integer, ArrayList<Connection>> Game_Connections = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Integer, ArrayList<Connection>> GAME_CONNECTIONS = new ConcurrentHashMap<>();
 
 
     public void joinGame(String user, int gameId, Session session) {
         var connection = new Connection(user, session);
-        Game_Connections.computeIfAbsent(gameId, k -> new ArrayList<>()).add(connection); // Add player to the game
+        GAME_CONNECTIONS.computeIfAbsent(gameId, k -> new ArrayList<>()).add(connection); // Add player to the game
         connections.put(user, connection);
     }
 
     public static boolean isUserInGame(String user, int gameId) {
-        var gameList = Game_Connections.get(gameId);
+        var gameList = GAME_CONNECTIONS.get(gameId);
         if (gameList == null) {
             return false;
         }
@@ -31,18 +31,18 @@ public class ConnectionManager {
 
 
     public void leaveGame(String user, int gameId) {
-        var gameList = Game_Connections.get(gameId);
+        var gameList = GAME_CONNECTIONS.get(gameId);
         if (gameList != null) {
             gameList.removeIf(c -> c.user.equals(user)); // Remove the player from the game
             if (gameList.isEmpty()) {
-                Game_Connections.remove(gameId); // Clean up if the game is empty
+                GAME_CONNECTIONS.remove(gameId); // Clean up if the game is empty
             }
         }
         connections.remove(user); // Remove player globally
     }
 
     public void broadcastToGame(String excludeVisitorName, int gameId, ServerMessage message) throws IOException {
-        var gameList = Game_Connections.get(gameId);
+        var gameList = GAME_CONNECTIONS.get(gameId);
         if (gameList == null) {
             return;
         }

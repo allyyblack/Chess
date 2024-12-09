@@ -4,7 +4,7 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import model.AuthData;
-import model.Game_Data;
+import model.GameData;
 import model.UserData;
 import java.util.Collection;
 
@@ -21,11 +21,11 @@ public interface DataAccess {
 
     boolean isAuthTokenValid(String authToken) throws DataAccessException;
 
-    Game_Data createGame(String gameName) throws DataAccessException;
+    GameData createGame(String gameName) throws DataAccessException;
 
-    Game_Data getGame(int gameID) throws DataAccessException;
+    GameData getGame(int gameID) throws DataAccessException;
 
-    Collection<Game_Data> listGames() throws DataAccessException;
+    Collection<GameData> listGames() throws DataAccessException;
 
     void updateGame(int gameID, String authToken, String color) throws DataAccessException;
 
@@ -33,7 +33,7 @@ public interface DataAccess {
 
     AuthData getAuth(String authToken) throws DataAccessException;
 
-    Game_Data makeMove(ChessMove move, int gameID) throws DataAccessException;
+    GameData makeMove(ChessMove move, int gameID) throws DataAccessException;
 
     boolean isInCheck(ChessGame game, ChessGame.TeamColor color);
 

@@ -1,6 +1,6 @@
 package ui;
 
-import model.Game_Data;
+import model.GameData;
 import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
@@ -19,7 +19,7 @@ public class Repl implements NotificationHandler {
     public void switchToPostLogin(String authToken) {
         client = new PostloginUi(authToken, this);
     }
-    public void switchToGameplayUi(String authToken, Game_Data game, String color) {
+    public void switchToGameplayUi(String authToken, GameData game, String color) {
         var ws = PostloginUi.ws; // Retrieve the WebSocket instance
         client = new GameplayUi(authToken, game, color, this, ws);
     }
@@ -47,7 +47,7 @@ public class Repl implements NotificationHandler {
                     String[] parts = line.split(" ");
                     String color = parts[2];
                     int gameNumber = Integer.parseInt(parts[1]);
-                    var game = PostloginUi.gameMap.get(gameNumber);
+                    var game = PostloginUi.GAME_MAP.get(gameNumber);
                     switchToGameplayUi(newAuth, game, color);
                 }
                 if (line.contains("logout") && result.contains("Goodbye")) {
