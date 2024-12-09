@@ -8,7 +8,6 @@ import model.GameData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
-import javax.swing.*;
 import java.util.*;
 import java.sql.*;
 
@@ -285,6 +284,24 @@ public class MySqlDataAccess implements DataAccess {
 
     public boolean isInCheck(ChessGame game, ChessGame.TeamColor color) {
         return game.isInCheck(color);
+    }
+
+    @Override
+    public void changeTeamTurn(ChessGame.TeamColor color) {
+
+    }
+
+    public boolean isInCheckmate(ChessGame game, ChessGame.TeamColor color) {
+        return game.isInCheckmate(color);
+    }
+
+    public void changeTeamTurn(ChessGame game, ChessGame.TeamColor color) {
+        if (color.equals("BLACK")) {
+            color = ChessGame.TeamColor.valueOf("WHITE");
+        } else {
+            color = ChessGame.TeamColor.valueOf("BLACK");
+        }
+        game.setTeamTurn(color);
     }
 
     public void deleteAuth(AuthData authToken) throws DataAccessException {

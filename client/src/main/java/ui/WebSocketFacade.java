@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import model.PlayerGame;
@@ -90,7 +91,7 @@ public class WebSocketFacade extends Endpoint {
       }
 
     public void makeMove(PlayerGame playerGame, String authToken) throws ResponseException {
-        try {
+            try {
             var command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, playerGame.gameID());
             this.session.getBasicRemote().sendText((new Gson().toJson(command)));
         } catch (IOException ex) {

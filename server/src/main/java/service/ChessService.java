@@ -86,6 +86,9 @@ public class ChessService {
 
     public String getUserColor(int gameId, String authToken) throws DataAccessException {
         AuthData authData = dataAccess.getAuth(authToken);
+        if(authData == null) {
+            return "invalid auth";
+        }
         GameData gameData = dataAccess.getGame(gameId);
         if (authData.username().equals(gameData.whiteUsername())) {
             return "WHITE";
@@ -97,6 +100,17 @@ public class ChessService {
 
     public boolean isInCheck(ChessGame game, ChessGame.TeamColor color) {
         return dataAccess.isInCheck(game, color);
+    }
+
+    public void changeTeamTurn(ChessGame game, ChessGame.TeamColor color) {
+        dataAccess.changeTeamTurn(game, color);
+    }
+
+
+
+
+    public boolean isInCheckmate(ChessGame game, ChessGame.TeamColor color) {
+        return dataAccess.isInCheckmate(game, color);
     }
 
     public void joinGame(PlayerGame playerGame, String authToken) throws DataAccessException, UnauthorizedAccessException {
@@ -161,10 +175,14 @@ public class ChessService {
     }
 
     public String getOtherUser(String authToken, int gameId) throws DataAccessException {
+        AuthData authData = dataAccess.getAuth(authToken);
+        if(authData == null) {
+            return "invalid auth";
+        }
         String blackUser = dataAccess.getGame(gameId).blackUsername();
         String whiteUser = dataAccess.getGame(gameId).whiteUsername();
-        AuthData authData = dataAccess.getAuth(authToken);
-        if(authData.username().equals(whiteUser)) {
+        AuthData otherAuthData = dataAccess.getAuth(authToken);
+        if(otherAuthData.username().equals(whiteUser)) {
             return dataAccess.getAuthToken(blackUser);
         }
         else{

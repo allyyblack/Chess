@@ -112,13 +112,17 @@ public class GameplayUi extends ClientUI {
                 if (params.length == 3) {
                     promotionPiece = ChessPiece.PieceType.valueOf(params[2].toUpperCase());
                 }
+                try {
+                    if (ws != null) {
+                        ws.makeMove(playergame, authToken);
+                    } else {
+                        System.out.println("No WebSocket connection found.");
+                    }
+                } catch (ResponseException e) {
+                    return "Move not successful";
+                }
                 ChessMove move = convertToChessMove(position, destination, promotionPiece);
                 service.makeMove(move, gameData.gameID(), authToken);
-                if (ws != null) {
-                    ws.makeMove(playergame, authToken);
-                } else {
-                    System.out.println("No WebSocket connection found.");
-                }
                 return "Move successful!";
             } else {
                 throw new IllegalArgumentException("Invalid number of parameters. Expected start and end positions, with an optional promotion piece.");

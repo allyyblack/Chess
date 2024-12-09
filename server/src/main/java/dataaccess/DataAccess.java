@@ -36,6 +36,12 @@ public interface DataAccess {
 
     boolean isInCheck(ChessGame game, ChessGame.TeamColor color);
 
+    void changeTeamTurn(ChessGame game, ChessGame.TeamColor color);
+
+    void changeTeamTurn(ChessGame.TeamColor color);
+
+    boolean isInCheckmate(ChessGame game, ChessGame.TeamColor color);
+
     void updateGameState(int gameID, ChessGame chessGame) throws DataAccessException;
 
     void deleteAuth(AuthData authToken) throws DataAccessException;

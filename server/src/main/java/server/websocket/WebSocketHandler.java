@@ -49,35 +49,69 @@ public class WebSocketHandler {
     }
 
     private void makeMove(String authToken, int gameId) throws IOException, DataAccessException {
-//        var sendBoard = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, board);
         String user = service.getUser(authToken);
+        if (!service.isAuthTokenValid(authToken)) {
+            var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: Not a valid authtoken");
+            connections.broadcastToUser(user, error);
+            return;
+        }
+        ChessGame game = service.getgame(gameId).game();
         String otherUser = service.getOtherUser(authToken, gameId);
         String color = service.getUserColor(gameId, authToken);
-        String otherColor = service.getUserColor(gameId, otherUser);
-        boolean whiteAtBottom = color.equals("WHITE");
-
-        var message = String.format("%s made the move FILL IN", user);
-        var sendToSelf = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), whiteAtBottom);
-        var sendToOther = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), !whiteAtBottom);
-        var allOtherUsers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-
-        connections.broadcastToUser(user, sendToSelf);
-        connections.broadcastToGame(user, gameId, sendToOther);
-        connections.broadcastToGame(user, gameId, allOtherUsers);
-        ChessGame game = service.getgame(gameId).game();
-        boolean isInCheck = service.isInCheck(game, ChessGame.TeamColor.valueOf(otherColor));
-        if (isInCheck) {
-            var checkMessage = String.format("move results in check");
-            var everrrbody = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, checkMessage);
-            connections.broadcastToGame(null, gameId, everrrbody);
+        if (!color.equals("BLACK") || !color.equals("WHITE")) {
+            var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: You can't make a turn as an observer");
+            connections.broadcastToUser(user, error);
+            return;
         }
 
-        // FIXME If the move results in check, checkmate or stalemate the server sends a Notification message to all clients.
-        //                 var checkMessage = String.format("move results in check, checkmate, or stalemate")
-        //                 var everrrbody = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, checkMessage);
-        //         connections.broadcastToGame(null, everrrbody);
+        if(!game.getTeamTurn().equals(ChessGame.TeamColor.valueOf(color))) {
+            var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: Not your turn");
+            connections.broadcastToUser(user, error);
+            return;
+        }
+
+        if(!game.getTeamTurn().equals(ChessGame.TeamColor.valueOf(color))) {
+            var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: Not your turn");
+            connections.broadcastToUser(user, error);
+            return;
+        }
+
+            String otherColor = service.getUserColor(gameId, otherUser);
+        boolean whiteAtBottom = color.equals("WHITE");
+        boolean isInCheck = service.isInCheck(game, ChessGame.TeamColor.valueOf(otherColor));
+        boolean isInCheckMate = service.isInCheckmate(game, ChessGame.TeamColor.valueOf(otherColor));
+        if (isInCheck || isInCheckMate) {
+            var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: Game is over");
+            connections.broadcastToUser(user, error);
+        } else {
+            var message = String.format("%s made the move FILL IN", user);
+            var sendToSelf = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), whiteAtBottom);
+            var sendToOther = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), !whiteAtBottom);
+            var allOtherUsers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+
+            connections.broadcastToUser(user, sendToSelf);
+            connections.broadcastToGame(user, gameId, sendToOther);
+            connections.broadcastToGame(user, gameId, allOtherUsers);
+            isInCheck = service.isInCheck(game, ChessGame.TeamColor.valueOf(otherColor));
+            isInCheckMate = service.isInCheckmate(game, ChessGame.TeamColor.valueOf(otherColor));
+            if (isInCheck) {
+                var checkMessage = String.format("move results in check");
+                var everrrbody = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, checkMessage);
+                connections.broadcastToGame(null, gameId, everrrbody);
+            }
+            if (isInCheckMate) {
+                var checkmateMessage = String.format("move results in checkmate");
+                var everrrbody = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, checkmateMessage);
+                connections.broadcastToGame(null, gameId, everrrbody);
+            }
 
 
+            // FIXME If the move results in check, checkmate or stalemate the server sends a Notification message to all clients.
+            //                 var checkMessage = String.format("move results in check, checkmate, or stalemate")
+            //                 var everrrbody = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, checkMessage);
+            //         connections.broadcastToGame(null, everrrbody);
+
+        }
     }
 
     public void connect(String authToken, int gameId, Session session) throws IOException, DataAccessException {

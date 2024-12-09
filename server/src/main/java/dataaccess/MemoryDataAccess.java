@@ -130,6 +130,21 @@ public class MemoryDataAccess implements DataAccess{
     }
 
     @Override
+    public void changeTeamTurn(ChessGame game, ChessGame.TeamColor color) {
+
+    }
+
+    @Override
+    public void changeTeamTurn(ChessGame.TeamColor color) {
+
+    }
+
+    @Override
+    public boolean isInCheckmate(ChessGame game, ChessGame.TeamColor color) {
+        return false;
+    }
+
+    @Override
     public void updateGameState(int gameID, ChessGame chessGame) throws DataAccessException {
 
     }
