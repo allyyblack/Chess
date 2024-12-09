@@ -1,6 +1,7 @@
 package dataaccess;
 
 import chess.ChessMove;
+import chess.ChessPosition;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -167,6 +168,11 @@ public class MemoryDataAccess implements DataAccess{
     @Override
     public boolean isGameEnded(int gameID) throws DataAccessException {
         return false;
+    }
+
+    @Override
+    public Collection<ChessMove> getValidMoves(ChessPosition position, int gameID) throws DataAccessException {
+        return List.of();
     }
 }
 

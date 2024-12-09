@@ -253,7 +253,7 @@ public class MySqlDataAccess implements DataAccess {
             Collection<ChessMove> validMoves = chessGame.validMoves(position);
             return validMoves;
         } catch (SQLException e) {
-            throw new DataAccessException("Error retrieving valid moves for gameID: " + gameID, e);
+            throw new DataAccessException("Error retrieving valid moves for gameID: " + gameID);
         }
     }
 
