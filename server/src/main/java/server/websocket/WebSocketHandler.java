@@ -104,7 +104,6 @@ public class WebSocketHandler {
                 connections.broadcastToGame(null, gameId, everrrbody);
             }
             if (isInCheckMate) {
-                //                 var checkMessage = String.format("move results in check, checkmate, or stalemate")
 
                 var checkmateMessage = String.format("move results in checkmate");
                 var everrrbody = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, checkmateMessage);
