@@ -46,7 +46,6 @@ public class ConnectionManager {
                         message = new Gson().fromJson(message.toString(), LoadGameMessage.class);
                     }
                     // check if message
-                    System.out.println(c.user + message.toString());
                     c.send(message.toString());
                 }
             } else {
