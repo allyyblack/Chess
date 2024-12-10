@@ -136,7 +136,7 @@ public class GameplayUi extends ClientUI {
                 server.makeMove(move, gameData.gameID(), authToken);
                 return "Move successful!";
             } else {
-                throw new IllegalArgumentException("Invalid number of parameters. Expected start and end positions, with an optional promotion piece.");
+                throw new IllegalArgumentException("Invalid number of parameters.");
             }
         } catch (Exception e) {
             System.err.println("An error occurred while trying to leave the game: " + e.getMessage());

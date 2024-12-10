@@ -37,7 +37,6 @@ public class WebSocketHandler {
         } catch (DataAccessException e) {
                 String user = action.getAuthToken();
             }
-            // FIXME: VALIDATE AUTH TOKEN AND GAMEID
         // IF INVALID, you need to send an errorMessage to the current client
 
         switch (action.getCommandType()) {
@@ -104,8 +103,6 @@ public class WebSocketHandler {
                 var everrrbody = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, checkMessage);
                 connections.broadcastToGame(null, gameId, everrrbody);
             }
-            // FIXME If the move results in check, checkmate or stalemate the server sends a Notification message to all clients.
-
             if (isInCheckMate) {
                 //                 var checkMessage = String.format("move results in check, checkmate, or stalemate")
 
@@ -143,7 +140,7 @@ public class WebSocketHandler {
         String color = service.getUserColor(gameId, authToken);
         boolean whiteAtBottom = color.equals("WHITE");
         var message = String.format("%s joined the game as %s", user, color);
-        var m = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), whiteAtBottom); //FIXME change true to whether white or black
+        var m = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), whiteAtBottom);
         var all = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
 
         connections.broadcastToUser(user, m);
