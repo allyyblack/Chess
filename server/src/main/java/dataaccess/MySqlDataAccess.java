@@ -216,7 +216,6 @@ public class MySqlDataAccess implements DataAccess {
 
 
     }
-
     public void endGame(int gameID) throws DataAccessException {
         String statement = "UPDATE games SET gameStatus = 'FINISHED' WHERE gameID = ?";
         try (var conn = DatabaseManager.getConnection()) {
@@ -231,7 +230,6 @@ public class MySqlDataAccess implements DataAccess {
             throw new DataAccessException("Error updating game status: " + e.getMessage());
         }
     }
-
     public Collection<ChessMove> getValidMoves(ChessPosition position, int gameID) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             String statement = "SELECT game FROM games WHERE gameID = ?";
@@ -256,8 +254,6 @@ public class MySqlDataAccess implements DataAccess {
             throw new DataAccessException("Error retrieving valid moves for gameID: " + gameID);
         }
     }
-
-
     public boolean isGameEnded(int gameID) throws DataAccessException {
         String query = "SELECT gameStatus FROM games WHERE gameID = ?";
 
@@ -277,9 +273,6 @@ public class MySqlDataAccess implements DataAccess {
             throw new DataAccessException("Error checking game status: " + e.getMessage());
         }
     }
-
-
-
     public void removeUser(int gameID, String color) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             String updateStatement;
@@ -303,8 +296,6 @@ public class MySqlDataAccess implements DataAccess {
             throw new DataAccessException("Error removing user from game: " + e.getMessage());
         }
     }
-
-
     public void updateGameState(int gameID, ChessGame chessGame) throws DataAccessException {
         // Serialize the ChessGame object to JSON
         String gameJson = new Gson().toJson(chessGame);
@@ -315,8 +306,6 @@ public class MySqlDataAccess implements DataAccess {
         // Execute the update
         executeUpdate(statement, gameJson, gameID);
     }
-
-
     public AuthData createAuth(String username) throws DataAccessException {
         String token =  UUID.randomUUID().toString();
         AuthData authData = new AuthData(token, username);
@@ -324,7 +313,6 @@ public class MySqlDataAccess implements DataAccess {
         executeUpdate(statement, token, username);
         return authData;
     }
-
     public ChessGame.TeamColor getTeamTurn(int gameId) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             String statement = "SELECT teamTurn FROM games WHERE gameID = ?";
@@ -333,7 +321,7 @@ public class MySqlDataAccess implements DataAccess {
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
                         String teamTurnValue = rs.getString("teamTurn");
-                        return ChessGame.TeamColor.valueOf(teamTurnValue.toUpperCase());
+                        return ChessGame.TeamColor.valueOf(teamTurnValue);
                     } else {
                         throw new DataAccessException("Game not found for gameID: " + gameId);
                     }
@@ -343,7 +331,6 @@ public class MySqlDataAccess implements DataAccess {
             throw new DataAccessException("Error retrieving game data for gameID: " + gameId);
         }
     }
-
     public void changeTeamTurn(int gameId) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             String selectStatement = "SELECT teamTurn FROM games WHERE gameID = ?";
@@ -375,9 +362,6 @@ public class MySqlDataAccess implements DataAccess {
             throw new DataAccessException("Error changing team turn: " + e.getMessage());
         }
     }
-
-
-
     public AuthData getAuth(String authToken) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT auth_token, username FROM tokens WHERE auth_token = ?";
@@ -398,7 +382,6 @@ public class MySqlDataAccess implements DataAccess {
         }
         return null;
     }
-
     public boolean isInCheck(ChessGame game, ChessGame.TeamColor color) {
         return game.isInCheck(color);
     }
@@ -506,5 +489,3 @@ public class MySqlDataAccess implements DataAccess {
         }
     }
 }
-
-
