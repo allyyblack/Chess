@@ -47,7 +47,7 @@ public class GameplayUi extends ClientUI {
                 case "leave" -> leave();
                 case "makemove" -> makeMove(params);
                 case "resign" -> resign(params);
-//                case "highlightmoves" -> highlightMoves(params);
+                case "highlightmoves" -> highlightMoves(params);
                 default -> help();
             };
         } catch (ResponseException ex) {
