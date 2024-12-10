@@ -2,6 +2,8 @@
 package server.websocket;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import model.PlayerGame;
@@ -30,7 +32,7 @@ public class WebSocketHandler {
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException, DataAccessException {
+    public void onMessage(Session session, String message) throws IOException, DataAccessException, InvalidMoveException {
         UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
         try {
             String user = service.getUser(action.getAuthToken());
@@ -41,14 +43,20 @@ public class WebSocketHandler {
 
         switch (action.getCommandType()) {
             case CONNECT -> connect(action.getAuthToken(), action.getGameID(), session);
-            case MAKE_MOVE -> makeMove(action.getAuthToken(), action.getGameID());
+            case MAKE_MOVE -> makeMove(action.getAuthToken(), action.getGameID(), action.getMove());
             case LEAVE -> leave(action.getAuthToken(), action.getGameID());
             case RESIGN -> resign(action.getAuthToken(), action.getGameID());
         }
     }
 
-    private void makeMove(String authToken, int gameId) throws IOException, DataAccessException {
+    private void makeMove(String authToken, int gameId, ChessMove move) throws IOException, DataAccessException, InvalidMoveException {
         String user = service.getUser(authToken);
+
+        if(!service.isMoveValid(gameId,move)) {
+            var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: invalid move");
+            connections.broadcastToUser(user, error);
+            return;
+        }
         if(service.isGameEnded(gameId)) {
             var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: You can't move in a finished game");
             connections.broadcastToUser(user, error);
@@ -67,19 +75,13 @@ public class WebSocketHandler {
             connections.broadcastToUser(user, error);
             return;
         }
+        ChessGame.TeamColor teamTurn = service.getTeamTurn(gameId);
 
-        if(!game.getTeamTurn().equals(ChessGame.TeamColor.valueOf(color))) {
+        if (teamTurn != ChessGame.TeamColor.valueOf(color)) {
             var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: Not your turn");
             connections.broadcastToUser(user, error);
             return;
         }
-
-        if(!game.getTeamTurn().equals(ChessGame.TeamColor.valueOf(color))) {
-            var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: Not your turn");
-            connections.broadcastToUser(user, error);
-            return;
-        }
-
             String otherColor = service.getUserColor(gameId, otherUser);
         boolean whiteAtBottom = color.equals("WHITE");
         boolean isInCheck = service.isInCheck(game, ChessGame.TeamColor.valueOf(otherColor));
@@ -88,6 +90,7 @@ public class WebSocketHandler {
             var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: Game is over");
             connections.broadcastToUser(user, error);
         } else {
+            service.changeTeamTurn(gameId);
             var message = String.format("%s made the move FILL IN", user);
             var sendToSelf = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), whiteAtBottom);
             var sendToOther = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), !whiteAtBottom);
@@ -118,6 +121,10 @@ public class WebSocketHandler {
         }
     }
 
+    public boolean isMoveValid(int gameId, ChessMove move) {
+        return true;
+    }
+
     public void connect(String authToken, int gameId, Session session) throws IOException, DataAccessException {
         String user;
         try {
@@ -145,6 +152,12 @@ public class WebSocketHandler {
         connections.broadcastToUser(user, m);
         connections.broadcastToGame(user, gameId, all);
     }
+
+    public void sendErrorMessage(String user, String errorMessage) throws IOException {
+        var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, errorMessage);
+        connections.broadcastToUser(user, error);
+    }
+
 
     public void leave(String authToken, int gameId) throws IOException, DataAccessException {
         String user = service.getUser(authToken);

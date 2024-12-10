@@ -131,16 +131,6 @@ public class MemoryDataAccess implements DataAccess{
     }
 
     @Override
-    public void changeTeamTurn(ChessGame game, ChessGame.TeamColor color) {
-
-    }
-
-    @Override
-    public void changeTeamTurn(ChessGame.TeamColor color) {
-
-    }
-
-    @Override
     public boolean isInCheckmate(ChessGame game, ChessGame.TeamColor color) {
         return false;
     }
@@ -168,6 +158,16 @@ public class MemoryDataAccess implements DataAccess{
     @Override
     public boolean isGameEnded(int gameID) throws DataAccessException {
         return false;
+    }
+
+    @Override
+    public ChessGame.TeamColor getTeamTurn(int gameId) throws DataAccessException {
+        return null;
+    }
+
+    @Override
+    public void changeTeamTurn(int gameId) throws DataAccessException {
+
     }
 
     @Override

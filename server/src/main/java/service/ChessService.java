@@ -54,7 +54,7 @@ public class ChessService {
     }
 
     public GameData makeMove(ChessMove move, int gameID, String authToken)
-            throws DataAccessException, UnauthorizedAccessException {
+            throws DataAccessException, UnauthorizedAccessException, InvalidMoveException {
         AuthData authData = dataAccess.getAuth(authToken);
         if (authData == null) {
             throw new UnauthorizedAccessException("Invalid auth token");
@@ -68,7 +68,7 @@ public class ChessService {
         try {
             chessGame.makeMove(move);
         } catch (InvalidMoveException e) {
-            throw new DataAccessException("Invalid move: " + e.getMessage());
+            throw new InvalidMoveException("Invalid move: " + e.getMessage());
         }
         dataAccess.updateGameState(gameID, chessGame);
         return dataAccess.getGame(gameID);
@@ -81,6 +81,14 @@ public class ChessService {
 
     public boolean isAuthTokenValid(String authToken) throws DataAccessException {
         return dataAccess.isAuthTokenValid(authToken);
+    }
+
+    public ChessGame.TeamColor getTeamTurn(int gameId) throws DataAccessException {
+        return dataAccess.getTeamTurn(gameId);
+    }
+
+    public void changeTeamTurn(int gameId) throws DataAccessException {
+        dataAccess.changeTeamTurn(gameId);
     }
 
 
@@ -103,11 +111,10 @@ public class ChessService {
         return dataAccess.isInCheck(game, color);
     }
 
-    public void changeTeamTurn(ChessGame game, ChessGame.TeamColor color) {
-        dataAccess.changeTeamTurn(game, color);
+    public boolean isMoveValid(int gameId, ChessMove move) throws DataAccessException, InvalidMoveException {
+        ChessGame game = dataAccess.getGame(gameId).game();
+        return game.isMoveValid(move);
     }
-
-
 
 
     public boolean isInCheckmate(ChessGame game, ChessGame.TeamColor color) {

@@ -15,6 +15,7 @@ public class ChessGame {
     private ChessBoard board = new ChessBoard();
     public boolean gameOver;
 
+
     public ChessGame() {
         board.resetBoard();
         team = TeamColor.WHITE;
@@ -75,6 +76,30 @@ public class ChessGame {
         return numbersWithoutDuplicates;
     }
 
+    public boolean isMoveValid(ChessMove move) throws InvalidMoveException {
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPosition endPosition = move.getEndPosition();
+        ChessPiece piece = board.getPiece(startPosition);
+        if (piece == null) {
+            return false;
+        }
+        if (piece.getTeamColor() != team) {
+            return false;
+        }
+        Collection<ChessMove> validMoves = validMoves(startPosition);
+        if (!validMoves.contains(move)) {
+            return false;
+        }
+
+        ChessBoard hypotheticalBoard = board.clone();
+        makeMoveHypothetical(move, hypotheticalBoard);
+        if (isInCheckHypothetical(piece.getTeamColor(), hypotheticalBoard)) {
+            return false;
+        }
+        return true;
+    }
+
+
     /**
      * Makes a move in a chess game
      *
@@ -95,6 +120,7 @@ public class ChessGame {
         Collection<ChessMove> validMoves = validMoves(startPosition);
         if (!validMoves.contains(move)) {
             throw new InvalidMoveException("Invalid Move");
+
         }
         ChessPiece piece = new ChessPiece(board.getPiece(startPosition).getTeamColor(), board.getPiece(startPosition).getPieceType());
         if (promotionPiece != null) {

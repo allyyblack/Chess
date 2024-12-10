@@ -49,7 +49,6 @@ public class ConnectionManager {
                     c.send(message.toString());
                 }
             } else {
-                System.out.println("UGH"+c.user);
                 removeList.add(c);
             }
         }

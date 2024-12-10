@@ -325,6 +325,59 @@ public class MySqlDataAccess implements DataAccess {
         return authData;
     }
 
+    public ChessGame.TeamColor getTeamTurn(int gameId) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            String statement = "SELECT teamTurn FROM games WHERE gameID = ?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setInt(1, gameId);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        String teamTurnValue = rs.getString("teamTurn");
+                        return ChessGame.TeamColor.valueOf(teamTurnValue.toUpperCase());
+                    } else {
+                        throw new DataAccessException("Game not found for gameID: " + gameId);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error retrieving game data for gameID: " + gameId);
+        }
+    }
+
+    public void changeTeamTurn(int gameId) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            String selectStatement = "SELECT teamTurn FROM games WHERE gameID = ?";
+            ChessGame.TeamColor currentTurn = null;
+            try (var ps = conn.prepareStatement(selectStatement)) {
+                ps.setInt(1, gameId);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        String teamTurnValue = rs.getString("teamTurn");
+                        currentTurn = ChessGame.TeamColor.valueOf(teamTurnValue.toUpperCase());
+                    } else {
+                        throw new DataAccessException("Game not found for gameID: " + gameId);
+                    }
+                }
+            }
+            ChessGame.TeamColor newTurn = (currentTurn == ChessGame.TeamColor.WHITE)
+                    ? ChessGame.TeamColor.BLACK
+                    : ChessGame.TeamColor.WHITE;
+            String updateStatement = "UPDATE games SET teamTurn = ? WHERE gameID = ?";
+            try (var ps = conn.prepareStatement(updateStatement)) {
+                ps.setString(1, newTurn.name());
+                ps.setInt(2, gameId);
+                int rowsAffected = ps.executeUpdate();
+                if (rowsAffected == 0) {
+                    throw new DataAccessException("No game found with the provided gameID or update failed.");
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error changing team turn: " + e.getMessage());
+        }
+    }
+
+
+
     public AuthData getAuth(String authToken) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT auth_token, username FROM tokens WHERE auth_token = ?";
@@ -350,22 +403,8 @@ public class MySqlDataAccess implements DataAccess {
         return game.isInCheck(color);
     }
 
-    @Override
-    public void changeTeamTurn(ChessGame.TeamColor color) {
-
-    }
-
     public boolean isInCheckmate(ChessGame game, ChessGame.TeamColor color) {
         return game.isInCheckmate(color);
-    }
-
-    public void changeTeamTurn(ChessGame game, ChessGame.TeamColor color) {
-        if (color.equals("BLACK")) {
-            color = ChessGame.TeamColor.valueOf("WHITE");
-        } else {
-            color = ChessGame.TeamColor.valueOf("BLACK");
-        }
-        game.setTeamTurn(color);
     }
 
     public void deleteAuth(AuthData authToken) throws DataAccessException {

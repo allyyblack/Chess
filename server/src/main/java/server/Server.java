@@ -1,5 +1,6 @@
 package server;
 
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dataaccess.MySqlDataAccess;
@@ -11,6 +12,8 @@ import model.GameData;
 import model.UserData;
 import model.PlayerGame;
 import dataaccess.DataAccessException;
+
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import server.websocket.WebSocketHandler;
@@ -57,9 +60,10 @@ public class Server {
         return Spark.port();
     }
 
-    private Object makeMove(Request req, Response res) {
+    private Object makeMove(Request req, Response res) throws IOException {
+        String authToken = req.headers("Authorization");
         try {
-            String authToken = req.headers("Authorization");
+            authToken = req.headers("Authorization");
             var move = new Gson().fromJson(req.body(), Move.class);
             service.makeMove(move.getMove(), move.getGameId(), authToken);
             res.status(200);
@@ -67,6 +71,11 @@ public class Server {
         } catch (UnauthorizedAccessException e) {
             res.status(401);
             return new Gson().toJson(Map.of("message", "Error: unauthorized"));
+        } catch (InvalidMoveException e) {
+            String notificationMessage = "Invalid move attempted: " + e.getMessage();
+            webSocketHandler.sendErrorMessage(authToken, notificationMessage);
+            res.status(400);
+            return new Gson().toJson(Map.of("message", "Error: invalid move"));
         } catch (Exception e) {
             res.status(500);
             return new Gson().toJson(Map.of("message", "Error: internal server error"));

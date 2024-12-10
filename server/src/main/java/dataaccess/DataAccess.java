@@ -37,10 +37,6 @@ public interface DataAccess {
 
     boolean isInCheck(ChessGame game, ChessGame.TeamColor color);
 
-    void changeTeamTurn(ChessGame game, ChessGame.TeamColor color);
-
-    void changeTeamTurn(ChessGame.TeamColor color);
-
     boolean isInCheckmate(ChessGame game, ChessGame.TeamColor color);
 
     void updateGameState(int gameID, ChessGame chessGame) throws DataAccessException;
@@ -52,6 +48,10 @@ public interface DataAccess {
     void endGame(int gameID) throws DataAccessException;
 
     boolean isGameEnded(int gameID) throws DataAccessException;
+
+    ChessGame.TeamColor getTeamTurn(int gameId) throws DataAccessException;
+
+    void changeTeamTurn(int gameId) throws DataAccessException;
 
     Collection<ChessMove> getValidMoves(ChessPosition position, int gameID) throws DataAccessException;
 

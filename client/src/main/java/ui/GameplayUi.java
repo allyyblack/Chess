@@ -123,16 +123,16 @@ public class GameplayUi extends ClientUI {
                 if (params.length == 3) {
                     promotionPiece = ChessPiece.PieceType.valueOf(params[2].toUpperCase());
                 }
+                ChessMove move = convertToChessMove(position, destination, promotionPiece);
                 try {
                     if (ws != null) {
-                        ws.makeMove(playergame, authToken);
+                        ws.makeMove(playergame, authToken, move);
                     } else {
                         System.out.println("No WebSocket connection found.");
                     }
                 } catch (ResponseException e) {
                     return "Move not successful";
                 }
-                ChessMove move = convertToChessMove(position, destination, promotionPiece);
                 server.makeMove(move, gameData.gameID(), authToken);
                 return "Move successful!";
             } else {
