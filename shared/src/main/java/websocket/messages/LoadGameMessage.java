@@ -1,20 +1,33 @@
 package websocket.messages;
 import chess.*;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 
 public class LoadGameMessage extends ServerMessage {
     ChessGame game;
     boolean whiteAtBottom;
-    public LoadGameMessage(ServerMessageType type, ChessGame game, boolean whiteAtBottom) {
+    ChessPosition position;
+    public LoadGameMessage(ServerMessageType type, ChessGame game, boolean whiteAtBottom, ChessPosition position) {
         super(type);
         this.game = game;
         this.whiteAtBottom = whiteAtBottom;
+        this.position = position;
     }
 
     @Override
     public String getMessage() {
+        Collection<ChessMove> validMoves;
         ChessBoard board = game.getBoard();
-        ChessPosition startPosition;
+        Set<ChessPosition> validMovePositions = new HashSet<>();
+
+        if (position != null) {
+            validMoves = game.validMoves(position);
+        } else {
+            validMoves = null;
+        }
 
         String[][] chessBoard = new String[8][8];
         String whitePieceColor = EscapeSequences.SET_TEXT_COLOR_WHITE;

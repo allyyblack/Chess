@@ -49,13 +49,50 @@ public class WebSocketHandler {
         // IF INVALID, you need to send an errorMessage to the current client
 
         switch (action.getCommandType()) {
-            case CONNECT -> connect(action.getAuthToken(), action.getGameID(), session, action.getPosition());
+            case CONNECT -> connect(action.getAuthToken(), action.getGameID(), session);
             case MAKE_MOVE -> makeMove(action.getAuthToken(), action.getGameID(), action.getMove());
             case LEAVE -> leave(action.getAuthToken(), action.getGameID());
+            case REDRAW -> redraw(action.getAuthToken(), action.getGameID(), action.getPosition());
+            case OBSERVE -> observe(action.getAuthToken(), action.getGameID(), session);
             case RESIGN -> resign(action.getAuthToken(), action.getGameID());
         }
     }
 
+    private void observe(String authToken, int gameId, Session session) throws DataAccessException, IOException {
+        String username;
+        try {
+            username = service.getUser(authToken);
+        } catch(DataAccessException e) {
+            username = authToken;
+        }
+        connections.joinGame(username, gameId, session);
+        if (!service.isAuthTokenValid(authToken)) {
+            var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: Not a valid authtoken");
+            connections.broadcastToUser(username, error);
+            return;
+        }
+        if (!service.isGameValid(gameId)) {
+            var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: Not a real game");
+            connections.broadcastToUser(username, error);
+            return;
+        }
+
+        boolean whiteAtBottom = true;
+        var message = String.format("%s joined the game as an observer", username);
+        var m = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), whiteAtBottom, null);
+        var all = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+
+        connections.broadcastToUser(username, m);
+        connections.broadcastToGame(username, gameId, all);
+    }
+    private void redraw(String authToken, int gameId, ChessPosition position) throws DataAccessException, IOException {
+        String user = service.getUser(authToken);
+        String color = service.getUserColor(gameId, authToken);
+        boolean whiteAtBottom = color.equals("WHITE");
+        var sendToSelf = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), whiteAtBottom, null);
+
+        connections.broadcastToUser(user, sendToSelf);
+    }
     private void makeMove(String authToken, int gameId, ChessMove move) throws IOException, DataAccessException, InvalidMoveException, UnauthorizedAccessException {
         String user = service.getUser(authToken);
 
@@ -107,8 +144,8 @@ public class WebSocketHandler {
         }
             service.changeTeamTurn(gameId);
             var message = String.format("%s made the move FILL IN", user);
-            var sendToSelf = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), whiteAtBottom);
-            var sendToOther = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), !whiteAtBottom);
+            var sendToSelf = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), whiteAtBottom, null);
+            var sendToOther = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), !whiteAtBottom, null);
             var allOtherUsers = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
 
             connections.broadcastToUser(user, sendToSelf);
@@ -132,7 +169,7 @@ public class WebSocketHandler {
     }
 
 
-    public void connect(String authToken, int gameId, Session session, ChessPosition position) throws IOException, DataAccessException {
+    public void connect(String authToken, int gameId, Session session) throws IOException, DataAccessException {
         String user;
         try {
             user = service.getUser(authToken);
@@ -153,7 +190,7 @@ public class WebSocketHandler {
         String color = service.getUserColor(gameId, authToken);
         boolean whiteAtBottom = color.equals("WHITE");
         var message = String.format("%s joined the game as %s", user, color);
-        var m = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), whiteAtBottom);
+        var m = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), whiteAtBottom, null);
         var all = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
 
         connections.broadcastToUser(user, m);

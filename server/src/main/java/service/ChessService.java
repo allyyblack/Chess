@@ -160,8 +160,6 @@ public class ChessService {
             // Create a new GameData instance with black player removed
             gameData = gameData.withBlackUsername(null);
             dataAccess.removeUser(gameData.gameID(), playerGame.playerColor());
-        } else {
-            throw new DataAccessException(authData.username() + " is not part of this game.");
         }
     }
 
