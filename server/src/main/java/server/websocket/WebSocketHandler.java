@@ -93,7 +93,7 @@ public class WebSocketHandler {
 
         connections.broadcastToUser(user, sendToSelf);
     }
-    private void makeMove(String a, int gameId, ChessMove move) throws IOException, DataAccessException, InvalidMoveException, UnauthorizedAccessException {
+    void makeMove(String a, int gameId, ChessMove move) throws IOException, DataAccessException, InvalidMoveException, UnauthorizedAccessException {
         String user = service.getUser(a);
 
         if(!service.isMoveValid(gameId,move)) {
