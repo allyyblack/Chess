@@ -34,11 +34,11 @@ public class WebSocketHandler {
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException, DataAccessException, InvalidMoveException, UnauthorizedAccessException {
-        UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
+    public void onMessage(Session s, String m) throws IOException, DataAccessException, InvalidMoveException, UnauthorizedAccessException {
+        UserGameCommand action = new Gson().fromJson(m, UserGameCommand.class);
         if (!service.isAuthTokenValid(action.getAuthToken())) {
             var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: Not a valid authtoken");
-            session.getRemote().sendString(new Gson().toJson(error));
+            s.getRemote().sendString(new Gson().toJson(error));
             return;
         }
         try {
@@ -49,11 +49,11 @@ public class WebSocketHandler {
         // IF INVALID, you need to send an errorMessage to the current client
 
         switch (action.getCommandType()) {
-            case CONNECT -> connect(action.getAuthToken(), action.getGameID(), session);
+            case CONNECT -> connect(action.getAuthToken(), action.getGameID(), s);
             case MAKE_MOVE -> makeMove(action.getAuthToken(), action.getGameID(), action.getMove());
             case LEAVE -> leave(action.getAuthToken(), action.getGameID());
             case REDRAW -> redraw(action.getAuthToken(), action.getGameID(), action.getPosition());
-            case OBSERVE -> observe(action.getAuthToken(), action.getGameID(), session);
+            case OBSERVE -> observe(action.getAuthToken(), action.getGameID(), s);
             case RESIGN -> resign(action.getAuthToken(), action.getGameID());
         }
     }
@@ -93,8 +93,8 @@ public class WebSocketHandler {
 
         connections.broadcastToUser(user, sendToSelf);
     }
-    private void makeMove(String authToken, int gameId, ChessMove move) throws IOException, DataAccessException, InvalidMoveException, UnauthorizedAccessException {
-        String user = service.getUser(authToken);
+    private void makeMove(String a, int gameId, ChessMove move) throws IOException, DataAccessException, InvalidMoveException, UnauthorizedAccessException {
+        String user = service.getUser(a);
 
         if(!service.isMoveValid(gameId,move)) {
             var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: invalid move");
@@ -106,14 +106,14 @@ public class WebSocketHandler {
             connections.broadcastToUser(user, error);
             return;
         }
-        if (!service.isAuthTokenValid(authToken)) {
+        if (!service.isAuthTokenValid(a)) {
             var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: Not a valid authtoken");
             connections.broadcastToUser(user, error);
             return;
         }
         ChessGame game = service.getgame(gameId).game();
-        String otherUser = service.getOtherUser(authToken, gameId);
-        String color = service.getUserColor(gameId, authToken);
+        String otherUser = service.getOtherUser(a, gameId);
+        String color = service.getUserColor(gameId, a);
         if (!color.equalsIgnoreCase("BLACK") && !color.equalsIgnoreCase("WHITE")) {
             var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: You can't make a turn as an observer");
             connections.broadcastToUser(user, error);
@@ -130,7 +130,7 @@ public class WebSocketHandler {
         boolean whiteAtBottom = color.equals("WHITE");
         boolean isInCheck = service.isInCheck(game, ChessGame.TeamColor.valueOf(otherColor));
         boolean isInCheckMate = service.isInCheckmate(game, ChessGame.TeamColor.valueOf(otherColor));
-        service.makeMove(move, gameId, authToken);
+        service.makeMove(move, gameId, a);
         if (isInCheckMate) {
             var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Game is over");
             service.endGame(gameId);
