@@ -156,8 +156,7 @@ public class ChessService {
             gameData = gameData.withWhiteUsername(null);
             dataAccess.removeUser(gameData.gameID(), playerGame.playerColor());
         }
-        else if (authToken.equals(gameData.blackUsername())) {
-            // Create a new GameData instance with black player removed
+        else if (authData.username().equals(gameData.blackUsername())) {
             gameData = gameData.withBlackUsername(null);
             dataAccess.removeUser(gameData.gameID(), playerGame.playerColor());
         }

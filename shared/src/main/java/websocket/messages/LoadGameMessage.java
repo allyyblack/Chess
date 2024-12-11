@@ -2,8 +2,6 @@ package websocket.messages;
 import chess.*;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 
 public class LoadGameMessage extends ServerMessage {
@@ -21,8 +19,6 @@ public class LoadGameMessage extends ServerMessage {
     public String getMessage() {
         Collection<ChessMove> validMoves;
         ChessBoard board = game.getBoard();
-        Set<ChessPosition> validMovePositions = new HashSet<>();
-
         if (position != null) {
             validMoves = game.validMoves(position);
         } else {

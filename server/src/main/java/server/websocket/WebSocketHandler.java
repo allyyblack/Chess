@@ -27,7 +27,6 @@ public class WebSocketHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
     private final ChessService service;
-    private PlayerGame playerGame;
 
     public WebSocketHandler(ChessService service) {
         this.service = service;
@@ -89,7 +88,7 @@ public class WebSocketHandler {
         String user = service.getUser(authToken);
         String color = service.getUserColor(gameId, authToken);
         boolean whiteAtBottom = color.equals("WHITE");
-        var sendToSelf = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), whiteAtBottom, null);
+        var sendToSelf = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), whiteAtBottom, position);
 
         connections.broadcastToUser(user, sendToSelf);
     }
@@ -208,8 +207,8 @@ public class WebSocketHandler {
         connections.leaveGame(user, gameId);
         var message = String.format("%s left the game", user);
         var m = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        PlayerGame playerGame1 = new PlayerGame(service.getUserColor(gameId, authToken), gameId);
-        service.leave(playerGame1, authToken);
+        PlayerGame playerGame = new PlayerGame(service.getUserColor(gameId, authToken), gameId);
+        service.leave(playerGame, authToken);
         connections.broadcastToGame(user, gameId, m);
     }
 
