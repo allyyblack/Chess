@@ -3,9 +3,11 @@ package server.websocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPosition;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import dataaccess.UnauthorizedAccessException;
 import model.PlayerGame;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
@@ -32,8 +34,13 @@ public class WebSocketHandler {
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException, DataAccessException, InvalidMoveException {
+    public void onMessage(Session session, String message) throws IOException, DataAccessException, InvalidMoveException, UnauthorizedAccessException {
         UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
+        if (!service.isAuthTokenValid(action.getAuthToken())) {
+            var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: Not a valid authtoken");
+            session.getRemote().sendString(new Gson().toJson(error));
+            return;
+        }
         try {
             String user = service.getUser(action.getAuthToken());
         } catch (DataAccessException e) {
@@ -42,14 +49,14 @@ public class WebSocketHandler {
         // IF INVALID, you need to send an errorMessage to the current client
 
         switch (action.getCommandType()) {
-            case CONNECT -> connect(action.getAuthToken(), action.getGameID(), session);
+            case CONNECT -> connect(action.getAuthToken(), action.getGameID(), session, action.getPosition());
             case MAKE_MOVE -> makeMove(action.getAuthToken(), action.getGameID(), action.getMove());
             case LEAVE -> leave(action.getAuthToken(), action.getGameID());
             case RESIGN -> resign(action.getAuthToken(), action.getGameID());
         }
     }
 
-    private void makeMove(String authToken, int gameId, ChessMove move) throws IOException, DataAccessException, InvalidMoveException {
+    private void makeMove(String authToken, int gameId, ChessMove move) throws IOException, DataAccessException, InvalidMoveException, UnauthorizedAccessException {
         String user = service.getUser(authToken);
 
         if(!service.isMoveValid(gameId,move)) {
@@ -86,10 +93,18 @@ public class WebSocketHandler {
         boolean whiteAtBottom = color.equals("WHITE");
         boolean isInCheck = service.isInCheck(game, ChessGame.TeamColor.valueOf(otherColor));
         boolean isInCheckMate = service.isInCheckmate(game, ChessGame.TeamColor.valueOf(otherColor));
-        if (isInCheck || isInCheckMate) {
-            var error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "ERROR: Game is over");
-            connections.broadcastToUser(user, error);
-        } else {
+        service.makeMove(move, gameId, authToken);
+        if (isInCheckMate) {
+            var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Game is over");
+            service.endGame(gameId);
+            connections.broadcastToUser(user, notification);
+            connections.broadcastToGame(user, gameId,notification);
+        } else if (isInCheck) {
+            var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "user was put in check");
+            connections.broadcastToUser(user, notification);
+            connections.broadcastToGame(user, gameId,notification);
+
+        }
             service.changeTeamTurn(gameId);
             var message = String.format("%s made the move FILL IN", user);
             var sendToSelf = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, service.getgame(gameId).game(), whiteAtBottom);
@@ -114,18 +129,10 @@ public class WebSocketHandler {
 
                 connections.broadcastToGame(null, gameId, everrrbody);
             }
-
-
-            //         connections.broadcastToGame(null, everrrbody);
-
-        }
     }
 
-    public boolean isMoveValid(int gameId, ChessMove move) {
-        return true;
-    }
 
-    public void connect(String authToken, int gameId, Session session) throws IOException, DataAccessException {
+    public void connect(String authToken, int gameId, Session session, ChessPosition position) throws IOException, DataAccessException {
         String user;
         try {
             user = service.getUser(authToken);
@@ -159,12 +166,13 @@ public class WebSocketHandler {
     }
 
 
-    public void leave(String authToken, int gameId) throws IOException, DataAccessException {
+    public void leave(String authToken, int gameId) throws IOException, DataAccessException, UnauthorizedAccessException {
         String user = service.getUser(authToken);
         connections.leaveGame(user, gameId);
         var message = String.format("%s left the game", user);
         var m = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-
+        PlayerGame playerGame1 = new PlayerGame(service.getUserColor(gameId, authToken), gameId);
+        service.leave(playerGame1, authToken);
         connections.broadcastToGame(user, gameId, m);
     }
 

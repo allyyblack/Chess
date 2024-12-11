@@ -58,9 +58,18 @@ public class GameplayUi extends ClientUI {
     public String highlightMoves(String... params) throws ResponseException {
         if (params.length == 1) {
             var position = params[0];
-            Collection<ChessMove> validMove;
+            ChessPosition position1 = parsePosition(position);
+            try {
+                if (ws != null) {
+                    ws.highlightMoves(playergame, authToken, position1);
+                } else {
+                    System.out.println("No WebSocket connection found.");
+                }
+            } catch (ResponseException e) {
+                return "highlight moves not successful";
+            }
         }
-        return null;
+        return "Highlighted moves";
     }
 
     public String redrawBoard(String... params) throws ResponseException {
@@ -101,7 +110,6 @@ public class GameplayUi extends ClientUI {
             } else {
                 System.out.println("No WebSocket connection found.");
             }
-            server.leave(playergame, authToken);
             System.out.println("You have successfully left the game.");
             return "You have successfully left the game.\n";
         } catch (Exception e) {
@@ -133,7 +141,6 @@ public class GameplayUi extends ClientUI {
                 } catch (ResponseException e) {
                     return "Move not successful";
                 }
-                server.makeMove(move, gameData.gameID(), authToken);
                 return "Move successful!";
             } else {
                 throw new IllegalArgumentException("Invalid number of parameters.");

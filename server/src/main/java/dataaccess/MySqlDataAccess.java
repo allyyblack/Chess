@@ -353,10 +353,7 @@ public class MySqlDataAccess implements DataAccess {
             try (var ps = conn.prepareStatement(updateStatement)) {
                 ps.setString(1, newTurn.name());
                 ps.setInt(2, gameId);
-                int rowsAffected = ps.executeUpdate();
-                if (rowsAffected == 0) {
-                    throw new DataAccessException("No game found with the provided gameID or update failed.");
-                }
+                ps.executeUpdate();
             }
         } catch (SQLException e) {
             throw new DataAccessException("Error changing team turn: " + e.getMessage());
@@ -465,14 +462,16 @@ public class MySqlDataAccess implements DataAccess {
             `whiteUsername` VARCHAR(50) DEFAULT NULL,
             `blackUsername` VARCHAR(50) DEFAULT NULL,
             `gameName` VARCHAR(100) NOT NULL,
-            `gameStatus` ENUM('ONGOING', 'CHECKMATE', 'STALEMATE', 'DRAW') DEFAULT 'ONGOING',
+            `gameStatus` ENUM('ONGOING', 'FINISHED') DEFAULT 'ONGOING',
             `game` TEXT NOT NULL, -- This can hold the serialized ChessGame data
-             PRIMARY KEY (`gameID`),
+            `teamTurn` ENUM('BLACK','WHITE') NOT NULL DEFAULT 'WHITE',
+            PRIMARY KEY (`gameID`),
             FOREIGN KEY (`whiteUsername`) REFERENCES users(`username`) ON DELETE SET NULL,
             FOREIGN KEY (`blackUsername`) REFERENCES users(`username`) ON DELETE SET NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
             """
     };
+
 
     private void configureDatabase() {
         DatabaseManager.createDatabase();
